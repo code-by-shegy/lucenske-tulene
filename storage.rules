@@ -1,0 +1,23 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // Profile pictures: /users/{userId}/profile.jpg
+    match /users/{userId}/{allPaths=**} {
+      // Anyone can view profile pics
+      allow read: if true;
+
+      // Only the owner can upload/replace their profile pic
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Event photos: /events/{eventId}/{userId}/{filename}
+    match /events/{eventId}/{userId}/{allPaths=**} {
+      // Anyone can view event photos
+      allow read: if true;
+
+      // Only the event owner can upload photos to their own folder
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+  }
+}
