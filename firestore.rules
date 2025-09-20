@@ -1,0 +1,30 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // User profiles
+    match /users/{userId} {
+      // Anyone can read any user profile
+      allow read: if true;
+
+      // Only the user can create or update their own profile
+      allow create, update, delete: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Events (cold exposure logs)
+    match /events/{eventId} {
+      // Anyone can read all events (for leaderboard/feed)
+      allow read: if true;
+
+      // Only logged-in users can create events
+      //allow create: if request.auth != null;
+
+      //shegy - for testing allow all for now.
+      allow create: if true;
+
+      // Only event owner can update/delete their event
+      allow update, delete: if request.auth != null
+        && request.auth.uid == resource.data.userId;
+    }
+  }
+}
