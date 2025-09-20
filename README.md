@@ -1,4 +1,4 @@
-# Lučenské Tulene 🦭❄️
+# 🦭 Lučenské Tulene 🦭
 
 **Lučenské Tulene** is a hardening & cold-exposure app inspired by the resilience of seals and the community in Lučenec, Slovakia.  
 It helps you track cold showers, ice baths, and exposure sessions to build grit, discipline, and strength.
