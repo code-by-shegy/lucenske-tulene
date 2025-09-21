@@ -1,36 +1,27 @@
-// src/pages/Home.tsx
-import { useEffect, useState } from "react";
-import type { User } from "firebase/auth";
-import { getUserProfile } from "../lib/users";
+import { useNavigate } from "react-router-dom";
 
-export default function Home({ user, onLogout }: { user: User; onLogout: () => void }) {
-  const [nickname, setNickname] = useState<string | null>(null);
-
-  useEffect(() => {
-    async function fetchProfile() {
-      if (user?.uid) {
-        const profile = await getUserProfile(user.uid);
-        if (profile?.name) {
-          setNickname(profile.name);
-        }
-      }
-    }
-    fetchProfile();
-  }, [user]);
+export default function Home() {
+  const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-blue-50">
-      <h1 className="text-3xl font-bold text-blue-800 mb-6">
-        Home Screen 🦭
-      </h1>
-      <p className="text-lg mb-4">
-        Welcome, <span className="font-semibold">{nickname ?? user.email}</span>
-      </p>
+    <div className="flex flex-col items-center justify-center h-screen gap-6 p-4 bg-gray-100">
       <button
-        onClick={onLogout}
-        className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+        onClick={() => navigate("/session")}
+        className="w-full max-w-xs p-6 text-xl font-bold text-white bg-blue-500 rounded-2xl shadow-lg"
       >
-        Logout
+        Start a new session
+      </button>
+      <button
+        onClick={() => navigate("/leaderboard")}
+        className="w-full max-w-xs p-6 text-xl font-bold text-white bg-green-500 rounded-2xl shadow-lg"
+      >
+        Leaderboard
+      </button>
+      <button
+        onClick={() => navigate("/profile")}
+        className="w-full max-w-xs p-6 text-xl font-bold text-white bg-purple-500 rounded-2xl shadow-lg"
+      >
+        My Profile
       </button>
     </div>
   );
