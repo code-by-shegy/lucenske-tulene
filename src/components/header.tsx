@@ -1,5 +1,4 @@
 import { ArrowLeft } from "lucide-react"; // lightweight icon lib
-import React from "react";
 
 type HeaderProps = {
   title: string;
