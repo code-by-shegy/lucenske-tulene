@@ -6,7 +6,7 @@ export default function Home() {
   return (
     <div className="flex flex-col items-center justify-center h-screen gap-6 p-4 bg-gray-100">
       <button
-        onClick={() => navigate("/session")}
+        onClick={() => navigate("/startsession")}
         className="w-full max-w-xs p-6 text-xl font-bold text-white bg-blue-500 rounded-2xl shadow-lg"
       >
         Start a new session

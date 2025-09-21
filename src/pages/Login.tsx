@@ -1,82 +1,70 @@
 import { useState } from "react";
-import type { User } from "firebase/auth";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import type { User } from "firebase/auth";
 import { auth } from "../firebase";
+import { useNavigate, Link } from "react-router-dom";
 
 type Props = {
   onLoginSuccess: (user: User) => void;
-  onSwitchToRegister: () => void;
 };
 
-export default function Login({ onLoginSuccess, onSwitchToRegister }: Props) {
+export default function Login({ onLoginSuccess }: Props) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleLogin = async () => {
-    setError(null);
-    setLoading(true);
+  const navigate = useNavigate();
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
     try {
-      const res = await signInWithEmailAndPassword(auth, email, password);
-      if (res.user) {
-        onLoginSuccess(res.user);
-      }
-    } catch (e: any) {
-      console.error("Login failed", e);
-      setError(e?.message ?? "Login failed");
-    } finally {
-      setLoading(false);
+      const cred = await signInWithEmailAndPassword(auth, email, password);
+      onLoginSuccess(cred.user);
+      navigate("/"); // ✅ go to home after login
+    } catch (err: any) {
+      setError(err.message);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50 p-6">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-md p-8">
-        <h1 className="text-3xl font-bold text-slate-900 mb-2">Login</h1>
-        <p className="text-slate-600 mb-6">Welcome back to Tulene</p>
+    <div className="flex h-screen items-center justify-center">
+      <form
+        onSubmit={handleLogin}
+        className="w-full max-w-sm rounded bg-white p-6 shadow"
+      >
+        <h1 className="mb-4 text-xl font-bold">Login</h1>
 
-        {error && (
-          <div className="mb-4 text-sm text-red-600 bg-red-50 p-2 rounded">
-            {error}
-          </div>
-        )}
-
-        <label className="block text-sm text-slate-700 mb-1">Email</label>
         <input
           type="email"
+          placeholder="Email"
+          className="mb-2 w-full rounded border p-2"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full p-3 mb-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-sky-300"
-          placeholder="you@example.com"
         />
-
-        <label className="block text-sm text-slate-700 mb-1">Password</label>
         <input
           type="password"
+          placeholder="Password"
+          className="mb-4 w-full rounded border p-2"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full p-3 mb-4 border rounded-md focus:outline-none focus:ring-2 focus:ring-sky-300"
-          placeholder="••••••••"
         />
 
+        {error && <p className="mb-2 text-sm text-red-500">{error}</p>}
+
         <button
-          onClick={handleLogin}
-          disabled={loading}
-          className="w-full bg-sky-600 text-white py-3 rounded-md hover:bg-sky-700 disabled:opacity-60"
+          type="submit"
+          className="w-full rounded bg-blue-500 p-2 text-white"
         >
-          {loading ? "Logging in..." : "Login"}
+          Login
         </button>
 
-        <div className="text-center text-sm text-slate-600 mt-4">
-          <button
-            onClick={onSwitchToRegister}
-            className="underline text-sky-600 hover:text-sky-700"
-          >
-            Don’t have an account? Register
-          </button>
-        </div>
-      </div>
+        <p className="mt-4 text-center text-sm">
+          Don’t have an account?{" "}
+          <Link to="/register" className="text-blue-500">
+            Register here
+          </Link>
+        </p>
+      </form>
     </div>
   );
 }
