@@ -1,102 +1,76 @@
-import React, { useState } from "react";
+// src/pages/Login.tsx
+import { useState } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import type { User } from "firebase/auth";
-import { auth } from "../firebase";
-import { ensureUserProfile } from "../lib/users";
+import { auth } from "../lib/firebase";
 
-type Props = {
-  onLoginSuccess: (user: User) => void;
+export default function Login({
+  onLoginSuccess,
+  onSwitchToRegister,
+}: {
+  onLoginSuccess: (user: any) => void;
   onSwitchToRegister: () => void;
-};
-
-export default function Login({ onLoginSuccess, onSwitchToRegister }: Props) {
+}) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleLogin = async () => {
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
     setError(null);
-    setLoading(true);
+
     try {
-      const res = await signInWithEmailAndPassword(auth, email, password);
-      if (res.user) {
-        await ensureUserProfile(res.user.uid, res.user.email);
-        onLoginSuccess(res.user);
-      }
-    } catch (e: any) {
-      console.error("Login failed", e);
-      setError(e?.message ?? "Login failed");
-    } finally {
-      setLoading(false);
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      onLoginSuccess(userCredential.user);
+    } catch (err: any) {
+      setError(err.message);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-blue-200 to-blue-300 p-6">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8">
-        {/* Logo / Title */}
-        <div className="flex flex-col items-center mb-6">
-          <img
-            src="/seal-logo.png" // put your logo in /public/seal-logo.png
-            alt="Lucenské Tulene"
-            className="w-20 h-20 mb-3"
+    <div className="min-h-screen flex items-center justify-center bg-blue-50">
+      <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+        <h2 className="text-2xl font-bold mb-4 text-center">Login</h2>
+        {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
+
+        <form onSubmit={handleLogin} className="space-y-4">
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full p-2 border rounded"
+            required
           />
-          <h1 className="text-3xl font-bold text-blue-800">
-            Lucenské Tulene 🦭
-          </h1>
-          <p className="text-slate-600">Cold Exposure Tracker</p>
-        </div>
-
-        {/* Error */}
-        {error && (
-          <div className="mb-4 text-sm text-red-600 bg-red-50 p-2 rounded">
-            {error}
-          </div>
-        )}
-
-        {/* Email */}
-        <label className="block text-sm font-medium text-slate-700 mb-1">
-          Email
-        </label>
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="w-full p-3 mb-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-          placeholder="you@example.com"
-        />
-
-        {/* Password */}
-        <label className="block text-sm font-medium text-slate-700 mb-1">
-          Password
-        </label>
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="w-full p-3 mb-4 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-          placeholder="••••••••"
-        />
-
-        {/* Button */}
-        <button
-          onClick={handleLogin}
-          disabled={loading}
-          className="w-full bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700 disabled:opacity-60"
-        >
-          {loading ? "Logging in..." : "Login"}
-        </button>
-
-        {/* Switch */}
-        <div className="text-center text-sm text-slate-600 mt-4">
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full p-2 border rounded"
+            required
+          />
           <button
-            onClick={onSwitchToRegister}
-            className="underline text-blue-600 hover:text-blue-700"
+            type="submit"
+            className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
           >
-            Don’t have an account? Register
+            Login
           </button>
-        </div>
+        </form>
+
+        <p className="text-sm mt-4 text-center">
+          Don’t have an account?{" "}
+          <button
+            type="button"
+            onClick={onSwitchToRegister}
+            className="text-blue-600 hover:underline"
+          >
+            Register
+          </button>
+        </p>
       </div>
     </div>
   );
