@@ -13,9 +13,9 @@ function App() {
     setScreen("home");
   };
 
-  const handleRegisterSuccess = (newUser: User) => {
-    setUser(newUser);
-    setScreen("home"); // ✅ go straight to Home instead of back to login
+  const handleRegisterSuccess = () => {
+    // After register, go back to login
+    setScreen("login");
   };
 
   const handleLogout = () => {
@@ -23,27 +23,29 @@ function App() {
     setScreen("login");
   };
 
-  return (
-    <>
-      {screen === "login" && (
-        <Login
-          onLoginSuccess={handleLoginSuccess}
-          onSwitchToRegister={() => setScreen("register")}
-        />
-      )}
+  if (screen === "login") {
+    return (
+      <Login
+        onLoginSuccess={handleLoginSuccess}
+        onSwitchToRegister={() => setScreen("register")}
+      />
+    );
+  }
 
-      {screen === "register" && (
-        <Register
-          onRegisterSuccess={handleRegisterSuccess}
-          onSwitchToLogin={() => setScreen("login")}
-        />
-      )}
+  if (screen === "register") {
+    return (
+      <Register
+        onRegisterSuccess={handleRegisterSuccess}
+        onSwitchToLogin={() => setScreen("login")}
+      />
+    );
+  }
 
-      {screen === "home" && user && (
-        <Home user={user} onLogout={handleLogout} />
-      )}
-    </>
-  );
+  if (screen === "home" && user) {
+    return <Home user={user} onLogout={handleLogout} />;
+  }
+
+  return null;
 }
 
 export default App;
