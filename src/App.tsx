@@ -1,70 +1,48 @@
-import { useEffect, useState } from "react";
-import { db, storage } from "./firebase";
-import { collection, addDoc, getDocs } from "firebase/firestore";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { useState } from "react";
+import type { User } from "firebase/auth";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Home from "./pages/Home";
 
 function App() {
-  const [events, setEvents] = useState<any[]>([]);
+  const [screen, setScreen] = useState<"login" | "register" | "home">("login");
+  const [user, setUser] = useState<User | null>(null);
 
-  useEffect(() => {
-    const testFirestore = async () => {
-      try {
-        await addDoc(collection(db, "events"), {
-          title: "Test Cold Exposure",
-          createdAt: new Date(),
-          userId: "test-user",
-        });
+  const handleLoginSuccess = (loggedInUser: User) => {
+    setUser(loggedInUser);
+    setScreen("home");
+  };
 
-        const snapshot = await getDocs(collection(db, "events"));
-        const docs = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setEvents(docs);
-      } catch (error) {
-        console.error("Firestore test failed:", error);
-      }
-    };
+  const handleRegisterSuccess = (newUser: User) => {
+    setUser(newUser);
+    setScreen("home"); // ✅ go straight to Home instead of back to login
+  };
 
-    testFirestore();
-  }, []);
-
-  const handleUpload = async () => {
-    try {
-      const file = new Blob(["seal-test 🦭"], { type: "text/plain" });
-      const storageRef = ref(storage, `events/test-event/test-user/seal.txt`);
-      await uploadBytes(storageRef, file);
-      const url = await getDownloadURL(storageRef);
-      alert("Uploaded test file! URL: " + url);
-    } catch (error) {
-      console.error("Storage test failed:", error);
-    }
+  const handleLogout = () => {
+    setUser(null);
+    setScreen("login");
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen bg-blue-100">
-      <h1 className="text-3xl font-bold text-blue-700 mb-4">
-        Lucenské Tulene 🦭❄️
-      </h1>
+    <>
+      {screen === "login" && (
+        <Login
+          onLoginSuccess={handleLoginSuccess}
+          onSwitchToRegister={() => setScreen("register")}
+        />
+      )}
 
-      <button
-        onClick={handleUpload}
-        className="px-4 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700"
-      >
-        Upload Test File
-      </button>
+      {screen === "register" && (
+        <Register
+          onRegisterSuccess={handleRegisterSuccess}
+          onSwitchToLogin={() => setScreen("login")}
+        />
+      )}
 
-      <div className="mt-6 w-full max-w-md">
-        <h2 className="text-xl font-semibold mb-2">Events from Firestore:</h2>
-        <ul className="bg-white shadow-md rounded-lg p-4">
-          {events.map((event) => (
-            <li key={event.id} className="border-b py-1 last:border-none">
-              {event.title}
-            </li>
-          ))}
-        </ul>
-      </div>
-    </div>
+      {screen === "home" && user && (
+        <Home user={user} onLogout={handleLogout} />
+      )}
+    </>
   );
 }
 
