@@ -16,31 +16,21 @@ export default function Register({ onRegisterSuccess, onSwitchToLogin }: Props) 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleRegister = async () => {
-    setError(null);
-    setLoading(true);
-    try {
-      const res = await createUserWithEmailAndPassword(auth, email, password);
-      if (res.user) {
-        // create Firestore profile
-        await createUser({
-          id: res.user.uid,
-          email: res.user.email || "",
-          name: nickname,
-          avatar_url: "",
-          points: 0,
-          events_count: 0,
-          standing: 0,
-        });
-        onRegisterSuccess(res.user);
-      }
-    } catch (e: any) {
-      console.error("Register failed", e);
-      setError(e?.message ?? "Register failed");
-    } finally {
-      setLoading(false);
+ const handleRegister = async () => {
+  setError(null);
+  setLoading(true);
+  try {
+    const res = await createUserWithEmailAndPassword(auth, email, password);
+    if (res.user) {
+      await createUser(res.user.uid, res.user.email ?? "", nickname);
+      onRegisterSuccess(res.user);
     }
-  };
+  } catch (e: any) {
+    setError(e?.message ?? "Register failed");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-50 p-6">
