@@ -11,7 +11,6 @@ export type TimeInSeconds = number;
 
 // Event
 export type EventEntry = {
-  event_id: EventId;
   user_id: UserId;
   date: Date; // normalized to JS Date (instead of raw Firestore Timestamp)
   water_temp: WaterTempCelsius;
@@ -22,13 +21,11 @@ export type EventEntry = {
 
 // User profile
 export type UserProfile = {
-  user_id: UserId;
   user_name: UserName;
   email: Email;
   avatar_url: Url;
   events_count: EventsCount;
   points: Points;
-  standing: Standing;
 };
 
 // Leaderboard
