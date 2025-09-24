@@ -1,28 +1,24 @@
-import {
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  query,
-  setDoc,
-  updateDoc,
-  where,
-  orderBy,
-  addDoc,
-  Timestamp,
+import { 
+  collection, doc, getDoc, getDocs, query, setDoc,
+  updateDoc, where, orderBy, addDoc
 } from "firebase/firestore";
+
+import type {
+  UserId, UserName, UserProfile, Email, Url, Points, 
+  WaterTempCelsius, TimeInSeconds, EventEntry, LeaderboardEntry,
+} from "../types";
+
 import { db } from "../firebase";
 
 // ==========================
 // USERS
 // ==========================
 
-// 1) Create a new user profile
-export async function createUser(userId: string, email: string, name: string) {
-  const userRef = doc(db, "users", userId);
+export async function createUser(user_id: UserId, email: Email, user_name: UserName) {
+  const userRef = doc(db, "users", user_id);
   await setDoc(userRef, {
+    user_name,
     email,
-    name,
     avatar_url: null,
     points: 0,
     events_count: 0,
@@ -32,22 +28,22 @@ export async function createUser(userId: string, email: string, name: string) {
 
 // 2) Ensure profile exists (used after login/registration)
 export async function ensureUserProfile(
-  userId: string,
-  email: string,
-  name: string
+  user_id: UserId,
+  email: Email,
+  user_name: UserName
 ) {
-  const userRef = doc(db, "users", userId);
+  const userRef = doc(db, "users", user_id);
   const snap = await getDoc(userRef);
   if (!snap.exists()) {
-    await createUser(userId, email, name);
+    await createUser(user_id, email, user_name);
   }
 }
 
 // 3) Get user by ID
-export async function getUser(userId: string) {
-  const userRef = doc(db, "users", userId);
+export async function getUser(user_id: UserId): Promise <UserProfile | null> {
+  const userRef = doc(db, "users", user_id);
   const snap = await getDoc(userRef);
-  return snap.exists() ? snap.data() : null;
+  return snap.exists() ? snap.data() as UserProfile : null;
 }
 
 // ==========================
@@ -56,17 +52,17 @@ export async function getUser(userId: string) {
 
 // 4) Create a new event and update user stats
 export async function createEvent(
-  userId: string,
+  user_id: UserId,
   date: Date,
-  water_temp: number,
-  time_in_water: number,
-  points: number,
-  photo_url: string | null
+  water_temp: WaterTempCelsius,
+  time_in_water: TimeInSeconds,
+  points: Points,
+  photo_url: Url
 ) {
   // Add event
   await addDoc(collection(db, "events"), {
-    userId,
-    date: Timestamp.fromDate(date),
+    user_id,
+    date,
     water_temp,
     time_in_water,
     points,
@@ -74,7 +70,7 @@ export async function createEvent(
   });
 
   // Update user stats
-  const userRef = doc(db, "users", userId);
+  const userRef = doc(db, "users", user_id);
   const snap = await getDoc(userRef);
   if (snap.exists()) {
     const user = snap.data();
@@ -86,14 +82,26 @@ export async function createEvent(
 }
 
 // 5) Get events for a user, sorted by date
-export async function getEventsByUser(userId: string) {
+export async function getEventsByUser(user_id: UserId): Promise<EventEntry[]> {
   const q = query(
     collection(db, "events"),
-    where("userId", "==", userId),
+    where("user_id", "==", user_id),
     orderBy("date", "desc")
   );
   const querySnapshot = await getDocs(q);
-  return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+
+  return querySnapshot.docs.map((doc) => {
+    const data = doc.data();
+    return {
+      event_id: doc.id,
+      user_id,
+      date: data.date?.toDate ? data.date.toDate() : null, // Firestore Timestamp → Date @todo:check
+      water_temp: data.water_temp ?? null,
+      time_in_water: data.time_in_water ?? null,
+      points: data.points ?? 0,
+      photo_url: data.photo_url ?? null,
+    };
+  });
 }
 
 // ==========================
@@ -101,14 +109,14 @@ export async function getEventsByUser(userId: string) {
 // ==========================
 
 // 6) Get leaderboard, sorted by points
-export async function getLeaderboard() {
+export async function getLeaderboard(): Promise<LeaderboardEntry[]> {
   const q = query(collection(db, "users"), orderBy("points", "desc"));
   const querySnapshot = await getDocs(q);
   return querySnapshot.docs.map((doc) => {
     const data = doc.data();
     return {
-      id: doc.id,
-      name: data.name,
+      user_id: doc.id,
+      user_name: data.user_name,
       events_count: data.events_count,
       points: data.points,
     };

@@ -1,13 +1,17 @@
 import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase";
 import { createUser } from "../lib/users";
-import { useNavigate, Link } from "react-router-dom";
+
+import type { 
+  Email, UserName
+} from "../types";
 
 export default function Register() {
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState<Email>("");
   const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
+  const [user_name, setName] = useState<UserName>("");
   const [error, setError] = useState<string | null>(null);
 
   const navigate = useNavigate();
@@ -19,7 +23,7 @@ export default function Register() {
       const cred = await createUserWithEmailAndPassword(auth, email, password);
 
       // Create Firestore profile
-      await createUser(cred.user.uid, email, name);
+      await createUser(cred.user.uid, email, user_name);
 
       // ✅ Redirect back to login page
       navigate("/login");
@@ -40,7 +44,7 @@ export default function Register() {
           type="text"
           placeholder="Nickname"
           className="mb-2 w-full rounded border p-2"
-          value={name}
+          value={user_name}
           onChange={(e) => setName(e.target.value)}
         />
         <input

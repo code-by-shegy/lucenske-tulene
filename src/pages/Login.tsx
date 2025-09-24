@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import type { User } from "firebase/auth";
 import { auth } from "../firebase";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { useNavigate, Link } from "react-router-dom";
+
+import type { User } from "firebase/auth";
 
 type Props = {
   onLoginSuccess: (user: User) => void;

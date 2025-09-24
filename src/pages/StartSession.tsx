@@ -10,7 +10,7 @@ export default function StartSession() {
 
   const [time, setTime] = useState<number>(0);
   const [running, setRunning] = useState<boolean>(false);
-  const [waterTemp, setWaterTemp] = useState<string>("");
+  const [water_temp_string, setWaterTemp] = useState<string>("");
   const [points, setPoints] = useState<number>(0);
   const [stage, setStage] = useState<"start" | "stop" | "save">("start");
   const [loading, setLoading] = useState<boolean>(false);
@@ -26,13 +26,13 @@ export default function StartSession() {
   }, [running]);
 
   useEffect(() => {
-    const tempNum = parseFloat(waterTemp);
+    const tempNum = parseFloat(water_temp_string);
     if (!isNaN(tempNum) && tempNum > 0) {
       setPoints(Math.round((time / tempNum) * 100) / 100);
     } else {
       setPoints(0);
     }
-  }, [time, waterTemp]);
+  }, [time, water_temp_string]);
 
   const displayName =
     auth.currentUser?.displayName ??
@@ -40,7 +40,7 @@ export default function StartSession() {
 
   const handleMainButton = async () => {
     if (stage === "start") {
-      if (!waterTemp || isNaN(parseFloat(waterTemp)) || parseFloat(waterTemp) <= 0) {
+      if (!water_temp_string || isNaN(parseFloat(water_temp_string)) || parseFloat(water_temp_string) <= 0) {
         alert("Please enter a valid water temperature (°C) before starting.");
         return;
       }
@@ -67,12 +67,12 @@ export default function StartSession() {
 
       const uid = user.uid;
       const date = new Date();
-      const water_temp_num = parseFloat(waterTemp);
-      const timeInWater = time;
-      const pointsNum = Math.round((timeInWater / (water_temp_num || 1)) * 100) / 100;
+      const water_temp_num = parseFloat(water_temp_string);
+      const time_in_water = time;
+      const points = Math.round((time_in_water / (water_temp_num || 1)) * 100) / 100;
 
       try {
-        await createEvent(uid, date, water_temp_num, timeInWater, pointsNum, null);
+        await createEvent(uid, date, water_temp_num, time_in_water, points, null);
 
         setTime(0);
         setPoints(0);
@@ -126,7 +126,7 @@ export default function StartSession() {
           <input
             type="number"
             step="0.1"
-            value={waterTemp}
+            value={water_temp_string}
             onChange={(e) => setWaterTemp(e.target.value)}
             disabled={stage !== "start"}
             className="w-full rounded border p-3 text-center"
