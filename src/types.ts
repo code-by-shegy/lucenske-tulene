@@ -11,8 +11,9 @@ export type TimeInSeconds = number;
 
 // Event
 export type EventEntry = {
+  event_id: EventId;
   user_id: UserId;
-  date: Date; // normalized to JS Date (instead of raw Firestore Timestamp)
+  date: Date | null;
   water_temp: WaterTempCelsius;
   time_in_water: TimeInSeconds;
   points: Points;

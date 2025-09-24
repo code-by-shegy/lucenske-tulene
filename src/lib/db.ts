@@ -1,6 +1,6 @@
 import { 
   collection, doc, getDoc, getDocs, query, setDoc,
-  updateDoc, where, orderBy, addDoc
+  updateDoc, where, orderBy, addDoc, Timestamp
 } from "firebase/firestore";
 
 import type {
@@ -61,7 +61,7 @@ export async function createEvent(
   // Add event
   await addDoc(collection(db, "events"), {
     user_id,
-    date,
+    date: Timestamp.fromDate(date),
     water_temp,
     time_in_water,
     points,
@@ -94,7 +94,7 @@ export async function getEventsByUser(user_id: UserId): Promise<EventEntry[]> {
     return {
       event_id: doc.id,
       user_id,
-      date: data.date?.toDate ? data.date.toDate() : null, // Firestore Timestamp → Date @todo:check
+      date: data.date?.toDate ? data.date.toDate() : null, // ✅ normalize Timestamp → Date
       water_temp: data.water_temp ?? null,
       time_in_water: data.time_in_water ?? null,
       points: data.points ?? 0,

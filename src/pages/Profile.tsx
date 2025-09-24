@@ -70,7 +70,7 @@ export default function Profile() {
           </thead>
           <tbody>
             {events.map((ev) => (
-              <tr key={ev.user_id} className="border-t">
+              <tr key={ev.event_id} className="border-t">
                 <td className="p-3">
                   {ev.date ? ev.date.toLocaleDateString() : "—"}
                 </td>
