@@ -22,7 +22,6 @@ export async function createUser(user_id: UserId, email: Email, user_name: UserN
     avatar_url: null,
     points: 0,
     events_count: 0,
-    standing: null,
   });
 }
 
