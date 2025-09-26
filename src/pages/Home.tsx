@@ -1,28 +1,45 @@
+// src/pages/Home.tsx
 import { useNavigate } from "react-router-dom";
+import Header from "../components/Header";
+import Button from "../components/Button";
+import Page from "../components/Page";
 
 export default function Home() {
   const navigate = useNavigate();
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen gap-6 p-4 bg-gray-100">
-      <button
-        onClick={() => navigate("/startsession")}
-        className="w-full max-w-xs p-6 text-xl font-bold text-white bg-blue-500 rounded-2xl shadow-lg"
-      >
-        Start a new session
-      </button>
-      <button
-        onClick={() => navigate("/leaderboard")}
-        className="w-full max-w-xs p-6 text-xl font-bold text-white bg-green-500 rounded-2xl shadow-lg"
-      >
-        Leaderboard
-      </button>
-      <button
-        onClick={() => navigate("/profile")}
-        className="w-full max-w-xs p-6 text-xl font-bold text-white bg-purple-500 rounded-2xl shadow-lg"
-      >
-        My Profile
-      </button>
-    </div>
+    <Page className="bg-icywhite">
+      <Header title="Home" className="bg-oceanblue text-white" />
+
+      <div className="flex-1 flex flex-col justify-center items-center gap-6 px-6">
+        
+        <Button
+          variant="primary"
+          size="lg"
+          fullWidth
+          onClick={() => navigate("/startsession")}
+        >
+          Start New Session
+        </Button>
+
+        <Button
+          variant="secondary"
+          size="lg"
+          fullWidth
+          onClick={() => navigate("/leaderboard")}
+        >
+          Leaderboard
+        </Button>
+
+        <Button
+          variant="secondary"
+          size="lg"
+          fullWidth
+          onClick={() => navigate("/profile")}
+        >
+          My Profile
+        </Button>
+      </div>
+    </Page>
   );
 }

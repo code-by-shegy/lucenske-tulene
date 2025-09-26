@@ -1,20 +1,25 @@
-import { ArrowLeft } from "lucide-react"; // lightweight icon lib
+import { ArrowLeft } from "lucide-react";
 
-type HeaderProps = {
+interface HeaderProps {
   title: string;
-  onBack: () => void;
-};
+  onBack?: () => void;
+  className?: string;
+}
 
-export default function Header({ title, onBack }: HeaderProps) {
+export default function Header({ title, onBack, className = "" }: HeaderProps) {
   return (
-    <div className="flex items-center px-4 py-3 bg-sky-600 text-white shadow-md">
-      <button
-        onClick={onBack}
-        className="mr-3 p-1 rounded hover:bg-sky-500 transition"
-      >
-        <ArrowLeft className="w-6 h-6" />
-      </button>
-      <h1 className="text-lg font-semibold">{title}</h1>
-    </div>
+    <header
+      className={`flex items-center justify-between px-4 py-3 bg-white shadow ${className}`}
+    >
+      {onBack ? (
+        <button onClick={onBack} className="p-2">
+          <ArrowLeft className="w-6 h-6 text-gray-600" />
+        </button>
+      ) : (
+        <div className="w-8" />
+      )}
+      <h1 className="text-lg font-bold text-gray-800">{title}</h1>
+      <div className="w-8" />
+    </header>
   );
 }
