@@ -1,14 +1,12 @@
-// src/components/Page.tsx
 import type { ReactNode } from "react";
 
 interface PageProps {
   children: ReactNode;
-  className?: string; // 👈 allow optional className
 }
 
-export default function Page({ children, className = "" }: PageProps) {
+export default function Page({ children }: PageProps) {
   return (
-    <div className={`min-h-screen flex flex-col bg-icywhite ${className}`}>
+    <div className="min-h-screen flex flex-col bg-icywhite text-deepblack">
       {children}
     </div>
   );
