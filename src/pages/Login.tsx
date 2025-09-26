@@ -54,7 +54,7 @@ export default function Login({ onLoginSuccess }: Props) {
 
           <div className="mb-4">
             <Input
-              label="Password"
+              label="Heslo"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
