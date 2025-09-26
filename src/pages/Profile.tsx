@@ -51,14 +51,14 @@ export default function Profile() {
 
       {/* Stats summary */}
       <div className="p-6 text-center bg-white shadow">
-        <p className="text-lg font-bold">
+        <p className="text-lg font-bangers">
           Standing: #{standing ?? "-"} | Points: {points} | Sessions: {events_count}
         </p>
       </div>
 
       {/* Sessions list */}
       <div className="flex-1 p-6">
-        <h2 className="text-xl font-bold mb-4">Sessions</h2>
+        <h2 className="text-xl font-bangers mb-4">Sessions</h2>
         <table className="w-full table-auto border-collapse bg-white rounded-lg shadow">
           <thead>
             <tr className="bg-gray-200">

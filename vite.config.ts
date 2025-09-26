@@ -1,11 +1,12 @@
-import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import tailwindcss from '@tailwindcss/vite'
+import { defineConfig } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
-import tailwindcss from '@tailwindcss/postcss'
 
 export default defineConfig({
   plugins: [
     react(),
+    tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
       manifest: {
@@ -28,9 +29,4 @@ export default defineConfig({
       },
     }),
   ],
-  css: {
-    postcss: {
-      plugins: [tailwindcss()],
-    },
-  },
 })

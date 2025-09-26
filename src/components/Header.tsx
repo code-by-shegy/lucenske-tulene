@@ -1,19 +1,24 @@
-import type { ReactNode } from "react";
-
 interface HeaderProps {
   title: string;
-  leftSlot?: ReactNode;   // e.g. back button or logo
-  rightSlot?: ReactNode;  // e.g. profile icon
+  onBack?: () => void;
+  rightSlot?: React.ReactNode;
+  className?: string;
 }
 
-export default function Header({ title, leftSlot, rightSlot }: HeaderProps) {
+export default function Header({ title, onBack, rightSlot, className = "" }: HeaderProps) {
   return (
-    <header className="h-14 flex items-center justify-between px-4 bg-oceanblue text-white shadow-md">
-      <div>{leftSlot}</div>
-      <h1 className="text-lg font-bold">{title}</h1>
-      <div>{rightSlot}</div>
+    <header
+      className={`flex items-center justify-between px-4 py-3 bg-oceanblue text-white shadow-md ${className}`}
+    >
+      {onBack ? (
+        <button onClick={onBack} className="text-white text-lg font-bangers">
+          ←
+        </button>
+      ) : (
+        <span />
+      )}
+      <h1 className="text-lg font-bangers">{title}</h1>
+      {rightSlot ?? <span />}
     </header>
   );
 }
-
-

@@ -33,7 +33,7 @@ export default function Login({ onLoginSuccess }: Props) {
         onSubmit={handleLogin}
         className="w-full max-w-sm rounded bg-white p-6 shadow"
       >
-        <h1 className="mb-4 text-xl font-bold">Login</h1>
+        <h1 className="mb-4 text-xl font-bangers">Login</h1>
 
         <input
           type="email"

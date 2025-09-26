@@ -19,7 +19,7 @@ export default function Avatar({ src, alt, fallback = "?", size = "md" }: Avatar
       {src ? (
         <img src={src} alt={alt} className="w-full h-full object-cover" />
       ) : (
-        <span className="font-bold">{fallback}</span>
+        <span className="font-bangers">{fallback}</span>
       )}
     </div>
   );

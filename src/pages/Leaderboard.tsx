@@ -52,7 +52,7 @@ export default function Leaderboard() {
                 <td className="p-3">{index + 1}</td>
                 <td className="p-3">{entry.user_name}</td>
                 <td className="p-3">{entry.events_count}</td>
-                <td className="p-3 font-semibold">{entry.points}</td>
+                <td className="p-3 font-bangers">{entry.points}</td>
               </tr>
             ))}
           </tbody>

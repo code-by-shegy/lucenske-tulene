@@ -96,7 +96,7 @@ export default function StartSession() {
 
       <div className="flex-1 flex items-center justify-center">
         <div className="text-center">
-          <div className="text-6xl font-mono">
+          <div className="text-6xl font-bangers">
             {String(Math.floor(time / 60)).padStart(2, "0")}:
             {String(time % 60).padStart(2, "0")}
           </div>
@@ -107,7 +107,7 @@ export default function StartSession() {
         <button
           onClick={handleMainButton}
           disabled={loading}
-          className={`w-full max-w-lg mx-auto block py-5 rounded-3xl text-xl font-bold text-white shadow-lg ${
+          className={`w-full max-w-lg mx-auto block py-5 rounded-3xl text-xl font-bangers text-white shadow-lg ${
             loading
               ? "bg-gray-400 opacity-50 cursor-not-allowed"
               : "bg-blue-600 hover:bg-blue-700"

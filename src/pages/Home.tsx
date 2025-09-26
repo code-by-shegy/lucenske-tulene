@@ -1,18 +1,17 @@
 // src/pages/Home.tsx
 import { useNavigate } from "react-router-dom";
+import Page from "../components/Page";
 import Header from "../components/Header";
 import Button from "../components/Button";
-import Page from "../components/Page";
 
 export default function Home() {
   const navigate = useNavigate();
 
   return (
-    <Page className="bg-icywhite">
-      <Header title="Home" className="bg-oceanblue text-white" />
+    <Page>
+      <Header title="Home" />
 
-      <div className="flex-1 flex flex-col justify-center items-center gap-6 px-6">
-        
+      <main className="flex-1 flex flex-col justify-center items-center gap-4 px-6">
         <Button
           variant="primary"
           size="lg"
@@ -39,7 +38,7 @@ export default function Home() {
         >
           My Profile
         </Button>
-      </div>
+      </main>
     </Page>
   );
 }

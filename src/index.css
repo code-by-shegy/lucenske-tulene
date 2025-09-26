@@ -1,3 +1,10 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@font-face {
+    font-family: Bangers;
+    src: url("../src/assets/fonts/Bangers-Regular.ttf");
+}
+
+@import "tailwindcss";
+
+@theme{
+    --font-bangers: Bangers, "sans-serif";
+}
