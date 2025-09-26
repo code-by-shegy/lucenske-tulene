@@ -7,9 +7,9 @@ interface TableProps {
 
 export default function Table({ left, right }: TableProps) {
   return (
-    <div className="flex justify-between items-center px-4 py-3 border-b border-gray-200">
+    <div className="flex justify-between items-center px-4 py-3 border-b border-mediumgrey">
       <div className="text-deepblack">{left}</div>
-      {right && <div className="text-gray-600">{right}</div>}
+      {right && <div className="text-red-600">{right}</div>}
     </div>
   );
 }

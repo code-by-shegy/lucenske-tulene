@@ -1,4 +1,3 @@
-// src/pages/Home.tsx
 import { useNavigate } from "react-router-dom";
 import Page from "../components/Page";
 import Header from "../components/Header";
@@ -9,25 +8,25 @@ export default function Home() {
 
   return (
     <Page>
-      <Header title="Home" />
+      <Header title="Lučenské Tulene" />
 
-      <main className="flex-1 flex flex-col justify-center items-center gap-4 px-6">
+      <main className="flex-1 flex flex-col justify-center items-center gap-4 px-6 bg-lightgrey">
         <Button
           variant="primary"
           size="lg"
           fullWidth
           onClick={() => navigate("/startsession")}
         >
-          Start New Session
+          Začať otužovať
         </Button>
 
         <Button
-          variant="secondary"
+          variant="primary"
           size="lg"
           fullWidth
           onClick={() => navigate("/leaderboard")}
         >
-          Leaderboard
+          Tabuľka
         </Button>
 
         <Button
@@ -36,7 +35,7 @@ export default function Home() {
           fullWidth
           onClick={() => navigate("/profile")}
         >
-          My Profile
+          Môj Profil
         </Button>
       </main>
     </Page>

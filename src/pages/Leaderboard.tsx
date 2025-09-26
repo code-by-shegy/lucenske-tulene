@@ -1,10 +1,9 @@
 import Header from "../components/Header";
-
 import { useEffect, useState } from "react";
 import { getLeaderboard } from "../lib/leaderboard";
 import { useNavigate } from "react-router-dom";
 
-import type { LeaderboardEntry } from "../types"
+import type { LeaderboardEntry } from "../types";
 
 export default function Leaderboard() {
   const navigate = useNavigate();
@@ -28,35 +27,42 @@ export default function Leaderboard() {
 
   if (loading) {
     return (
-      <div className="flex h-screen items-center justify-center">Loading…</div>
+      <div className="flex h-screen items-center justify-center font-bangers bg-lightgrey text-darkblack text-2xl">
+        Loading...
+      </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
-      <Header title="Leaderboard" onBack={() => navigate("/")} />
+    <div className="min-h-screen flex flex-col bg-lightgrey">
+      <Header title="Tabuľka" onBack={() => navigate("/")} />
 
       <div className="flex-1 p-4">
-        <table className="w-full border-collapse rounded-lg shadow bg-white">
-          <thead>
-            <tr className="bg-gray-200 text-left">
-              <th className="p-3 text-left">#</th>
-              <th className="p-3">Name</th>
-              <th className="p-3">Sessions</th>
-              <th className="p-3">Points</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.map((entry, index) => (
-              <tr key={entry.user_id} className="border-t">
-                <td className="p-3">{index + 1}</td>
-                <td className="p-3">{entry.user_name}</td>
-                <td className="p-3">{entry.events_count}</td>
-                <td className="p-3 font-bangers">{entry.points}</td>
+        <div className="overflow-x-auto rounded-2xl shadow-lg bg-icywhite">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="bg-darkblue text-icywhite font-bangers text-lg">
+                <th className="p-3 rounded-tl-2xl">#</th>
+                <th className="p-3">Tuleň</th>
+                <th className="p-3">Otuženia</th>
+                <th className="p-3 rounded-tr-2xl">Body</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {data.map((entry, index) => (
+                <tr
+                  key={entry.user_id}
+                  className={`border-t border-mediumgrey hover:bg-lightblue/10 transition-colors`}
+                >
+                  <td className="p-3 font-bold text-darkblack">{index + 1}</td>
+                  <td className="p-3 ">{entry.user_name}</td>
+                  <td className="p-3 ">{entry.events_count}</td>
+                  <td className="p-3 font-bold text-darkblack">{entry.points}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

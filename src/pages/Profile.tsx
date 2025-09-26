@@ -7,8 +7,12 @@ import { getUser } from "../lib/users";
 import { getEventsByUser } from "../lib/events";
 import { getLeaderboard } from "../lib/leaderboard";
 
-import type { 
-  EventEntry, Standing, UserName, Points, EventsCount 
+import type {
+  EventEntry,
+  Standing,
+  UserName,
+  Points,
+  EventsCount,
 } from "../types";
 
 export default function Profile() {
@@ -46,48 +50,72 @@ export default function Profile() {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
-      <Header title={`${user_name}'s profile`} onBack={() => navigate("/")} />
+    <div className="min-h-screen flex flex-col bg-lightgrey">
+      <Header title={`Tuleň ${user_name}`} onBack={() => navigate("/")} />
 
       {/* Stats summary */}
-      <div className="p-6 text-center bg-white shadow">
-        <p className="text-lg font-bangers">
-          Standing: #{standing ?? "-"} | Points: {points} | Sessions: {events_count}
+      <div className="p-6 text-center bg-white shadow rounded-b-2xl">
+        <p className="text-lg font-bangers text-darkblack">
+          <span className="mr-4">
+            Poradie:{" "}
+            <span className="text-mediumblue font-bangers">
+              #{standing ?? "-"}
+            </span>
+          </span>
+          <span className="mr-4">
+            Body:{" "}
+            <span className="text-mediumblue font-bangers">{points}</span>
+          </span>
+          <span>
+            Otuženia:{" "}
+            <span className="text-mediumblue font-bangers">{events_count}</span>
+          </span>
         </p>
       </div>
 
       {/* Sessions list */}
       <div className="flex-1 p-6">
-        <h2 className="text-xl font-bangers mb-4">Sessions</h2>
-        <table className="w-full table-auto border-collapse bg-white rounded-lg shadow">
-          <thead>
-            <tr className="bg-gray-200">
-              <th className="p-3 text-left">Date</th>
-              <th className="p-3 text-left">Water Temp (°C)</th>
-              <th className="p-3 text-left">Time (s)</th>
-              <th className="p-3 text-left">Points</th>
-            </tr>
-          </thead>
-          <tbody>
-            {events.map((ev) => (
-              <tr key={ev.event_id} className="border-t">
-                <td className="p-3">
-                  {ev.date ? ev.date.toLocaleDateString() : "—"}
-                </td>
-                <td className="p-3">{ev.water_temp}</td>
-                <td className="p-3">{ev.time_in_water}</td>
-                <td className="p-3">{ev.points.toFixed(1)}</td>
+        <h2 className="text-2xl font-bangers mb-4 text-darkblack">Otuženia</h2>
+
+        <div className="overflow-x-auto rounded-2xl shadow-lg bg-white">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="bg-darkblue text-icywhite font-bangers">
+                <th className="p-3 rounded-tl-2xl">Dátum</th>
+                <th className="p-3">Teplota vody (°C)</th>
+                <th className="p-3">Čas (s)</th>
+                <th className="p-3 rounded-tr-2xl">Body</th>
               </tr>
-            ))}
-            {events.length === 0 && (
-              <tr>
-                <td colSpan={4} className="p-3 text-center text-gray-500">
-                  No sessions yet
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {events.map((ev) => (
+                <tr
+                  key={ev.event_id}
+                  className="border-t border-mediumgrey hover:bg-lightblue/10 transition-colors"
+                >
+                  <td className="p-3">
+                    {ev.date ? ev.date.toLocaleDateString() : "—"}
+                  </td>
+                  <td className="p-3">{ev.water_temp}</td>
+                  <td className="p-3">{ev.time_in_water}</td>
+                  <td className="p-3 font-bold text-darkblack">
+                    {ev.points.toFixed(1)}
+                  </td>
+                </tr>
+              ))}
+              {events.length === 0 && (
+                <tr>
+                  <td
+                    colSpan={4}
+                    className="p-6 text-center text-mediumgrey2 font-bangers"
+                  >
+                    No sessions yet 🚀
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

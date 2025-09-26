@@ -8,10 +8,10 @@ interface HeaderProps {
 export default function Header({ title, onBack, rightSlot, className = "" }: HeaderProps) {
   return (
     <header
-      className={`flex items-center justify-between px-4 py-3 bg-oceanblue text-white shadow-md ${className}`}
+      className={`flex items-center justify-between px-4 py-3 bg-darkblue text-icywhite shadow-md ${className}`}
     >
       {onBack ? (
-        <button onClick={onBack} className="text-white text-lg font-bangers">
+        <button onClick={onBack} className="text-icywhite text-lg font-bangers">
           ←
         </button>
       ) : (

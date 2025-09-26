@@ -1,10 +1,19 @@
+@import "tailwindcss";
+
 @font-face {
     font-family: Bangers;
     src: url("../src/assets/fonts/Bangers-Regular.ttf");
 }
 
-@import "tailwindcss";
-
 @theme{
-    --font-bangers: Bangers, "sans-serif";
+  --color-darkblue: #035AA6;
+  --color-mediumblue: #1EA4D9;
+  --color-lightblue: #2ECEF2;
+  --color-turquoise: #63F2F2;
+  --color-icywhite: #F2F2F2;
+  --color-mediumgrey: #BFBFBF;
+  --color-lightgrey: #F2F2F2;
+  --color-darkblack: #0D0D0D;
+
+  --font-bangers: Bangers, sans-serif;
 }

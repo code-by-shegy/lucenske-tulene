@@ -26,9 +26,9 @@ export default function Button({
     "rounded-xl font-bangers transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2";
 
   const variants: Record<ButtonVariant, string> = {
-    primary: "bg-oceanblue text-white hover:bg-blue-700 focus:ring-oceanblue",
-    secondary: "bg-icywhite text-deepblack border border-gray-300 hover:bg-gray-100 focus:ring-gray-300",
-    danger: "bg-red-500 text-white hover:bg-red-600 focus:ring-red-400",
+    primary: "bg-darkblue text-icywhite hover:bg-mediumblue focus:ring-darkblue border border-mediumgrey",
+    secondary: "bg-darkblue text-icywhite hover:bg-mediumblue focus:ring-darkblue border border-mediumgrey",
+    danger: "bg-red-500 text-icywhite hover:bg-red-600 focus:ring-red-400 border border-mediumgrey",
   };
 
   const sizes: Record<ButtonSize, string> = {

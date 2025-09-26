@@ -3,6 +3,10 @@ import { auth } from "../firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useNavigate, Link } from "react-router-dom";
 
+import Page from "../components/Page";
+import Input from "../components/Input";
+import Button from "../components/Button";
+
 import type { User } from "firebase/auth";
 
 type Props = {
@@ -28,44 +32,50 @@ export default function Login({ onLoginSuccess }: Props) {
   };
 
   return (
-    <div className="flex h-screen items-center justify-center">
-      <form
-        onSubmit={handleLogin}
-        className="w-full max-w-sm rounded bg-white p-6 shadow"
-      >
-        <h1 className="mb-4 text-xl font-bangers">Login</h1>
-
-        <input
-          type="email"
-          placeholder="Email"
-          className="mb-2 w-full rounded border p-2"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          className="mb-4 w-full rounded border p-2"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-
-        {error && <p className="mb-2 text-sm text-red-500">{error}</p>}
-
-        <button
-          type="submit"
-          className="w-full rounded bg-blue-500 p-2 text-white"
+    <Page>
+      <div className="flex h-full items-center justify-center  bg-icywhite">
+        <form
+          onSubmit={handleLogin}
+          className="w-full max-w-sm rounded-2xl bg-lightgrey p-6 shadow-lg"
         >
-          Login
-        </button>
+          <h1 className="mb-6 text-3xl font-bangers text-darkblue text-center">
+            Tulení Nábor
+          </h1>
 
-        <p className="mt-4 text-center text-sm">
-          Don’t have an account?{" "}
-          <Link to="/register" className="text-blue-500">
-            Register here
-          </Link>
-        </p>
-      </form>
-    </div>
+          <div className="mb-4">
+            <Input
+              label="Email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder=""
+            />
+          </div>
+
+          <div className="mb-4">
+            <Input
+              label="Password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder=""
+            />
+          </div>
+
+          {error && <p className="mb-4 text-sm text-red-500">{error}</p>}
+
+          <Button type="submit" variant="primary" size="md" fullWidth>
+            Login
+          </Button>
+
+          <p className="mt-6 text-center text-sm text-darkblack">
+            Ešte nemáš účet ty primitív?{" "}
+            <Link to="/register" className="text-mediumblue hover:underline">
+              Tu sa registruj!
+            </Link>
+          </p>
+        </form>
+      </div>
+    </Page>
   );
 }

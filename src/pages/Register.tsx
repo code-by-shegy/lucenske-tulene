@@ -4,9 +4,9 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase";
 import { createUser } from "../lib/users";
 
-import type { 
-  Email, UserName
-} from "../types";
+import type { Email, UserName } from "../types";
+import Input from "../components/Input";
+import Button from "../components/Button";
 
 export default function Register() {
   const [email, setEmail] = useState<Email>("");
@@ -33,48 +33,53 @@ export default function Register() {
   };
 
   return (
-    <div className="flex h-screen items-center justify-center">
+    <div className="flex h-screen items-center justify-center bg-icywhite">
       <form
         onSubmit={handleRegister}
-        className="w-full max-w-sm rounded bg-white p-6 shadow"
+        className="w-full max-w-sm rounded-2xl bg-lightgrey p-6 shadow-lg"
       >
-        <h1 className="mb-4 text-xl font-bangers">Register</h1>
+        <h1 className="mb-6 text-3xl font-bangers text-darkblue text-center">
+          Tulení výtvor
+        </h1>
 
-        <input
-          type="text"
-          placeholder="Nickname"
-          className="mb-2 w-full rounded border p-2"
-          value={user_name}
-          onChange={(e) => setName(e.target.value)}
-        />
-        <input
-          type="email"
-          placeholder="Email"
-          className="mb-2 w-full rounded border p-2"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          className="mb-4 w-full rounded border p-2"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+        <div className="space-y-4">
+          <Input
+            label="Prezývka"
+            type="text"
+            value={user_name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder=""
+          />
 
-        {error && <p className="mb-2 text-sm text-red-500">{error}</p>}
+          <Input
+            label="Email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder=""
+          />
 
-        <button
-          type="submit"
-          className="w-full rounded bg-green-500 p-2 text-white"
-        >
-          Register
-        </button>
+          <Input
+            label="Heslo"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder=""
+          />
+        </div>
 
-        <p className="mt-4 text-center text-sm">
-          Already have an account?{" "}
-          <Link to="/login" className="text-blue-500">
-            Login here
+        {error && <p className="mt-2 text-sm text-red-500">{error}</p>}
+
+        <div className="mt-6">
+          <Button type="submit" variant="primary" size="md" fullWidth>
+            Vytvor Tuleňa
+          </Button>
+        </div>
+
+        <p className="mt-4 text-center text-sm text-darkblack">
+          Si bezmozeg a už máš účet?{" "}
+          <Link to="/login" className="text-mediumblue font-medium">
+            Tu sa prihlás!
           </Link>
         </p>
       </form>

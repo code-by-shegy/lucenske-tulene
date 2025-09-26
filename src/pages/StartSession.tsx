@@ -2,6 +2,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
+import Page from "../components/Page";
+import Button from "../components/Button";
+import Input from "../components/Input";
 import { createEvent } from "../lib/events";
 import { auth } from "../firebase";
 
@@ -39,9 +42,14 @@ export default function StartSession() {
     (auth.currentUser?.email ? auth.currentUser.email.split("@")[0] : "Your");
 
   const handleMainButton = async () => {
+    // ⚠️ logic untouched
     if (stage === "start") {
-      if (!water_temp_string || isNaN(parseFloat(water_temp_string)) || parseFloat(water_temp_string) <= 0) {
-        alert("Please enter a valid water temperature (°C) before starting.");
+      if (
+        !water_temp_string ||
+        isNaN(parseFloat(water_temp_string)) ||
+        parseFloat(water_temp_string) <= 0
+      ) {
+        alert("Zadaj teplotu vody ty primitív.");
         return;
       }
       setRunning(true);
@@ -69,10 +77,18 @@ export default function StartSession() {
       const date = new Date();
       const water_temp_num = parseFloat(water_temp_string);
       const time_in_water = time;
-      const points = Math.round((time_in_water / (water_temp_num || 1)) * 100) / 100;
+      const points =
+        Math.round((time_in_water / (water_temp_num || 1)) * 100) / 100;
 
       try {
-        await createEvent(uid, date, water_temp_num, time_in_water, points, null);
+        await createEvent(
+          uid,
+          date,
+          water_temp_num,
+          time_in_water,
+          points,
+          null
+        );
 
         setTime(0);
         setPoints(0);
@@ -91,59 +107,54 @@ export default function StartSession() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-blue-50">
-      <Header title={`${displayName}'s session`} onBack={() => navigate("/")} />
+    <Page>
+      <Header title={`${displayName} otužuje`} onBack={() => navigate("/")} />
 
-      <div className="flex-1 flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-6xl font-bangers">
-            {String(Math.floor(time / 60)).padStart(2, "0")}:
-            {String(time % 60).padStart(2, "0")}
-          </div>
+      {/* Timer */}
+      <div className="flex-1 flex items-center justify-center  bg-lightgrey">
+        <div className="text-6xl font-bangers text-darkblack">
+          {String(Math.floor(time / 60)).padStart(2, "0")}:
+          {String(time % 60).padStart(2, "0")}
         </div>
       </div>
 
-      <div className="p-4">
-        <button
+      {/* Main button */}
+      <div className="p-4 bg-lightgrey">
+        <Button
+          fullWidth
+          size="lg"
+          variant={stage === "stop" ? "danger" : "primary"}
           onClick={handleMainButton}
           disabled={loading}
-          className={`w-full max-w-lg mx-auto block py-5 rounded-3xl text-xl font-bangers text-white shadow-lg ${
-            loading
-              ? "bg-gray-400 opacity-50 cursor-not-allowed"
-              : "bg-blue-600 hover:bg-blue-700"
-          }`}
         >
-          {loading && stage === "save" ? "Saving..." : 
-            stage === "start" ? "Start" : 
-            stage === "stop" ? "Stop" : 
-            "Save"}
-        </button>
+          {loading && stage === "save"
+            ? "Silné!"
+            : stage === "start"
+            ? "Štart"
+            : stage === "stop"
+            ? "Stop"
+            : "Uložiť"}
+        </Button>
       </div>
 
-      <div className="flex gap-4 px-6 pb-8">
-        <div className="flex-1">
-          <label className="block text-sm mb-1">Water temp (°C)</label>
-          <input
+      {/* Inputs */}
+      <div className="grid grid-cols-2 gap-4 px-6 pb-8 bg-lightgrey">
+        <div className="w-full">
+          <Input
+            label="Teplota vody (°C)"
             type="number"
             step="0.1"
             value={water_temp_string}
             onChange={(e) => setWaterTemp(e.target.value)}
             disabled={stage !== "start"}
-            className="w-full rounded border p-3 text-center"
             placeholder="e.g. 4"
           />
         </div>
 
-        <div className="w-40">
-          <label className="block text-sm mb-1">Points</label>
-          <input
-            type="text"
-            value={String(points)}
-            readOnly
-            className="w-full rounded border p-3 text-center bg-gray-100"
-          />
+        <div className="w-full">
+          <Input label="Body" value={String(points)} readOnly />
         </div>
       </div>
-    </div>
+    </Page>
   );
 }
