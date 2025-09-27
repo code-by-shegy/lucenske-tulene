@@ -33,9 +33,7 @@ function App() {
         {/* Public routes */}
         <Route
           path="/login"
-          element={
-            user ? <Navigate to="/" /> : <Login onLoginSuccess={(u) => setUser(u)} />
-          }
+          element={user ? <Navigate to="/" /> : <Login />}
         />
         <Route
           path="/register"

@@ -7,50 +7,100 @@ import Button from "../components/Button";
 import Input from "../components/Input";
 import { createEvent } from "../lib/events";
 import { auth } from "../firebase";
+import { getUser } from "../lib/users";
+
+import type { Weather, UserName, TimeInSeconds, TempCelsius, Points } from "../types"
 
 export default function StartSession() {
   const navigate = useNavigate();
+  const user = auth.currentUser;
 
-  const [time, setTime] = useState<number>(0);
+  const [user_name, setName] = useState<UserName>("");
+  const [current_time, setCurrentTime] = useState<TimeInSeconds>(0);
   const [running, setRunning] = useState<boolean>(false);
-  const [water_temp_string, setWaterTemp] = useState<string>("");
-  const [points, setPoints] = useState<number>(0);
+  
+  const [water_temp, setWaterTemp] = useState<TempCelsius| "">("");
+  const [air_temp, setAirTemp] = useState<TempCelsius| "">("");
+  const [weather, setWeather] = useState<Weather| "">("");
+  
+  const [points, setPoints] = useState<Points>(0);
   const [stage, setStage] = useState<"start" | "stop" | "save">("start");
   const [loading, setLoading] = useState<boolean>(false);
 
+function calculatePoints(): Points {
+  const tw = Number(water_temp);
+  const ta = Number(air_temp);
+  const w = Number(weather);
+  const sign = (x: number) => (x > 0 ? 1 : x < 0 ? -1 : 0);
+  const numerator = (30 - tw) * (current_time / 60) + (tw - ta) / (50 - 10 * w);
+  const denominator = 1 + (tw * sign(tw)) / 5;
+  if (denominator === 0 || !isFinite(numerator / denominator)) return 0;
+  return numerator / denominator;
+}
+
   useEffect(() => {
+    const fetchUserName = async () => {
+      if (!user) return;
+
+      try {
+        const user_profile = await getUser(user.uid);
+        if (user_profile?.user_name) {
+          setName(user_profile.user_name);
+        }
+      } catch (err) {
+        console.error("Failed to fetch user profile:", err);
+        setName('Tuleň'); // fallback
+      }
+    };
+
+    fetchUserName();
+  }, []);
+
+  useEffect(() => { //stopwatch ticking refresh every one second
     let id: number | undefined;
     if (running) {
-      id = window.setInterval(() => setTime((t) => t + 1), 1000);
+      id = window.setInterval(() => setCurrentTime((t) => t + 1), 1000);
     }
     return () => {
       if (id !== undefined) window.clearInterval(id);
     };
   }, [running]);
 
-  useEffect(() => {
-    const tempNum = parseFloat(water_temp_string);
-    if (!isNaN(tempNum) && tempNum > 0) {
-      setPoints(Math.round((time / tempNum) * 100) / 100);
-    } else {
-      setPoints(0);
-    }
-  }, [time, water_temp_string]);
-
-  const displayName =
-    auth.currentUser?.displayName ??
-    (auth.currentUser?.email ? auth.currentUser.email.split("@")[0] : "Your");
+useEffect(() => {
+  if (
+    water_temp !== "" &&
+    air_temp !== "" &&
+    weather !== "" &&
+    !isNaN(water_temp) &&
+    !isNaN(air_temp) &&
+    !isNaN(weather)
+  ) {
+    setPoints(parseFloat(calculatePoints().toFixed(1)));
+  } else {
+    setPoints(0);
+  }
+}, [current_time, water_temp, air_temp, weather]);
 
   const handleMainButton = async () => {
     // ⚠️ logic untouched
     if (stage === "start") {
       if (
-        !water_temp_string ||
-        isNaN(parseFloat(water_temp_string)) ||
-        parseFloat(water_temp_string) <= 0
+        !water_temp ||
+        isNaN(water_temp)
       ) {
         alert("Zadaj teplotu vody ty primitív.");
         return;
+      }
+      if (
+        !air_temp ||
+        isNaN(air_temp)
+      ) {
+        alert("Zadaj teplotu vzduchu ty primitív.");
+        return;
+      }
+      if (weather === "" || isNaN(weather)) {
+       alert("Vyber počasie ty primitív.");
+       return;
       }
       setRunning(true);
       setStage("stop");
@@ -65,7 +115,6 @@ export default function StartSession() {
 
     if (stage === "save") {
       setLoading(true);
-      const user = auth.currentUser;
       if (!user) {
         alert("You must be logged in to save a session.");
         navigate("/login");
@@ -73,26 +122,26 @@ export default function StartSession() {
         return;
       }
 
-      const uid = user.uid;
       const date = new Date();
-      const water_temp_num = parseFloat(water_temp_string);
-      const time_in_water = time;
-      const points =
-        Math.round((time_in_water / (water_temp_num || 1)) * 100) / 100;
+      const time_in_water = current_time;
 
       try {
         await createEvent(
-          uid,
+          user.uid,
           date,
-          water_temp_num,
+          water_temp === "" ? 0 : parseFloat(water_temp.toFixed(1)),
+          air_temp === "" ? 0 : parseFloat(air_temp.toFixed(1)),
+          weather === "" ? 0 : parseFloat(weather.toFixed(1)),
           time_in_water,
           points,
           null
         );
 
-        setTime(0);
+        setCurrentTime(0);
         setPoints(0);
-        setWaterTemp("");
+        setWaterTemp(0);
+        setAirTemp(0);
+        setWeather(1);
         setStage("start");
         setRunning(false);
 
@@ -108,13 +157,13 @@ export default function StartSession() {
 
   return (
     <Page>
-      <Header title={`${displayName} otužuje`} onBack={() => navigate("/")} />
+      <Header title={`${user_name} otužuje`} onBack={() => navigate("/")} />
 
       {/* Timer */}
       <div className="flex-1 flex items-center justify-center  bg-lightgrey">
-        <div className="text-6xl font-bangers text-darkblack">
-          {String(Math.floor(time / 60)).padStart(2, "0")}:
-          {String(time % 60).padStart(2, "0")}
+        <div className="text-8xl font-bangers text-darkblack">
+          {String(Math.floor(current_time / 60)).padStart(2, "0")}:
+          {String(current_time % 60).padStart(2, "0")}
         </div>
       </div>
 
@@ -144,15 +193,44 @@ export default function StartSession() {
             label="Teplota vody (°C)"
             type="number"
             step="0.1"
-            value={water_temp_string}
-            onChange={(e) => setWaterTemp(e.target.value)}
+            value={water_temp === "" ? "" : water_temp.toFixed(1)}
+            onChange={(e) => setWaterTemp(
+              e.target.value === "" ? "" : parseFloat(Number(e.target.value).toFixed(1)))}
             disabled={stage !== "start"}
-            placeholder="e.g. 4"
+            placeholder=""
           />
         </div>
 
         <div className="w-full">
-          <Input label="Body" value={String(points)} readOnly />
+          <Input
+            label="Teplota vzduchu (°C)"
+            type="number"
+            step="0.1"
+            value={air_temp === "" ? "" : air_temp.toFixed(1)}
+            onChange={(e) => setAirTemp(
+              e.target.value === "" ? "" : parseFloat(Number(e.target.value).toFixed(1)))}
+            disabled={stage !== "start"}
+            placeholder=""
+          />
+        </div>
+
+        <div className="w-full">
+        <label className="block text-sm font-bangers text-darkblack mb-1">Počasie</label>
+        <select
+          className="w-full rounded-xl border border-gray-300 bg-white p-2"
+          value={weather}
+          onChange={(e) => setWeather(e.target.value === "" ? "" : Number(e.target.value))}
+          disabled={stage !== "start"}
+        >
+          <option value="">Vyber počasie</option>
+          <option value={1}>Slnečno</option>
+          <option value={2}>Oblačno</option>
+          <option value={3}>Sneží/Prší</option>
+        </select>
+      </div>
+        
+        <div className="w-full">
+          <Input label="Body" value={points.toFixed(1)} readOnly />
         </div>
       </div>
     </Page>

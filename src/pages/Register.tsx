@@ -19,10 +19,10 @@ export default function Register() {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      // Create Firebase Auth user
+      // ✅ Create Firebase Auth user
       const cred = await createUserWithEmailAndPassword(auth, email, password);
 
-      // Create Firestore profile
+      // ✅ Create Firestore profile
       await createUser(cred.user.uid, email, user_name);
 
       // ✅ Redirect back to login page
@@ -78,7 +78,7 @@ export default function Register() {
 
         <p className="mt-4 text-center text-sm text-darkblack">
           Si bezmozeg a už máš účet?{" "}
-          <Link to="/login" className="text-mediumblue font-medium">
+          <Link to="/login" className="text-mediumblue hover:underline">
             Tu sa prihlás!
           </Link>
         </p>

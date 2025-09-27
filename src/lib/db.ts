@@ -5,7 +5,7 @@ import {
 
 import type {
   UserId, UserName, UserProfile, Email, Url, Points, 
-  WaterTempCelsius, TimeInSeconds, EventEntry, LeaderboardEntry,
+  TempCelsius, TimeInSeconds, EventEntry, LeaderboardEntry, Weather
 } from "../types";
 
 import { db } from "../firebase";
@@ -53,7 +53,9 @@ export async function getUser(user_id: UserId): Promise <UserProfile | null> {
 export async function createEvent(
   user_id: UserId,
   date: Date,
-  water_temp: WaterTempCelsius,
+  water_temp: TempCelsius,
+  air_temp: TempCelsius,
+  weather: Weather,
   time_in_water: TimeInSeconds,
   points: Points,
   photo_url: Url
@@ -63,6 +65,8 @@ export async function createEvent(
     user_id,
     date: Timestamp.fromDate(date),
     water_temp,
+    air_temp,
+    weather,
     time_in_water,
     points,
     photo_url,
@@ -96,6 +100,8 @@ export async function getEventsByUser(user_id: UserId): Promise<EventEntry[]> {
       user_id,
       date: data.date?.toDate ? data.date.toDate() : null, // ✅ normalize Timestamp → Date
       water_temp: data.water_temp ?? null,
+      air_temp: data.air_temp ?? null,
+      weather: data.weather ?? 1,
       time_in_water: data.time_in_water ?? null,
       points: data.points ?? 0,
       photo_url: data.photo_url ?? null,

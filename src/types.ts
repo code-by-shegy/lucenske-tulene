@@ -6,7 +6,8 @@ export type Url = string | null;
 export type Points = number;
 export type EventsCount = number;
 export type Standing = number | null;
-export type WaterTempCelsius = number;
+export type Weather = number;
+export type TempCelsius = number;
 export type TimeInSeconds = number;
 
 // Event
@@ -14,7 +15,9 @@ export type EventEntry = {
   event_id: EventId;
   user_id: UserId;
   date: Date | null;
-  water_temp: WaterTempCelsius;
+  water_temp: TempCelsius;
+  air_temp: TempCelsius;
+  weather: Weather;
   time_in_water: TimeInSeconds;
   points: Points;
   photo_url: Url;

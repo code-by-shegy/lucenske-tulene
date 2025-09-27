@@ -1,4 +1,5 @@
 import Header from "../components/Header";
+import Button from "../components/Button";
 
 import { auth } from "../firebase";
 import { useEffect, useState } from "react";
@@ -23,6 +24,15 @@ export default function Profile() {
   const [events_count, setEventsCount] = useState<EventsCount>(0);
   const [standing, setStanding] = useState<Standing>(null);
   const [events, setEvents] = useState<EventEntry[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const rowsPerPage = 5;
+  const totalPages = Math.ceil(events.length / rowsPerPage);
+  
+  const paginatedEvents = events.slice(
+    (currentPage - 1) * rowsPerPage,
+    currentPage * rowsPerPage
+  );
 
   useEffect(() => {
     async function fetchProfile() {
@@ -80,7 +90,7 @@ export default function Profile() {
         <div className="overflow-x-auto rounded-2xl shadow-lg bg-white">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-darkblue text-icywhite font-bangers">
+              <tr className="bg-darkblue text-icywhite font-bangers text-shadow-lg/50">
                 <th className="p-3 rounded-tl-2xl">Dátum</th>
                 <th className="p-3">Teplota vody (°C)</th>
                 <th className="p-3">Čas (s)</th>
@@ -88,19 +98,15 @@ export default function Profile() {
               </tr>
             </thead>
             <tbody>
-              {events.map((ev) => (
+              {paginatedEvents.map((ev) => (
                 <tr
                   key={ev.event_id}
                   className="border-t border-mediumgrey hover:bg-lightblue/10 transition-colors"
                 >
-                  <td className="p-3">
-                    {ev.date ? ev.date.toLocaleDateString() : "—"}
-                  </td>
+                  <td className="p-3">{ev.date ? ev.date.toLocaleDateString() : "—"}</td>
                   <td className="p-3">{ev.water_temp}</td>
                   <td className="p-3">{ev.time_in_water}</td>
-                  <td className="p-3 font-bold text-darkblack">
-                    {ev.points.toFixed(1)}
-                  </td>
+                  <td className="p-3 font-bold text-darkblack">{ev.points.toFixed(1)}</td>
                 </tr>
               ))}
               {events.length === 0 && (
@@ -116,6 +122,29 @@ export default function Profile() {
             </tbody>
           </table>
         </div>
+          {totalPages > 1 && (
+            <div className="flex justify-center gap-2 mt-4">
+              <Button
+                size="sm"
+                variant="primary"
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+              >
+                Späť
+              </Button>
+              <span className="font-bangers text-darkblack">
+                {currentPage} / {totalPages}
+              </span>
+              <Button
+                size="sm"
+                variant="primary"
+                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+              >
+                Ďalšie
+              </Button>
+            </div>
+          )}
       </div>
     </div>
   );

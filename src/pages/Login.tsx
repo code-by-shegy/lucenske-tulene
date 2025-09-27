@@ -7,25 +7,19 @@ import Page from "../components/Page";
 import Input from "../components/Input";
 import Button from "../components/Button";
 
-import type { User } from "firebase/auth";
-
-type Props = {
-  onLoginSuccess: (user: User) => void;
-};
-
-export default function Login({ onLoginSuccess }: Props) {
+export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState("");
 
   const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const cred = await signInWithEmailAndPassword(auth, email, password);
-      onLoginSuccess(cred.user);
-      navigate("/"); // ✅ go to home after login
+      await signInWithEmailAndPassword(auth, email, password);
+      // onAuthStateChanged in App.tsx will update user state
+      navigate("/");
     } catch (err: any) {
       setError(err.message);
     }

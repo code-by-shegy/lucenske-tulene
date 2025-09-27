@@ -41,7 +41,7 @@ export default function Leaderboard() {
         <div className="overflow-x-auto rounded-2xl shadow-lg bg-icywhite">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-darkblue text-icywhite font-bangers text-lg">
+              <tr className="bg-darkblue text-icywhite font-bangers text-shadow-lg/50">
                 <th className="p-3 rounded-tl-2xl">#</th>
                 <th className="p-3">Tuleň</th>
                 <th className="p-3">Otuženia</th>
