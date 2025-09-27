@@ -9,7 +9,7 @@ import { createEvent } from "../lib/events";
 import { auth } from "../firebase";
 import { getUser } from "../lib/users";
 
-import type { Weather, UserName, TimeInSeconds, TempCelsius, Points } from "../types"
+import type { Weather, UserName, TimeInSeconds, Points } from "../types"
 
 export default function StartSession() {
   const navigate = useNavigate();
@@ -19,20 +19,25 @@ export default function StartSession() {
   const [current_time, setCurrentTime] = useState<TimeInSeconds>(0);
   const [running, setRunning] = useState<boolean>(false);
   
-  const [water_temp, setWaterTemp] = useState<TempCelsius| "">("");
-  const [air_temp, setAirTemp] = useState<TempCelsius| "">("");
-  const [weather, setWeather] = useState<Weather| "">("");
+  /*must be string for the input to work nicely*/
+  const [water_temp, setWaterTemp] = useState<string>("");
+  const [air_temp, setAirTemp] = useState<string>("");
+  const [weather, setWeather] = useState<Weather>(0);
+
+  // Convert to numbers safely
+  const water_temp_num = water_temp === "" ? 100 : parseFloat(water_temp);
+  const air_temp_num = air_temp === "" ? 100 : parseFloat(air_temp);
   
   const [points, setPoints] = useState<Points>(0);
   const [stage, setStage] = useState<"start" | "stop" | "save">("start");
   const [loading, setLoading] = useState<boolean>(false);
 
 function calculatePoints(): Points {
-  const tw = Number(water_temp);
-  const ta = Number(air_temp);
+  const tw = Number(water_temp_num);
+  const ta = Number(air_temp_num);
   const w = Number(weather);
   const sign = (x: number) => (x > 0 ? 1 : x < 0 ? -1 : 0);
-  const numerator = (30 - tw) * (current_time / 60) + (tw - ta) / (50 - 10 * w);
+  const numerator = (30 - tw) * (current_time / 60) + (tw - ta) / (50 - (10 * w));
   const denominator = 1 + (tw * sign(tw)) / 5;
   if (denominator === 0 || !isFinite(numerator / denominator)) return 0;
   return numerator / denominator;
@@ -70,35 +75,37 @@ useEffect(() => {
   if (
     water_temp !== "" &&
     air_temp !== "" &&
-    weather !== "" &&
-    !isNaN(water_temp) &&
-    !isNaN(air_temp) &&
+    !isNaN(water_temp_num) &&
+    !isNaN(air_temp_num) &&
     !isNaN(weather)
   ) {
     setPoints(parseFloat(calculatePoints().toFixed(1)));
   } else {
     setPoints(0);
   }
-}, [current_time, water_temp, air_temp, weather]);
+}, [current_time]);
 
   const handleMainButton = async () => {
     // ⚠️ logic untouched
     if (stage === "start") {
       if (
         !water_temp ||
-        isNaN(water_temp)
+        isNaN(water_temp_num)
       ) {
         alert("Zadaj teplotu vody ty primitív.");
         return;
       }
       if (
         !air_temp ||
-        isNaN(air_temp)
+        isNaN(air_temp_num)
       ) {
         alert("Zadaj teplotu vzduchu ty primitív.");
         return;
       }
-      if (weather === "" || isNaN(weather)) {
+      if (
+        !weather ||
+        isNaN(weather)) 
+      {
        alert("Vyber počasie ty primitív.");
        return;
       }
@@ -129,19 +136,19 @@ useEffect(() => {
         await createEvent(
           user.uid,
           date,
-          water_temp === "" ? 0 : parseFloat(water_temp.toFixed(1)),
-          air_temp === "" ? 0 : parseFloat(air_temp.toFixed(1)),
-          weather === "" ? 0 : parseFloat(weather.toFixed(1)),
-          time_in_water,
-          points,
+          water_temp_num ?? 100,
+          air_temp_num ?? 100,
+          weather ?? 0,
+          time_in_water ?? 0,
+          points ?? 0,
           null
         );
 
         setCurrentTime(0);
         setPoints(0);
-        setWaterTemp(0);
-        setAirTemp(0);
-        setWeather(1);
+        setWaterTemp("");
+        setAirTemp("");
+        setWeather(0);
         setStage("start");
         setRunning(false);
 
@@ -191,11 +198,10 @@ useEffect(() => {
         <div className="w-full">
           <Input
             label="Teplota vody (°C)"
-            type="number"
+            type="decimal"
             step="0.1"
-            value={water_temp === "" ? "" : water_temp.toFixed(1)}
-            onChange={(e) => setWaterTemp(
-              e.target.value === "" ? "" : parseFloat(Number(e.target.value).toFixed(1)))}
+            value={water_temp}
+            onChange={(e) => setWaterTemp(e.target.value)}
             disabled={stage !== "start"}
             placeholder=""
           />
@@ -204,11 +210,10 @@ useEffect(() => {
         <div className="w-full">
           <Input
             label="Teplota vzduchu (°C)"
-            type="number"
+            type="decimal"
             step="0.1"
-            value={air_temp === "" ? "" : air_temp.toFixed(1)}
-            onChange={(e) => setAirTemp(
-              e.target.value === "" ? "" : parseFloat(Number(e.target.value).toFixed(1)))}
+            value={air_temp}
+            onChange={(e) => setAirTemp(e.target.value)}
             disabled={stage !== "start"}
             placeholder=""
           />
@@ -219,10 +224,10 @@ useEffect(() => {
         <select
           className="w-full rounded-xl border border-gray-300 bg-white p-2"
           value={weather}
-          onChange={(e) => setWeather(e.target.value === "" ? "" : Number(e.target.value))}
+          onChange={(e) => setWeather(Number(e.target.value))}
           disabled={stage !== "start"}
         >
-          <option value="">Vyber počasie</option>
+          <option value={0}>Vyber počasie</option>
           <option value={1}>Slnečno</option>
           <option value={2}>Oblačno</option>
           <option value={3}>Sneží/Prší</option>
