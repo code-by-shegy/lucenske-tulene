@@ -3,7 +3,6 @@ import { useNavigate, Link } from "react-router-dom";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase";
 import { createUser } from "../lib/users";
-
 import type { Email, UserName } from "../types";
 import Input from "../components/Input";
 import Button from "../components/Button";
@@ -19,13 +18,8 @@ export default function Register() {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      // ✅ Create Firebase Auth user
       const cred = await createUserWithEmailAndPassword(auth, email, password);
-
-      // ✅ Create Firestore profile
       await createUser(cred.user.uid, email, user_name);
-
-      // ✅ Redirect back to login page
       navigate("/login");
     } catch (err: any) {
       setError(err.message);
@@ -78,7 +72,7 @@ export default function Register() {
 
         <p className="mt-4 text-center font-roboto text-sm text-darkblack">
           Si bezmozeg a už máš účet?{" "}
-          <Link to="/login" className= "font-roboto text-mediumblue hover:underline">
+          <Link to="/login" className="font-roboto text-mediumblue hover:underline">
             Tu sa prihlás!
           </Link>
         </p>

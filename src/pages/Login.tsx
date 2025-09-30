@@ -2,7 +2,6 @@ import { useState } from "react";
 import { auth } from "../firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useNavigate, Link } from "react-router-dom";
-
 import Page from "../components/Page";
 import Input from "../components/Input";
 import Button from "../components/Button";
@@ -18,7 +17,6 @@ export default function Login() {
     e.preventDefault();
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      // onAuthStateChanged in App.tsx will update user state
       navigate("/");
     } catch (err: any) {
       setError(err.message);
@@ -27,7 +25,7 @@ export default function Login() {
 
   return (
     <Page>
-      <div className="flex h-full items-center justify-center  bg-icywhite">
+      <div className="flex h-screen items-center justify-center bg-icywhite">
         <form
           onSubmit={handleLogin}
           className="w-full max-w-sm rounded-2xl bg-lightgrey p-6 shadow-lg"

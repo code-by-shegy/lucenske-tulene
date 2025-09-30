@@ -3,6 +3,9 @@
 @font-face {
     font-family: Bangers;
     src: url("../src/assets/fonts/Bangers-Regular.ttf");
+}
+
+@font-face {
     font-family: Roboto;
     src: url("../src/assets/fonts/Roboto-VariableFont_wdth,wght.ttf");
 }
