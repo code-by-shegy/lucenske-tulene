@@ -44,7 +44,7 @@ export default function Register() {
 
         <div className="space-y-4">
           <Input
-            label="Prezývka"
+            label="Meno"
             type="text"
             value={user_name}
             onChange={(e) => setName(e.target.value)}
@@ -76,9 +76,9 @@ export default function Register() {
           </Button>
         </div>
 
-        <p className="mt-4 text-center text-sm text-darkblack">
+        <p className="mt-4 text-center font-roboto text-sm text-darkblack">
           Si bezmozeg a už máš účet?{" "}
-          <Link to="/login" className="text-mediumblue hover:underline">
+          <Link to="/login" className= "font-roboto text-mediumblue hover:underline">
             Tu sa prihlás!
           </Link>
         </p>

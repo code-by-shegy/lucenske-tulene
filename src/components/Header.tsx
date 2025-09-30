@@ -21,7 +21,9 @@ export default function Header({ title, onBack, rightSlot, className = "" }: Hea
       ) : (
         <span />
       )}
-      <h1 className="text-lg font-bangers">{title}</h1>
+      <h1
+        className="text-lg font-bangers">{title}
+      </h1>
       {rightSlot ?? <span />}
     </header>
   );

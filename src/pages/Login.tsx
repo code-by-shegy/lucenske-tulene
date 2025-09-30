@@ -62,9 +62,9 @@ export default function Login() {
             Login
           </Button>
 
-          <p className="mt-6 text-center text-sm text-darkblack">
+          <p className="mt-6 text-center text-sm text-darkblack font-roboto">
             Ešte nemáš účet ty primitív?{" "}
-            <Link to="/register" className="text-mediumblue hover:underline">
+            <Link to="/register" className="font-roboto text-mediumblue hover:underline">
               Tu sa registruj!
             </Link>
           </p>

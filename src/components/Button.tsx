@@ -22,13 +22,20 @@ export default function Button({
   fullWidth = false,
   disabled = false,
 }: ButtonProps) {
-  const baseStyles =
-    "rounded-xl font-bangers transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2";
+
+  const baseStyles = `
+    font-bangers text-shadow-lg/50 
+    rounded-xl transition-colors border-2 border-darkblue
+    `
+    // focus:outline-none focus:ring-2 focus:ring-offset-2
 
   const variants: Record<ButtonVariant, string> = {
-    primary: "bg-darkblue text-icywhite hover:bg-mediumblue focus:ring-darkblue border border-mediumgrey text-shadow-lg/50",
-    secondary: "bg-darkgrey text-icywhite hover:bg-mediumgrey focus:ring-darkgrey border border-mediumgrey text-shadow-lg/50",
-    danger: "bg-red-500 text-icywhite hover:bg-red-600 focus:ring-red-400 border border-mediumgrey text-shadow-lg/50",
+    primary: 
+      `bg-darkblue text-icywhite hover:bg-mediumblue`,
+    secondary: 
+      `bg-darkgrey text-icywhite hover:bg-mediumgrey`,
+    danger: 
+      `bg-red-500 text-icywhite hover:bg-red-600`,
   };
 
   const sizes: Record<ButtonSize, string> = {
@@ -38,7 +45,6 @@ export default function Button({
   };
 
   const width = fullWidth ? "w-full" : "inline-block";
-
   const disabledStyles = disabled ? "opacity-50 cursor-not-allowed" : "";
 
   return (
