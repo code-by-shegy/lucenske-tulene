@@ -11,7 +11,7 @@ export default function Input({ label, ...props }: InputProps) {
       <input
         {...props}
         className={
-          `px-4 py-2 border-2 border-mediumgrey rounded-lg 
+          `p-2 border-2 border-mediumgrey rounded-lg 
           focus:outline-none focus:ring-2 focus:ring-darkblack`}
       />
     </div>

@@ -25,17 +25,17 @@ export default function Button({
 
   const baseStyles = `
     font-bangers text-shadow-lg/50 
-    rounded-xl transition-colors border-2 border-darkblue
+    rounded-xl transition-colors border-2
     `
     // focus:outline-none focus:ring-2 focus:ring-offset-2
 
   const variants: Record<ButtonVariant, string> = {
     primary: 
-      `bg-darkblue text-icywhite hover:bg-mediumblue`,
+      `bg-darkblue text-icywhite hover:bg-mediumblue border-darkblue`,
     secondary: 
-      `bg-darkgrey text-icywhite hover:bg-mediumgrey`,
+      `bg-darkgrey text-icywhite hover:bg-mediumgrey border-darkgrey`,
     danger: 
-      `bg-red-500 text-icywhite hover:bg-red-600`,
+      `bg-red-500 text-icywhite hover:bg-red-600 border-red-500`,
   };
 
   const sizes: Record<ButtonSize, string> = {

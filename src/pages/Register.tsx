@@ -6,6 +6,7 @@ import { createUser } from "../lib/users";
 import type { Email, UserName } from "../types";
 import Input from "../components/Input";
 import Button from "../components/Button";
+import Page from "../components/Page";
 
 export default function Register() {
   const [email, setEmail] = useState<Email>("");
@@ -27,22 +28,21 @@ export default function Register() {
   };
 
   return (
-    <div className="flex h-screen items-center justify-center bg-icywhite">
-      <form
-        onSubmit={handleRegister}
-        className="w-full max-w-sm rounded-2xl bg-lightgrey p-6 shadow-lg"
-      >
-        <h1 className="mb-6 text-3xl font-bangers text-darkblue text-center">
+    <Page className="flex items-center justify-center px-4">
+      <div className="w-full max-w-sm flex flex-col gap-6">
+        <h1 className="text-4xl font-bangers text-darkblue text-center">
           Tulení výtvor
         </h1>
 
-        <div className="space-y-4">
+        <form
+          onSubmit={handleRegister}
+          className="flex flex-col gap-4 w-full rounded-2xl bg-icywhite p-6 shadow-lg"
+        >
           <Input
             label="Meno"
             type="text"
             value={user_name}
             onChange={(e) => setName(e.target.value)}
-            placeholder=""
           />
 
           <Input
@@ -50,7 +50,6 @@ export default function Register() {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder=""
           />
 
           <Input
@@ -58,25 +57,22 @@ export default function Register() {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder=""
           />
-        </div>
 
-        {error && <p className="mt-2 text-sm text-red-500">{error}</p>}
+          {error && <p className="text-sm text-red-500">{error}</p>}
 
-        <div className="mt-6">
           <Button type="submit" variant="primary" size="md" fullWidth>
             Vytvor Tuleňa
           </Button>
-        </div>
 
-        <p className="mt-4 text-center font-roboto text-sm text-darkblack">
-          Si bezmozeg a už máš účet?{" "}
-          <Link to="/login" className="font-roboto text-mediumblue hover:underline">
-            Tu sa prihlás!
-          </Link>
-        </p>
-      </form>
-    </div>
+          <p className="text-center font-roboto text-sm text-darkblack mt-4">
+            Si bezmozeg a už máš účet?{" "}
+            <Link to="/login" className="font-roboto text-mediumblue hover:underline">
+              Tu sa prihlás!
+            </Link>
+          </p>
+        </form>
+      </div>
+    </Page>
   );
 }

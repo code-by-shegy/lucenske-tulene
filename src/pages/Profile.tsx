@@ -1,5 +1,6 @@
 import Header from "../components/Header";
 import Button from "../components/Button";
+import Page from "../components/Page";
 
 import { auth } from "../firebase";
 import { useEffect, useState } from "react";
@@ -28,7 +29,7 @@ export default function Profile() {
 
   const rowsPerPage = 5;
   const totalPages = Math.ceil(events.length / rowsPerPage);
-  
+
   const paginatedEvents = events.slice(
     (currentPage - 1) * rowsPerPage,
     currentPage * rowsPerPage
@@ -60,7 +61,7 @@ export default function Profile() {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col bg-lightgrey">
+    <Page>
       <Header title={`Tuleň ${user_name}`} onBack={() => navigate("/")} />
 
       {/* Stats summary */}
@@ -122,30 +123,30 @@ export default function Profile() {
             </tbody>
           </table>
         </div>
-          {totalPages > 1 && (
-            <div className="flex justify-center gap-2 mt-4">
-              <Button
-                size="sm"
-                variant="primary"
-                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                disabled={currentPage === 1}
-              >
-                Späť
-              </Button>
-              <span className="font-bangers text-darkblack">
-                {currentPage} / {totalPages}
-              </span>
-              <Button
-                size="sm"
-                variant="primary"
-                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                disabled={currentPage === totalPages}
-              >
-                Ďalšie
-              </Button>
-            </div>
-          )}
+        {totalPages > 1 && (
+          <div className="flex justify-center gap-2 mt-4">
+            <Button
+              size="sm"
+              variant="primary"
+              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+            >
+              Späť
+            </Button>
+            <span className="font-bangers text-darkblack">
+              {currentPage} / {totalPages}
+            </span>
+            <Button
+              size="sm"
+              variant="primary"
+              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+            >
+              Ďalšie
+            </Button>
+          </div>
+        )}
       </div>
-    </div>
+    </Page>
   );
 }

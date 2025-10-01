@@ -1,4 +1,5 @@
 import Header from "../components/Header";
+import Page from "../components/Page";
 import { useEffect, useState } from "react";
 import { getLeaderboard } from "../lib/leaderboard";
 import { useNavigate } from "react-router-dom";
@@ -34,7 +35,7 @@ export default function Leaderboard() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-lightgrey">
+    <Page>
       <Header title="Tabuľka" onBack={() => navigate("/")} />
 
       <div className="flex-1 p-4">
@@ -64,6 +65,6 @@ export default function Leaderboard() {
           </table>
         </div>
       </div>
-    </div>
+    </Page>
   );
 }

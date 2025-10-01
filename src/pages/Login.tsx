@@ -24,43 +24,37 @@ export default function Login() {
   };
 
   return (
-    <Page>
-      <div className="flex h-screen items-center justify-center bg-icywhite">
+    <Page className="flex items-center justify-center px-4">
+      <div className="w-full max-w-sm flex flex-col gap-6">
+        <h1 className="text-4xl font-bangers text-darkblue text-center">
+          Tulení Nábor
+        </h1>
+
         <form
           onSubmit={handleLogin}
-          className="w-full max-w-sm rounded-2xl bg-lightgrey p-6 shadow-lg"
+          className="flex flex-col gap-4 w-full rounded-2xl bg-icywhite p-6 shadow-lg"
         >
-          <h1 className="mb-6 text-3xl font-bangers text-darkblue text-center">
-            Tulení Nábor
-          </h1>
+          <Input
+            label="Email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
 
-          <div className="mb-4">
-            <Input
-              label="Email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder=""
-            />
-          </div>
+          <Input
+            label="Heslo"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
 
-          <div className="mb-4">
-            <Input
-              label="Heslo"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder=""
-            />
-          </div>
-
-          {error && <p className="mb-4 text-sm text-red-500">{error}</p>}
+          {error && <p className="text-sm text-red-500">{error}</p>}
 
           <Button type="submit" variant="primary" size="md" fullWidth>
             Login
           </Button>
 
-          <p className="mt-6 text-center text-sm text-darkblack font-roboto">
+          <p className="text-center font-roboto text-sm text-darkblack mt-4">
             Ešte nemáš účet ty primitív?{" "}
             <Link to="/register" className="font-roboto text-mediumblue hover:underline">
               Tu sa registruj!

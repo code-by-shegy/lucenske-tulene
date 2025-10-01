@@ -22,7 +22,7 @@ export default function Home() {
     <Page>
       <Header title="Lučenské Tulene" />
 
-      <main className="flex-1 flex flex-col justify-center items-center gap-4 px-6 bg-lightgrey">
+      <main className="flex-1 flex flex-col justify-center items-center gap-4 px-6">
         <Button
           variant="primary"
           size="lg"

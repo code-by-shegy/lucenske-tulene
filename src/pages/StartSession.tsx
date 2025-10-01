@@ -5,6 +5,7 @@ import Header from "../components/Header";
 import Page from "../components/Page";
 import Button from "../components/Button";
 import Input from "../components/Input";
+import Select from "../components/Select";
 import { createEvent } from "../lib/events";
 import { auth } from "../firebase";
 import { getUser } from "../lib/users";
@@ -18,7 +19,7 @@ export default function StartSession() {
   const [user_name, setName] = useState<UserName>("");
   const [current_time, setCurrentTime] = useState<TimeInSeconds>(0);
   const [running, setRunning] = useState<boolean>(false);
-  
+
   /*must be string for the input to work nicely*/
   const [water_temp, setWaterTemp] = useState<string>("");
   const [air_temp, setAirTemp] = useState<string>("");
@@ -27,21 +28,28 @@ export default function StartSession() {
   // Convert to numbers safely
   const water_temp_num = water_temp === "" ? 100 : parseFloat(water_temp);
   const air_temp_num = air_temp === "" ? 100 : parseFloat(air_temp);
-  
+
   const [points, setPoints] = useState<Points>(0);
   const [stage, setStage] = useState<"start" | "stop" | "save">("start");
   const [loading, setLoading] = useState<boolean>(false);
 
-function calculatePoints(): Points {
-  const tw = Number(water_temp_num);
-  const ta = Number(air_temp_num);
-  const w = Number(weather);
-  const sign = (x: number) => (x > 0 ? 1 : x < 0 ? -1 : 0);
-  const numerator = (30 - tw) * (current_time / 60) + (tw - ta) / (50 - (10 * w));
-  const denominator = 1 + (tw * sign(tw)) / 5;
-  if (denominator === 0 || !isFinite(numerator / denominator)) return 0;
-  return numerator / denominator;
-}
+  const weatherOptions = [
+    { value: 0, label: 'Vyber počasie' },
+    { value: 1, label: 'Slnečno' },
+    { value: 2, label: 'Oblačno' },
+    { value: 3, label: 'Sneží/Prší' }
+  ];
+
+  function calculatePoints(): Points {
+    const tw = Number(water_temp_num);
+    const ta = Number(air_temp_num);
+    const w = Number(weather);
+    const sign = (x: number) => (x > 0 ? 1 : x < 0 ? -1 : 0);
+    const numerator = (30 - tw) * (current_time / 60) + (tw - ta) / (50 - (10 * w));
+    const denominator = 1 + (tw * sign(tw)) / 5;
+    if (denominator === 0 || !isFinite(numerator / denominator)) return 0;
+    return numerator / denominator;
+  }
 
   useEffect(() => {
     const fetchUserName = async () => {
@@ -71,19 +79,19 @@ function calculatePoints(): Points {
     };
   }, [running]);
 
-useEffect(() => {
-  if (
-    water_temp !== "" &&
-    air_temp !== "" &&
-    !isNaN(water_temp_num) &&
-    !isNaN(air_temp_num) &&
-    !isNaN(weather)
-  ) {
-    setPoints(parseFloat(calculatePoints().toFixed(1)));
-  } else {
-    setPoints(0);
-  }
-}, [current_time]);
+  useEffect(() => {
+    if (
+      water_temp !== "" &&
+      air_temp !== "" &&
+      !isNaN(water_temp_num) &&
+      !isNaN(air_temp_num) &&
+      !isNaN(weather)
+    ) {
+      setPoints(parseFloat(calculatePoints().toFixed(1)));
+    } else {
+      setPoints(0);
+    }
+  }, [current_time]);
 
   const handleMainButton = async () => {
     // ⚠️ logic untouched
@@ -104,10 +112,9 @@ useEffect(() => {
       }
       if (
         !weather ||
-        isNaN(weather)) 
-      {
-       alert("Vyber počasie ty primitív.");
-       return;
+        isNaN(weather)) {
+        alert("Vyber počasie ty primitív.");
+        return;
       }
       setRunning(true);
       setStage("stop");
@@ -186,15 +193,16 @@ useEffect(() => {
           {loading && stage === "save"
             ? "Silné!"
             : stage === "start"
-            ? "Štart"
-            : stage === "stop"
-            ? "Stop"
-            : "Uložiť"}
+              ? "Štart"
+              : stage === "stop"
+                ? "Stop"
+                : "Uložiť"}
         </Button>
       </div>
 
       {/* Inputs */}
       <div className="grid grid-cols-2 gap-4 px-6 pb-8 bg-lightgrey">
+        
         <div className="w-full">
           <Input
             label="Teplota vody (°C)"
@@ -220,20 +228,15 @@ useEffect(() => {
         </div>
 
         <div className="w-full">
-        <label className="block text-sm font-bangers text-darkblack mb-1">Počasie</label>
-        <select
-          className="w-full rounded-xl border border-gray-300 bg-white p-2"
-          value={weather}
-          onChange={(e) => setWeather(Number(e.target.value))}
-          disabled={stage !== "start"}
-        >
-          <option value={0}>Vyber počasie</option>
-          <option value={1}>Slnečno</option>
-          <option value={2}>Oblačno</option>
-          <option value={3}>Sneží/Prší</option>
-        </select>
-      </div>
-        
+          <Select
+            label="Počasie"
+            value={weather}
+            onChange={(e) => setWeather(Number(e.target.value))}
+            disabled={stage !== "start"}
+            options={weatherOptions}
+          />
+        </div>
+
         <div className="w-full">
           <Input label="Body" value={points.toFixed(1)} readOnly />
         </div>
