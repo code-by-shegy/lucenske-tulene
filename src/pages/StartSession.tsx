@@ -10,7 +10,7 @@ import { createEvent } from "../lib/events";
 import { auth } from "../firebase";
 import { getUser } from "../lib/users";
 
-import type { Weather, UserName, TimeInSeconds, Points } from "../types"
+import type { Weather, UserName, TimeInSeconds, Points } from "../types";
 
 export default function StartSession() {
   const navigate = useNavigate();
@@ -34,10 +34,10 @@ export default function StartSession() {
   const [loading, setLoading] = useState<boolean>(false);
 
   const weatherOptions = [
-    { value: 0, label: 'Vyber počasie' },
-    { value: 1, label: 'Slnečno' },
-    { value: 2, label: 'Oblačno' },
-    { value: 3, label: 'Sneží/Prší' }
+    { value: 0, label: "Vyber počasie" },
+    { value: 1, label: "Slnečno" },
+    { value: 2, label: "Oblačno" },
+    { value: 3, label: "Sneží/Prší" },
   ];
 
   function calculatePoints(): Points {
@@ -45,7 +45,8 @@ export default function StartSession() {
     const ta = Number(air_temp_num);
     const w = Number(weather);
     const sign = (x: number) => (x > 0 ? 1 : x < 0 ? -1 : 0);
-    const numerator = (30 - tw) * (current_time / 60) + (tw - ta) / (50 - (10 * w));
+    const numerator =
+      (30 - tw) * (current_time / 60) + (tw - ta) / (50 - 10 * w);
     const denominator = 1 + (tw * sign(tw)) / 5;
     if (denominator === 0 || !isFinite(numerator / denominator)) return 0;
     return numerator / denominator;
@@ -62,14 +63,15 @@ export default function StartSession() {
         }
       } catch (err) {
         console.error("Failed to fetch user profile:", err);
-        setName('Tuleň'); // fallback
+        setName("Tuleň"); // fallback
       }
     };
 
     fetchUserName();
   }, []);
 
-  useEffect(() => { //stopwatch ticking refresh every one second
+  useEffect(() => {
+    //stopwatch ticking refresh every one second
     let id: number | undefined;
     if (running) {
       id = window.setInterval(() => setCurrentTime((t) => t + 1), 1000);
@@ -96,23 +98,15 @@ export default function StartSession() {
   const handleMainButton = async () => {
     // ⚠️ logic untouched
     if (stage === "start") {
-      if (
-        !water_temp ||
-        isNaN(water_temp_num)
-      ) {
+      if (!water_temp || isNaN(water_temp_num)) {
         alert("Zadaj teplotu vody ty primitív.");
         return;
       }
-      if (
-        !air_temp ||
-        isNaN(air_temp_num)
-      ) {
+      if (!air_temp || isNaN(air_temp_num)) {
         alert("Zadaj teplotu vzduchu ty primitív.");
         return;
       }
-      if (
-        !weather ||
-        isNaN(weather)) {
+      if (!weather || isNaN(weather)) {
         alert("Vyber počasie ty primitív.");
         return;
       }
@@ -148,7 +142,7 @@ export default function StartSession() {
           weather ?? 0,
           time_in_water ?? 0,
           points ?? 0,
-          null
+          null,
         );
 
         setCurrentTime(0);
@@ -174,15 +168,15 @@ export default function StartSession() {
       <Header title={`${user_name} otužuje`} onBack={() => navigate("/")} />
 
       {/* Timer */}
-      <div className="flex-1 flex items-center justify-center  bg-lightgrey">
-        <div className="text-8xl font-bangers text-darkblack">
+      <div className="bg-lightgrey flex flex-1 items-center justify-center">
+        <div className="font-bangers text-darkblack text-8xl">
           {String(Math.floor(current_time / 60)).padStart(2, "0")}:
           {String(current_time % 60).padStart(2, "0")}
         </div>
       </div>
 
       {/* Main button */}
-      <div className="p-4 bg-lightgrey">
+      <div className="bg-lightgrey p-4">
         <Button
           fullWidth
           size="lg"
@@ -201,8 +195,7 @@ export default function StartSession() {
       </div>
 
       {/* Inputs */}
-      <div className="grid grid-cols-2 gap-4 px-6 pb-8 bg-lightgrey">
-        
+      <div className="bg-lightgrey grid grid-cols-2 gap-4 px-6 pb-8">
         <div className="w-full">
           <Input
             label="Teplota vody (°C)"

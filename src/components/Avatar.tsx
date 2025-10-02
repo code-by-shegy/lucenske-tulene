@@ -5,7 +5,12 @@ interface AvatarProps {
   size?: "sm" | "md" | "lg";
 }
 
-export default function Avatar({ src, alt, fallback = "?", size = "md" }: AvatarProps) {
+export default function Avatar({
+  src,
+  alt,
+  fallback = "?",
+  size = "md",
+}: AvatarProps) {
   const sizes = {
     sm: "w-8 h-8 text-sm",
     md: "w-12 h-12 text-base",
@@ -14,10 +19,10 @@ export default function Avatar({ src, alt, fallback = "?", size = "md" }: Avatar
 
   return (
     <div
-      className={`rounded-full bg-oceanblue text-white flex items-center justify-center overflow-hidden ${sizes[size]}`}
+      className={`bg-oceanblue flex items-center justify-center overflow-hidden rounded-full text-white ${sizes[size]}`}
     >
       {src ? (
-        <img src={src} alt={alt} className="w-full h-full object-cover" />
+        <img src={src} alt={alt} className="h-full w-full object-cover" />
       ) : (
         <span className="font-bangers">{fallback}</span>
       )}

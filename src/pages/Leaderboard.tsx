@@ -28,7 +28,7 @@ export default function Leaderboard() {
 
   if (loading) {
     return (
-      <div className="flex h-screen items-center justify-center font-bangers bg-lightgrey text-darkblack text-2xl">
+      <div className="font-bangers bg-lightgrey text-darkblack flex h-screen items-center justify-center text-2xl">
         Loading...
       </div>
     );
@@ -39,26 +39,28 @@ export default function Leaderboard() {
       <Header title="Tabuľka" onBack={() => navigate("/")} />
 
       <div className="flex-1 p-4">
-        <div className="overflow-x-auto rounded-2xl shadow-lg bg-icywhite">
-          <table className="w-full text-left border-collapse">
+        <div className="bg-icywhite overflow-x-auto rounded-2xl shadow-lg">
+          <table className="w-full border-collapse text-left">
             <thead>
               <tr className="bg-darkblue text-icywhite font-bangers text-shadow-lg/50">
-                <th className="p-3 rounded-tl-2xl">#</th>
+                <th className="rounded-tl-2xl p-3">#</th>
                 <th className="p-3">Tuleň</th>
                 <th className="p-3">Otuženia</th>
-                <th className="p-3 rounded-tr-2xl">Body</th>
+                <th className="rounded-tr-2xl p-3">Body</th>
               </tr>
             </thead>
             <tbody>
               {data.map((entry, index) => (
                 <tr
                   key={entry.user_id}
-                  className={`border-t border-mediumgrey hover:bg-lightblue/10 transition-colors`}
+                  className={`border-mediumgrey hover:bg-lightblue/10 border-t transition-colors`}
                 >
-                  <td className="p-3 font-bold text-darkblack">{index + 1}</td>
-                  <td className="p-3 ">{entry.user_name}</td>
-                  <td className="p-3 ">{entry.events_count}</td>
-                  <td className="p-3 font-bold text-darkblack">{entry.points}</td>
+                  <td className="text-darkblack p-3 font-bold">{index + 1}</td>
+                  <td className="p-3">{entry.user_name}</td>
+                  <td className="p-3">{entry.events_count}</td>
+                  <td className="text-darkblack p-3 font-bold">
+                    {entry.points}
+                  </td>
                 </tr>
               ))}
             </tbody>

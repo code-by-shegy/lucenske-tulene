@@ -22,7 +22,7 @@ export default function Home() {
     <Page>
       <Header title="Lučenské Tulene" />
 
-      <main className="flex-1 flex flex-col justify-center items-center gap-4 px-6">
+      <main className="flex flex-1 flex-col items-center justify-center gap-4 px-6">
         <Button
           variant="primary"
           size="lg"
@@ -50,15 +50,9 @@ export default function Home() {
           Môj Profil
         </Button>
 
-        <Button
-          variant="secondary"
-          size="lg"
-          fullWidth
-          onClick={handleLogout}
-        >
+        <Button variant="secondary" size="lg" fullWidth onClick={handleLogout}>
           Odhlásiť sa
         </Button>
-
       </main>
     </Page>
   );

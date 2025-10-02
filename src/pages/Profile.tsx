@@ -32,7 +32,7 @@ export default function Profile() {
 
   const paginatedEvents = events.slice(
     (currentPage - 1) * rowsPerPage,
-    currentPage * rowsPerPage
+    currentPage * rowsPerPage,
   );
 
   useEffect(() => {
@@ -65,8 +65,8 @@ export default function Profile() {
       <Header title={`Tuleň ${user_name}`} onBack={() => navigate("/")} />
 
       {/* Stats summary */}
-      <div className="p-6 text-center bg-white shadow rounded-b-2xl">
-        <p className="text-lg font-bangers text-darkblack">
+      <div className="rounded-b-2xl bg-white p-6 text-center shadow">
+        <p className="font-bangers text-darkblack text-lg">
           <span className="mr-4">
             Poradie:{" "}
             <span className="text-mediumblue font-bangers">
@@ -74,8 +74,7 @@ export default function Profile() {
             </span>
           </span>
           <span className="mr-4">
-            Body:{" "}
-            <span className="text-mediumblue font-bangers">{points}</span>
+            Body: <span className="text-mediumblue font-bangers">{points}</span>
           </span>
           <span>
             Otuženia:{" "}
@@ -86,35 +85,39 @@ export default function Profile() {
 
       {/* Sessions list */}
       <div className="flex-1 p-6">
-        <h2 className="text-2xl font-bangers mb-4 text-darkblack">Otuženia</h2>
+        <h2 className="font-bangers text-darkblack mb-4 text-2xl">Otuženia</h2>
 
-        <div className="overflow-x-auto rounded-2xl shadow-lg bg-white">
-          <table className="w-full text-left border-collapse">
+        <div className="overflow-x-auto rounded-2xl bg-white shadow-lg">
+          <table className="w-full border-collapse text-left">
             <thead>
               <tr className="bg-darkblue text-icywhite font-bangers text-shadow-lg/50">
-                <th className="p-3 rounded-tl-2xl">Dátum</th>
+                <th className="rounded-tl-2xl p-3">Dátum</th>
                 <th className="p-3">Teplota vody (°C)</th>
                 <th className="p-3">Čas (s)</th>
-                <th className="p-3 rounded-tr-2xl">Body</th>
+                <th className="rounded-tr-2xl p-3">Body</th>
               </tr>
             </thead>
             <tbody>
               {paginatedEvents.map((ev) => (
                 <tr
                   key={ev.event_id}
-                  className="border-t border-mediumgrey hover:bg-lightblue/10 transition-colors"
+                  className="border-mediumgrey hover:bg-lightblue/10 border-t transition-colors"
                 >
-                  <td className="p-3">{ev.date ? ev.date.toLocaleDateString() : "—"}</td>
+                  <td className="p-3">
+                    {ev.date ? ev.date.toLocaleDateString() : "—"}
+                  </td>
                   <td className="p-3">{ev.water_temp}</td>
                   <td className="p-3">{ev.time_in_water}</td>
-                  <td className="p-3 font-bold text-darkblack">{ev.points.toFixed(1)}</td>
+                  <td className="text-darkblack p-3 font-bold">
+                    {ev.points.toFixed(1)}
+                  </td>
                 </tr>
               ))}
               {events.length === 0 && (
                 <tr>
                   <td
                     colSpan={4}
-                    className="p-6 text-center text-mediumgrey2 font-bangers"
+                    className="text-mediumgrey2 font-bangers p-6 text-center"
                   >
                     No sessions yet 🚀
                   </td>
@@ -124,7 +127,7 @@ export default function Profile() {
           </table>
         </div>
         {totalPages > 1 && (
-          <div className="flex justify-center gap-2 mt-4">
+          <div className="mt-4 flex justify-center gap-2">
             <Button
               size="sm"
               variant="primary"

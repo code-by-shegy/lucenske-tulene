@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import type { User } from "firebase/auth";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase";
@@ -24,27 +29,25 @@ function App() {
   }, []);
 
   if (loading) {
-    return <div className="flex font-bangers h-screen items-center justify-center">Obrovské zdravíčko!</div>;
+    return (
+      <div className="font-bangers flex h-screen items-center justify-center">
+        Obrovské zdravíčko!
+      </div>
+    );
   }
 
   return (
     <Router>
       <Routes>
         {/* Public routes */}
-        <Route
-          path="/login"
-          element={user ? <Navigate to="/" /> : <Login />}
-        />
+        <Route path="/login" element={user ? <Navigate to="/" /> : <Login />} />
         <Route
           path="/register"
           element={user ? <Navigate to="/" /> : <Register />}
         />
 
         {/* Protected routes */}
-        <Route
-          path="/"
-          element={user ? <Home /> : <Navigate to="/login" />}
-        />
+        <Route path="/" element={user ? <Home /> : <Navigate to="/login" />} />
         <Route
           path="/startsession"
           element={user ? <StartSession /> : <Navigate to="/login" />}

@@ -6,13 +6,13 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 
 export default function Input({ label, ...props }: InputProps) {
   return (
-    <div className="flex flex-col gap-1 w-full font-roboto">
-      {label && <label className="text-sm font-bold text-deepblack">{label}</label>}
+    <div className="font-roboto flex w-full flex-col gap-1">
+      {label && (
+        <label className="text-deepblack text-sm font-bold">{label}</label>
+      )}
       <input
         {...props}
-        className={
-          `p-2 border-2 border-mediumgrey rounded-lg 
-          focus:outline-none focus:ring-2 focus:ring-darkblack`}
+        className={`border-mediumgrey focus:ring-darkblack rounded-lg border-2 p-2 focus:ring-2 focus:outline-none`}
       />
     </div>
   );

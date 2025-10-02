@@ -25,14 +25,14 @@ export default function Login() {
 
   return (
     <Page className="flex items-center justify-center px-4">
-      <div className="w-full max-w-sm flex flex-col gap-6">
-        <h1 className="text-4xl font-bangers text-darkblue text-center">
+      <div className="flex w-full max-w-sm flex-col gap-6">
+        <h1 className="font-bangers text-darkblue text-center text-4xl">
           Tulení Nábor
         </h1>
 
         <form
           onSubmit={handleLogin}
-          className="flex flex-col gap-4 w-full rounded-2xl bg-icywhite p-6 shadow-lg"
+          className="bg-icywhite flex w-full flex-col gap-4 rounded-2xl p-6 shadow-lg"
         >
           <Input
             label="Email"
@@ -54,9 +54,12 @@ export default function Login() {
             Login
           </Button>
 
-          <p className="text-center font-roboto text-sm text-darkblack mt-4">
+          <p className="font-roboto text-darkblack mt-4 text-center text-sm">
             Ešte nemáš účet ty primitív?{" "}
-            <Link to="/register" className="font-roboto text-mediumblue hover:underline">
+            <Link
+              to="/register"
+              className="font-roboto text-mediumblue hover:underline"
+            >
               Tu sa registruj!
             </Link>
           </p>

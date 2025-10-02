@@ -7,7 +7,7 @@ interface PageProps {
 
 export default function Page({ children, className = "" }: PageProps) {
   return (
-    <div className={`min-h-screen flex flex-col bg-lightgrey ${className}`}>
+    <div className={`bg-lightgrey flex min-h-screen flex-col ${className}`}>
       {children}
     </div>
   );
