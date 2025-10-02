@@ -22,10 +22,8 @@ export default function Button({
   fullWidth = false,
   disabled = false,
 }: ButtonProps) {
-  const baseStyles = `
-    font-bangers text-shadow-lg/50 
-    rounded-xl transition-colors border-2
-    `;
+  const baseStyles = `font-bangers text-shadow-lg/50
+                      rounded-xl transition-colors border-2`;
   // focus:outline-none focus:ring-2 focus:ring-offset-2
 
   const variants: Record<ButtonVariant, string> = {
@@ -35,9 +33,9 @@ export default function Button({
   };
 
   const sizes: Record<ButtonSize, string> = {
-    sm: "px-3 py-2 text-sm",
-    md: "px-4 py-3 text-base",
-    lg: "px-6 py-4 text-lg",
+    sm: "p-2 text-sm",
+    md: "p-3 text-base",
+    lg: "p-4 text-lg",
   };
 
   const width = fullWidth ? "w-full" : "inline-block";

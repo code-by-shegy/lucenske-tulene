@@ -1,6 +1,7 @@
 import Header from "../components/Header";
 import Button from "../components/Button";
 import Page from "../components/Page";
+import Card from "../components/Card";
 
 import { auth } from "../firebase";
 import { useEffect, useState } from "react";
@@ -65,7 +66,7 @@ export default function Profile() {
       <Header title={`Tuleň ${user_name}`} onBack={() => navigate("/")} />
 
       {/* Stats summary */}
-      <div className="rounded-b-2xl bg-white p-6 text-center shadow">
+      <Card className="text-center rounded-none p-0">
         <p className="font-bangers text-darkblack text-lg">
           <span className="mr-4">
             Poradie:{" "}
@@ -81,13 +82,12 @@ export default function Profile() {
             <span className="text-mediumblue font-bangers">{events_count}</span>
           </span>
         </p>
-      </div>
+      </Card>
 
       {/* Sessions list */}
-      <div className="flex-1 p-6">
+      <div className="p-4">
         <h2 className="font-bangers text-darkblack mb-4 text-2xl">Otuženia</h2>
-
-        <div className="overflow-x-auto rounded-2xl bg-white shadow-lg">
+        <Card className="overflow-x-auto">
           <table className="w-full border-collapse text-left">
             <thead>
               <tr className="bg-darkblue text-icywhite font-bangers text-shadow-lg/50">
@@ -125,7 +125,8 @@ export default function Profile() {
               )}
             </tbody>
           </table>
-        </div>
+        </Card>
+
         {totalPages > 1 && (
           <div className="mt-4 flex justify-center gap-2">
             <Button

@@ -7,6 +7,7 @@ import type { Email, UserName } from "../types";
 import Input from "../components/Input";
 import Button from "../components/Button";
 import Page from "../components/Page";
+import Card from "../components/Card";
 
 export default function Register() {
   const [email, setEmail] = useState<Email>("");
@@ -28,12 +29,9 @@ export default function Register() {
   };
 
   return (
-    <Page className="flex items-center justify-center px-4">
-      <div className="flex w-full max-w-sm flex-col gap-6">
-        <form
-          onSubmit={handleRegister}
-          className="bg-icywhite flex w-full flex-col gap-4 rounded-2xl p-6 shadow-lg"
-        >
+    <Page className="items-center justify-center px-4">
+      <Card>
+        <form onSubmit={handleRegister} className="flex flex-col gap-4">
           <h1 className="font-bangers text-darkblue text-center text-4xl">
             Tulení výtvor
           </h1>
@@ -75,7 +73,7 @@ export default function Register() {
             </Link>
           </p>
         </form>
-      </div>
+      </Card>
     </Page>
   );
 }

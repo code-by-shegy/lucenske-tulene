@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Page from "../components/Page";
+import Card from "../components/Card";
 import Button from "../components/Button";
 import Input from "../components/Input";
 import Select from "../components/Select";
@@ -176,7 +177,7 @@ export default function StartSession() {
       </div>
 
       {/* Main button */}
-      <div className="bg-lightgrey p-4">
+      <div className="p-4">
         <Button
           fullWidth
           size="lg"
@@ -193,47 +194,39 @@ export default function StartSession() {
                 : "Uložiť"}
         </Button>
       </div>
-
       {/* Inputs */}
-      <div className="bg-lightgrey grid grid-cols-2 gap-4 px-6 pb-8">
-        <div className="w-full">
-          <Input
-            label="Teplota vody (°C)"
-            type="decimal"
-            step="0.1"
-            value={water_temp}
-            onChange={(e) => setWaterTemp(e.target.value)}
-            disabled={stage !== "start"}
-            placeholder=""
-          />
-        </div>
+      <Card className="grid grid-cols-2 gap-4">
+        <Input
+          label="Teplota vody (°C)"
+          type="decimal"
+          step="0.1"
+          value={water_temp}
+          onChange={(e) => setWaterTemp(e.target.value)}
+          disabled={stage !== "start"}
+          placeholder=""
+        />
 
-        <div className="w-full">
-          <Input
-            label="Teplota vzduchu (°C)"
-            type="decimal"
-            step="0.1"
-            value={air_temp}
-            onChange={(e) => setAirTemp(e.target.value)}
-            disabled={stage !== "start"}
-            placeholder=""
-          />
-        </div>
+        <Input
+          label="Teplota vzduchu (°C)"
+          type="decimal"
+          step="0.1"
+          value={air_temp}
+          onChange={(e) => setAirTemp(e.target.value)}
+          disabled={stage !== "start"}
+          placeholder=""
+        />
 
-        <div className="w-full">
-          <Select
-            label="Počasie"
-            value={weather}
-            onChange={(e) => setWeather(Number(e.target.value))}
-            disabled={stage !== "start"}
-            options={weatherOptions}
-          />
-        </div>
+        <Select
+          className="mt-auto"
+          label="Počasie"
+          value={weather}
+          onChange={(e) => setWeather(Number(e.target.value))}
+          disabled={stage !== "start"}
+          options={weatherOptions}
+        />
 
-        <div className="w-full">
-          <Input label="Body" value={points.toFixed(1)} readOnly />
-        </div>
-      </div>
+        <Input label="Body" value={points.toFixed(1)} readOnly />
+      </Card>
     </Page>
   );
 }

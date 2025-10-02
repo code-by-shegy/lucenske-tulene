@@ -5,6 +5,7 @@ import { useNavigate, Link } from "react-router-dom";
 import Page from "../components/Page";
 import Input from "../components/Input";
 import Button from "../components/Button";
+import Card from "../components/Card";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -24,12 +25,9 @@ export default function Login() {
   };
 
   return (
-    <Page className="flex items-center justify-center px-4">
-      <div className="flex w-full max-w-sm flex-col gap-6">
-        <form
-          onSubmit={handleLogin}
-          className="bg-icywhite flex w-full flex-col gap-4 rounded-2xl p-6 shadow-lg"
-        >
+    <Page className="items-center justify-center px-4">
+      <Card>
+        <form onSubmit={handleLogin} className="flex flex-col gap-4 ">
           <h1 className="font-bangers text-darkblue text-center text-4xl">
             Tulení Nábor
           </h1>
@@ -64,7 +62,7 @@ export default function Login() {
             </Link>
           </p>
         </form>
-      </div>
+      </Card>
     </Page>
   );
 }

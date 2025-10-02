@@ -15,7 +15,7 @@ export default function Header({
 }: HeaderProps) {
   return (
     <header
-      className={`bg-darkblue text-icywhite flex items-center justify-between px-4 py-3 text-shadow-lg/50 ${className}`}
+      className={`bg-darkblue text-icywhite flex items-center justify-between p-4 text-shadow-lg/50 ${className}`}
     >
       {onBack ? (
         <button onClick={onBack} className="text-icywhite">
