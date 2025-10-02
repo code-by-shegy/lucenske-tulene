@@ -30,14 +30,14 @@ export default function Register() {
   return (
     <Page className="flex items-center justify-center px-4">
       <div className="flex w-full max-w-sm flex-col gap-6">
-        <h1 className="font-bangers text-darkblue text-center text-4xl">
-          Tulení výtvor
-        </h1>
-
         <form
           onSubmit={handleRegister}
           className="bg-icywhite flex w-full flex-col gap-4 rounded-2xl p-6 shadow-lg"
         >
+          <h1 className="font-bangers text-darkblue text-center text-4xl">
+            Tulení výtvor
+          </h1>
+
           <Input
             label="Meno"
             type="text"
