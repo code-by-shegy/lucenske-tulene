@@ -30,7 +30,7 @@ function App() {
 
   if (loading) {
     return (
-      <div className="font-bangers flex size-full h-screen items-center justify-center">
+      <div className="font-bangers flex h-screen items-center justify-center">
         Obrovské zdravíčko!
       </div>
     );

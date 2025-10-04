@@ -2,6 +2,7 @@ import Header from "../components/Header";
 import Button from "../components/Button";
 import Page from "../components/Page";
 import Card from "../components/Card";
+import Table from "../components/Table";
 
 import { auth } from "../firebase";
 import { useEffect, useState } from "react";
@@ -73,6 +74,33 @@ export default function Profile() {
     }
   };
 
+  const formatDateTime = (date?: Date | null): string => {
+    if (!date) return "—";
+
+    return date.toLocaleString(undefined, {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    });
+  };
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
+  };
+
+  // Convert events into rows for Table component
+  const rows = paginatedEvents.map((ev) => [
+    formatDateTime(ev.date),
+    ev.water_temp,
+    formatTime(ev.time_in_water), // display as MM:SS
+    ev.points.toFixed(1),
+  ]);
+
   return (
     <Page className="pb-[10vh]">
       {/*So the bottom navbar does not cover content*/}
@@ -109,72 +137,34 @@ export default function Profile() {
         </p>
       </Card>
       {/* Sessions list */}
-      <div className="p-4">
-        <h2 className="font-bangers text-darkblack mb-4 text-2xl">Otuženia</h2>
-        <Card className="overflow-x-auto">
-          <table className="w-full border-collapse text-left">
-            <thead>
-              <tr className="bg-darkblack text-icywhite font-roboto">
-                <th className="rounded-tl-2xl p-3">Dátum</th>
-                <th className="p-3">Teplota vody (°C)</th>
-                <th className="p-3">Čas (s)</th>
-                <th className="rounded-tr-2xl p-3">Body</th>
-              </tr>
-            </thead>
-            <tbody>
-              {paginatedEvents.map((ev) => (
-                <tr
-                  key={ev.event_id}
-                  className="border-mediumgrey hover:bg-lightblue/10 border-t transition-colors"
-                >
-                  <td className="p-3">
-                    {ev.date ? ev.date.toLocaleDateString() : "—"}
-                  </td>
-                  <td className="p-3">{ev.water_temp}</td>
-                  <td className="p-3">{ev.time_in_water}</td>
-                  <td className="text-darkblack p-3 font-bold">
-                    {ev.points.toFixed(1)}
-                  </td>
-                </tr>
-              ))}
-              {events.length === 0 && (
-                <tr>
-                  <td
-                    colSpan={4}
-                    className="text-mediumgrey2 font-bangers p-6 text-center"
-                  >
-                    No sessions yet 🚀
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </Card>
+      <Table
+        headers={["Dátum", "Teplota vody (°C)", "Čas (MM:SS)", "Body"]}
+        rows={rows}
+      />
 
-        {totalPages > 1 && (
-          <div className="mt-4 flex justify-center gap-2">
-            <Button
-              size="sm"
-              variant="primary"
-              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-              disabled={currentPage === 1}
-            >
-              Späť
-            </Button>
-            <span className="font-bangers text-darkblack">
-              {currentPage} / {totalPages}
-            </span>
-            <Button
-              size="sm"
-              variant="primary"
-              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-              disabled={currentPage === totalPages}
-            >
-              Ďalšie
-            </Button>
-          </div>
-        )}
-      </div>
+      {totalPages > 1 && (
+        <div className="mt-4 flex justify-center gap-2">
+          <Button
+            size="sm"
+            variant="primary"
+            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+            disabled={currentPage === 1}
+          >
+            Späť
+          </Button>
+          <span className="font-bangers text-darkblack">
+            {currentPage} / {totalPages}
+          </span>
+          <Button
+            size="sm"
+            variant="primary"
+            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+            disabled={currentPage === totalPages}
+          >
+            Ďalšie
+          </Button>
+        </div>
+      )}
     </Page>
   );
 }
