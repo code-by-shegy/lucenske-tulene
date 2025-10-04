@@ -11,7 +11,7 @@ export default function Table({ headers, rows, className = "" }: TableProps) {
     <div className={`overflow-x-auto p-4`}>
       <table className={`w-full border-collapse text-left ${className}`}>
         <thead>
-          <tr className="bg-darkblack text-icywhite font-roboto">
+          <tr className="bg-darkblack text-icywhite font-roboto text-sm">
             {headers.map((header, i) => (
               <th
                 key={i}

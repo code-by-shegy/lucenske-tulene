@@ -39,7 +39,7 @@ export default function Leaderboard() {
   const rows = entries.map((entry, index) => [
     <span className="font-bold">{index + 1}</span>, // rank bold
     entry.user_name,
-    entry.events_count,
+    entry.events_count + " x",
     <span className="font-bold">{entry.points.toFixed(1)}</span>, // points bold
   ]);
 
@@ -47,7 +47,7 @@ export default function Leaderboard() {
     <Page className="pb-[10vh]">
       {/*So the bottom navbar does not cover content*/}
       <Header title="Tabuľka" onBack={() => navigate("/")} />
-      <Table headers={["#", "Tuleň", "Otuženia", "Body"]} rows={rows} />
+      <Table headers={["#", "TULEŇ", "OTUŽIL", "BODY"]} rows={rows} />
     </Page>
   );
 }

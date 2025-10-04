@@ -134,7 +134,7 @@ export default function Profile() {
       </Card>
       {/* Sessions list */}
       <Table
-        headers={["Dátum", "Teplota vody (°C)", "Čas (MM:SS)", "Body"]}
+        headers={["DÁTUM", "TEPLOTA VODY (°C)", "ČAS (MM:SS)", "BODY"]}
         rows={rows}
       />
 
