@@ -9,9 +9,9 @@ import type { User } from "firebase/auth";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase";
 
+import Bottom from "./components/Bottom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import Home from "./pages/Home";
 import StartSession from "./pages/StartSession";
 import Leaderboard from "./pages/Leaderboard";
 import Profile from "./pages/Profile";
@@ -30,7 +30,7 @@ function App() {
 
   if (loading) {
     return (
-      <div className="font-bangers flex h-screen items-center justify-center">
+      <div className="font-bangers flex size-full h-screen items-center justify-center">
         Obrovské zdravíčko!
       </div>
     );
@@ -47,9 +47,8 @@ function App() {
         />
 
         {/* Protected routes */}
-        <Route path="/" element={user ? <Home /> : <Navigate to="/login" />} />
         <Route
-          path="/startsession"
+          path="/"
           element={user ? <StartSession /> : <Navigate to="/login" />}
         />
         <Route
@@ -64,6 +63,9 @@ function App() {
         {/* Catch all */}
         <Route path="*" element={<Navigate to={user ? "/" : "/login"} />} />
       </Routes>
+
+      {/* BottomNav - This will be visible on all pages after authentication */}
+      {user && <Bottom />}
     </Router>
   );
 }

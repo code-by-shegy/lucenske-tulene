@@ -165,7 +165,8 @@ export default function StartSession() {
   };
 
   return (
-    <Page>
+    <Page className="pb-[10vh]">
+      {/*So the bottom navbar does not cover content*/}
       <Header title={`${user_name} otužuje`} onBack={() => navigate("/")} />
 
       {/* Timer */}
@@ -194,6 +195,7 @@ export default function StartSession() {
                 : "Uložiť"}
         </Button>
       </div>
+
       {/* Inputs */}
       <Card className="grid grid-cols-2 gap-4">
         <Input

@@ -19,6 +19,17 @@ export default function Register() {
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (user_name.length < 3 || user_name.length > 15) {
+      setError("Meno musí mať 3 až 15 znakov.");
+      return;
+    }
+
+    if (!/^[A-Za-z0-9]+(?: [A-Za-z0-9]+)*$/.test(user_name)) {
+      setError("Meno môže obsahovať len písmená, čísla a 1 medzeru.");
+      return;
+    }
+
     try {
       const cred = await createUserWithEmailAndPassword(auth, email, password);
       await createUser(cred.user.uid, email, user_name);
@@ -41,6 +52,7 @@ export default function Register() {
             type="text"
             value={user_name}
             onChange={(e) => setName(e.target.value)}
+            maxLength={15}
           />
 
           <Input

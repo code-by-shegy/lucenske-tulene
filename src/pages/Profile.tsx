@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { getUser } from "../lib/users";
 import { getEventsByUser } from "../lib/events";
 import { getLeaderboard } from "../lib/leaderboard";
+import { getAuth, signOut } from "firebase/auth";
 
 import type {
   EventEntry,
@@ -61,12 +62,36 @@ export default function Profile() {
     fetchProfile();
   }, []);
 
-  return (
-    <Page>
-      <Header title={`Tuleň ${user_name}`} onBack={() => navigate("/")} />
+  const handleLogout = async () => {
+    const auth = getAuth();
+    try {
+      await signOut(auth);
+      console.log("User signed out");
+      navigate("/login"); // redirect after logout
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
+  };
 
+  return (
+    <Page className="pb-[10vh]">
+      {/*So the bottom navbar does not cover content*/}
+      <Header
+        title={`Tuleň ${user_name}`}
+        onBack={() => navigate("/")}
+        rightSlot={
+          <Button
+            variant="secondary"
+            size="sm"
+            fullWidth={false}
+            onClick={handleLogout}
+          >
+            Odhlásiť sa
+          </Button>
+        }
+      />
       {/* Stats summary */}
-      <Card className="text-center rounded-none p-0">
+      <Card className="rounded-none p-0 text-center">
         <p className="font-bangers text-darkblack text-lg">
           <span className="mr-4">
             Poradie:{" "}
@@ -83,14 +108,13 @@ export default function Profile() {
           </span>
         </p>
       </Card>
-
       {/* Sessions list */}
       <div className="p-4">
         <h2 className="font-bangers text-darkblack mb-4 text-2xl">Otuženia</h2>
         <Card className="overflow-x-auto">
           <table className="w-full border-collapse text-left">
             <thead>
-              <tr className="bg-darkblue text-icywhite font-bangers text-shadow-lg/50">
+              <tr className="bg-darkblack text-icywhite font-roboto">
                 <th className="rounded-tl-2xl p-3">Dátum</th>
                 <th className="p-3">Teplota vody (°C)</th>
                 <th className="p-3">Čas (s)</th>

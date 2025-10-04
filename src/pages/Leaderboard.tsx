@@ -36,12 +36,13 @@ export default function Leaderboard() {
   }
 
   return (
-    <Page>
+    <Page className="pb-[10vh]">
+      {/*So the bottom navbar does not cover content*/}
       <Header title="Tabuľka" onBack={() => navigate("/")} />
-      <Card className="overflow-x-auto flex-1">
+      <Card className="flex-1 overflow-x-auto">
         <table className="w-full border-collapse text-left">
           <thead>
-            <tr className="bg-darkblue text-icywhite font-bangers text-shadow-lg/50">
+            <tr className="bg-darkblack text-icywhite font-roboto">
               <th className="rounded-tl-2xl p-3">#</th>
               <th className="p-3">Tuleň</th>
               <th className="p-3">Otuženia</th>
@@ -57,7 +58,9 @@ export default function Leaderboard() {
                 <td className="text-darkblack p-3 font-bold">{index + 1}</td>
                 <td className="p-3">{entry.user_name}</td>
                 <td className="p-3">{entry.events_count}</td>
-                <td className="text-darkblack p-3 font-bold">{entry.points}</td>
+                <td className="text-darkblack p-3 font-bold">
+                  {entry.points.toFixed(1)}
+                </td>
               </tr>
             ))}
           </tbody>

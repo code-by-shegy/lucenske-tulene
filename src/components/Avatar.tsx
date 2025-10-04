@@ -19,8 +19,7 @@ export default function Avatar({
 
   return (
     <div
-      className={`bg-oceanblue flex items-center justify-center 
-                  overflow-hidden rounded-full text-white ${sizes[size]}`}
+      className={`bg-oceanblue flex items-center justify-center overflow-hidden rounded-full text-white ${sizes[size]}`}
     >
       {src ? (
         <img src={src} alt={alt} className="h-full w-full object-cover" />
