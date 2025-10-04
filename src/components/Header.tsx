@@ -18,7 +18,7 @@ export default function Header({
       className={`bg-darkblue text-icywhite flex items-center justify-between p-4 text-shadow-lg/50 ${className}`}
     >
       {onBack ? (
-        <button onClick={onBack} className="text-icywhite">
+        <button onClick={onBack} className="text-icywhite text-2xl">
           <ArrowLeft size="1em" strokeWidth={4} />
         </button>
       ) : (

@@ -11,6 +11,7 @@ import { getUser } from "../lib/users";
 import { getEventsByUser } from "../lib/events";
 import { getLeaderboard } from "../lib/leaderboard";
 import { getAuth, signOut } from "firebase/auth";
+import { LogOut } from "lucide-react";
 
 import type {
   EventEntry,
@@ -95,10 +96,10 @@ export default function Profile() {
 
   // Convert events into rows for Table component
   const rows = paginatedEvents.map((ev) => [
-    formatDateTime(ev.date),
+    <span className="font-bold">{formatDateTime(ev.date)},</span>, // datetime bold
     ev.water_temp,
     formatTime(ev.time_in_water), // display as MM:SS
-    ev.points.toFixed(1),
+    <span className="font-bold">{ev.points.toFixed(1)}</span>, // points bold
   ]);
 
   return (
@@ -108,14 +109,9 @@ export default function Profile() {
         title={`Tuleň ${user_name}`}
         onBack={() => navigate("/")}
         rightSlot={
-          <Button
-            variant="secondary"
-            size="sm"
-            fullWidth={false}
-            onClick={handleLogout}
-          >
-            Odhlásiť sa
-          </Button>
+          <button onClick={handleLogout} className="text-icywhite text-2xl">
+            <LogOut size="1em" strokeWidth={4} />
+          </button>
         }
       />
       {/* Stats summary */}

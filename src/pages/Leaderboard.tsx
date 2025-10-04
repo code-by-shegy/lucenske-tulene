@@ -37,10 +37,10 @@ export default function Leaderboard() {
 
   // Convert leaderboard data to rows compatible with Table component
   const rows = entries.map((entry, index) => [
-    index + 1,
+    <span className="font-bold">{index + 1}</span>, // rank bold
     entry.user_name,
     entry.events_count,
-    entry.points.toFixed(1),
+    <span className="font-bold">{entry.points.toFixed(1)}</span>, // points bold
   ]);
 
   return (
