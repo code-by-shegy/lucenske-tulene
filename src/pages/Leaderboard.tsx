@@ -3,13 +3,10 @@ import Page from "../components/Page";
 import Table from "../components/Table";
 import { useEffect, useState } from "react";
 import { getLeaderboard } from "../lib/leaderboard";
-import { useNavigate } from "react-router-dom";
 
 import type { LeaderboardEntry } from "../types";
 
 export default function Leaderboard() {
-  const navigate = useNavigate();
-
   const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -46,7 +43,7 @@ export default function Leaderboard() {
   return (
     <Page className="pb-[10vh]">
       {/*So the bottom navbar does not cover content*/}
-      <Header title="Tabuľka" onBack={() => navigate("/")} />
+      <Header title="Tabuľka" />
       <Table headers={["#", "TULEŇ", "OTUŽIL", "BODY"]} rows={rows} />
     </Page>
   );

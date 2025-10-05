@@ -107,7 +107,6 @@ export default function Profile() {
       {/*So the bottom navbar does not cover content*/}
       <Header
         title={`Tuleň ${user_name}`}
-        onBack={() => navigate("/")}
         rightSlot={
           <button onClick={handleLogout} className="text-icywhite text-2xl">
             <LogOut size="1em" strokeWidth={4} />
@@ -127,8 +126,10 @@ export default function Profile() {
             Body: <span className="text-mediumblue font-bangers">{points}</span>
           </span>
           <span>
-            Otuženia:{" "}
-            <span className="text-mediumblue font-bangers">{events_count}</span>
+            Otužil:{" "}
+            <span className="text-mediumblue font-bangers">
+              {events_count + " x"}
+            </span>
           </span>
         </p>
       </Card>

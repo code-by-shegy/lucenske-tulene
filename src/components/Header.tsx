@@ -1,15 +1,13 @@
-import { ArrowLeft } from "lucide-react";
-
 interface HeaderProps {
   title: string;
-  onBack?: () => void;
+  leftSlot?: React.ReactNode;
   rightSlot?: React.ReactNode;
   className?: string;
 }
 
 export default function Header({
   title,
-  onBack,
+  leftSlot,
   rightSlot,
   className = "",
 }: HeaderProps) {
@@ -17,13 +15,7 @@ export default function Header({
     <header
       className={`bg-darkblue text-icywhite flex items-center justify-between p-4 text-shadow-lg/50 ${className}`}
     >
-      {onBack ? (
-        <button onClick={onBack} className="text-icywhite text-2xl">
-          <ArrowLeft size="1em" strokeWidth={4} />
-        </button>
-      ) : (
-        <span />
-      )}
+      {leftSlot ?? <span />}
       <h1 className="font-bangers text-lg">{title}</h1>
       {rightSlot ?? <span />}
     </header>

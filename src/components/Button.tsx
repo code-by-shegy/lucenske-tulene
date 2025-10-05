@@ -11,6 +11,8 @@ interface ButtonProps {
   size?: ButtonSize;
   fullWidth?: boolean;
   disabled?: boolean;
+  className?: string;
+  iconOnly?: boolean;
 }
 
 export default function Button({
@@ -21,8 +23,10 @@ export default function Button({
   size = "md",
   fullWidth = false,
   disabled = false,
+  className = "",
+  iconOnly = false,
 }: ButtonProps) {
-  const baseStyles = `font-bangers text-shadow-lg/50
+  const baseStyles = `font-bangers ${className} text-shadow-lg/50
                       rounded-xl transition-colors border-2`;
   // focus:outline-none focus:ring-2 focus:ring-offset-2
 
@@ -33,20 +37,23 @@ export default function Button({
   };
 
   const sizes: Record<ButtonSize, string> = {
-    sm: "p-2 text-sm",
-    md: "p-3 text-base",
-    lg: "p-4 text-lg",
+    sm: iconOnly ? "p-2" : "p-2 text-sm",
+    md: iconOnly ? "p-3" : "p-3 text-base",
+    lg: iconOnly ? "p-4" : "p-4 text-lg",
   };
 
   const width = fullWidth ? "w-full" : "inline-block";
   const disabledStyles = disabled ? "opacity-50 cursor-not-allowed" : "";
+
+  // Extra styles for icon-only buttons
+  const iconOnlyStyles = iconOnly ? "flex items-center justify-center" : "";
 
   return (
     <button
       type={type}
       onClick={onClick}
       disabled={disabled}
-      className={`${baseStyles} ${variants[variant]} ${sizes[size]} ${width} ${disabledStyles}`}
+      className={`${baseStyles} ${variants[variant]} ${sizes[size]} ${width} ${disabledStyles} ${iconOnlyStyles}`}
     >
       {children}
     </button>

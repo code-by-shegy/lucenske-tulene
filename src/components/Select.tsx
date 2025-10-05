@@ -10,18 +10,17 @@ interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
 export default function Select({
   label,
   options,
-  className,
+  className = "",
   ...props
 }: SelectProps) {
   return (
-    <div className={"font-roboto ${className} flex w-full flex-col gap-1"}>
+    <div className={`font-roboto ${className} flex w-full flex-col gap-1`}>
       {label && (
-        <label className="text-deepblack text-sm font-bold">{label}</label>
+        <label className={`text-deepblack text-sm font-bold`}>{label}</label>
       )}
       <select
         {...props}
-        //padding p-2 deleted and flex-1 used instead, to fix different height issue.
-        className={`border-mediumgrey focus:ring-darkblack flex-1 rounded-lg border-2 focus:ring-2 focus:outline-none`}
+        className={`border-mediumgrey focus:ring-darkblack appearance-none rounded-lg border-2 p-1 focus:ring-2 focus:outline-none`}
       >
         {options.map((option) => (
           <option key={option.value} value={option.value}>
