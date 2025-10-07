@@ -238,7 +238,7 @@ export default function StartSession() {
       </div>
 
       {/* Main + Reset buttons */}
-      <div className="flex gap-2 p-4">
+      <div className="flex gap-3 p-3">
         <Button
           className="flex-[9]"
           size="lg"

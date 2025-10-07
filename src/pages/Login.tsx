@@ -36,9 +36,9 @@ export default function Login() {
     }
   };
   return (
-    <Page className="items-center justify-center px-4">
+    <Page className="items-center justify-center px-3">
       <Card>
-        <form onSubmit={handleLogin} className="flex flex-col gap-4">
+        <form onSubmit={handleLogin} className="flex flex-col gap-3">
           <h1 className="font-bangers text-darkblue text-center text-4xl">
             Tulení Nábor
           </h1>
@@ -63,22 +63,23 @@ export default function Login() {
             Login
           </Button>
 
-          <p className="font-roboto text-darkblack mt-4 text-center text-sm">
-            Ešte nemáš účet ty primitív?{" "}
-            <Link
-              to="/register"
-              className="font-roboto text-mediumblue hover:underline"
-            >
-              Tu sa registruj!
-            </Link>
-          </p>
-          <p className="font-roboto text-darkblack mt-4 text-center text-sm">
+          <p className="font-roboto text-darkblack text-center text-sm">
             Zabudol si heslo?{" "}
             <Link
               to="/forgot-password"
               className="font-roboto text-mediumblue hover:underline"
             >
               Resetuj ho
+            </Link>
+          </p>
+
+          <p className="font-roboto text-darkblack text-center text-sm">
+            Ešte nemáš účet ty primitív?{" "}
+            <Link
+              to="/register"
+              className="font-roboto text-mediumblue hover:underline"
+            >
+              Tu sa registruj!
             </Link>
           </p>
         </form>

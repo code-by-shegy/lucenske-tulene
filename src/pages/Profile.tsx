@@ -150,15 +150,26 @@ export default function Profile() {
           </span>
         </p>
       </Card>
+      {bestEvent && (
+        <>
+          <h2 className="font-bangers text-darkblack pl-3 text-lg">
+            Najlepší výkon
+          </h2>
+          <Table
+            headers={["DÁTUM", "TEPLOTA VODY (°C)", "ČAS (MM:SS)", "BODY"]}
+            rows={user_top_event_row}
+          />
+        </>
+      )}
       {/* Sessions list */}
-      <h2 className="font-bangers text-darkblack pl-4 text-lg">Otuženia</h2>
+      <h2 className="font-bangers text-darkblack pl-3 text-lg">Otuženia</h2>
       <Table
         headers={["DÁTUM", "TEPLOTA VODY (°C)", "ČAS (MM:SS)", "BODY"]}
         rows={user_events_rows}
       />
 
       {totalPages > 1 && (
-        <div className="mt-4 flex justify-center gap-2">
+        <div className="flex justify-center gap-4 p-3">
           <Button
             size="sm"
             variant="primary"
@@ -167,7 +178,7 @@ export default function Profile() {
           >
             Späť
           </Button>
-          <span className="font-bangers text-darkblack">
+          <span className="font-bangers text-darkblack flex items-center">
             {currentPage} / {totalPages}
           </span>
           <Button
@@ -179,17 +190,6 @@ export default function Profile() {
             Ďalšie
           </Button>
         </div>
-      )}
-      {bestEvent && (
-        <>
-          <h2 className="font-bangers text-darkblack pl-4 text-lg">
-            Najlepší výkon
-          </h2>
-          <Table
-            headers={["DÁTUM", "TEPLOTA VODY (°C)", "ČAS (MM:SS)", "BODY"]}
-            rows={user_top_event_row}
-          />
-        </>
       )}
     </Page>
   );

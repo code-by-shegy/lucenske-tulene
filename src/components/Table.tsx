@@ -8,7 +8,7 @@ interface TableProps {
 
 export default function Table({ headers, rows, className = "" }: TableProps) {
   return (
-    <div className={`overflow-x-auto p-4`}>
+    <div className={`overflow-x-auto p-3`}>
       <table className={`w-full border-collapse text-left ${className}`}>
         <thead>
           <tr className="bg-darkblack text-icywhite font-roboto text-sm">
