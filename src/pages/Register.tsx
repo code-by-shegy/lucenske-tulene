@@ -1,7 +1,13 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../firebase";
+import {
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
+} from "firebase/auth";
+
+import { collection, query, where, getDocs } from "firebase/firestore";
+
+import { auth, db } from "../firebase";
 import { createUser } from "../lib/users";
 import type { Email, UserName } from "../types";
 import Input from "../components/Input";
@@ -30,12 +36,53 @@ export default function Register() {
       return;
     }
 
+    const usersRef = collection(db, "users");
+
+    const nameQuery = query(usersRef, where("user_name", "==", user_name));
+
+    const [nameSnapshot] = await Promise.all([getDocs(nameQuery)]);
+
+    if (!nameSnapshot.empty) {
+      setError("Toto meno je už obsadené.");
+      return;
+    }
+
     try {
       const cred = await createUserWithEmailAndPassword(auth, email, password);
       await createUser(cred.user.uid, email, user_name);
+      await sendEmailVerification(cred.user);
+      alert("Skontroluj svoj email a potvrď registráciu.");
+      await auth.signOut();
       navigate("/login");
     } catch (err: any) {
-      setError(err.message);
+      const code = err.code;
+      let message = "Neznáma chyba. Skús to znova.";
+
+      switch (code) {
+        case "auth/invalid-email":
+          message = "Neplatná e-mailová adresa.";
+          break;
+        case "auth/email-already-in-use":
+          message = "Tento e-mail je už zaregistrovaný.";
+          break;
+        case "auth/missing-password":
+        case "auth/weak-password":
+        case "auth/password-does-not-meet-requirements":
+          message =
+            "Heslo musí mať aspoň 6 znakov, jedno veľké a jedno malé písmeno.";
+          break;
+        case "auth/user-not-found":
+          message = "Používateľ s týmto e-mailom neexistuje.";
+          break;
+        case "auth/wrong-password":
+          message = "Zlé heslo, tuleň!";
+          break;
+        case "auth/too-many-requests":
+          message = "Príliš veľa pokusov. Skús to neskôr.";
+          break;
+      }
+
+      setError(message);
     }
   };
 

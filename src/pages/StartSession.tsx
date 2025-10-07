@@ -1,5 +1,5 @@
 // src/pages/StartSession.tsx
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { createEvent } from "../lib/events";
 import { auth } from "../firebase";
@@ -27,8 +27,10 @@ export default function StartSession() {
   const [inPrep, setInPrep] = useState<boolean>(false);
 
   const [user_name, setName] = useState<UserName>("");
+  // const [current_time, setCurrentTime] = useState<TimeInSeconds>(0);
+  // const [running, setRunning] = useState<boolean>(false);
   const [current_time, setCurrentTime] = useState<TimeInSeconds>(0);
-  const [running, setRunning] = useState<boolean>(false);
+  const [startTimestamp, setStartTimestamp] = useState<number | null>(null); // new
 
   /*must be string for the input to work nicely*/
   const [water_temp, setWaterTemp] = useState<string>("");
@@ -49,6 +51,9 @@ export default function StartSession() {
     { value: 2, label: "Oblačno" },
     { value: 3, label: "Sneží/Prší" },
   ];
+
+  const readonlyInputs = inPrep || startTimestamp !== null || stage !== "start";
+  const animationFrameRef = useRef<number | null>(null);
 
   useEffect(() => {
     const audio = new Audio("/gong.mp3");
@@ -107,21 +112,35 @@ export default function StartSession() {
     if (inPrep && prepRemaining === 0) {
       setInPrep(false);
       playBell();
-      setRunning(true); // start real session
+      setStartTimestamp(Date.now());
       setStage("stop");
     }
   }, [inPrep, prepRemaining]);
 
   useEffect(() => {
-    //stopwatch ticking refresh every one second
-    let id: number | undefined;
-    if (running) {
-      id = window.setInterval(() => setCurrentTime((t) => t + 1), 1000);
+    // Only run timer if session started and stage is "stop"
+    if (!startTimestamp || stage !== "stop") {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+        animationFrameRef.current = null;
+      }
+      return;
     }
-    return () => {
-      if (id !== undefined) window.clearInterval(id);
+
+    const update = () => {
+      setCurrentTime(Math.floor((Date.now() - startTimestamp) / 1000));
+      animationFrameRef.current = requestAnimationFrame(update);
     };
-  }, [running]);
+
+    animationFrameRef.current = requestAnimationFrame(update);
+
+    return () => {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+        animationFrameRef.current = null;
+      }
+    };
+  }, [startTimestamp, stage]);
 
   useEffect(() => {
     if (
@@ -159,7 +178,6 @@ export default function StartSession() {
     }
 
     if (stage === "stop") {
-      setRunning(false);
       setStage("save");
       return;
     }
@@ -194,7 +212,6 @@ export default function StartSession() {
         setAirTemp("");
         setWeather(0);
         setStage("start");
-        setRunning(false);
 
         navigate("/leaderboard");
       } catch (err: any) {
@@ -245,12 +262,16 @@ export default function StartSession() {
           size="lg"
           variant="secondary"
           onClick={() => {
+            if (animationFrameRef.current) {
+              cancelAnimationFrame(animationFrameRef.current);
+              animationFrameRef.current = null;
+            }
             setCurrentTime(0);
             setPoints(0);
-            setRunning(false);
             setStage("start");
             setInPrep(false);
             setPrepRemaining(0);
+            setStartTimestamp(null);
           }}
           iconOnly
         >
@@ -266,7 +287,7 @@ export default function StartSession() {
           step="0.1"
           value={water_temp}
           onChange={(e) => setWaterTemp(e.target.value)}
-          disabled={stage !== "start"}
+          disabled={readonlyInputs}
           placeholder=""
         />
 
@@ -276,7 +297,7 @@ export default function StartSession() {
           step="0.1"
           value={air_temp}
           onChange={(e) => setAirTemp(e.target.value)}
-          disabled={stage !== "start"}
+          disabled={readonlyInputs}
           placeholder=""
         />
 
@@ -285,7 +306,7 @@ export default function StartSession() {
           label="Počasie"
           value={weather}
           onChange={(e) => setWeather(Number(e.target.value))}
-          disabled={stage !== "start"}
+          disabled={readonlyInputs}
           options={weatherOptions}
         />
 
@@ -293,7 +314,7 @@ export default function StartSession() {
           label="Prípravný čas"
           value={prepTime}
           onChange={(e) => setPrepTime(Number(e.target.value))}
-          disabled={stage !== "start"}
+          disabled={readonlyInputs}
           options={[
             { value: 10, label: "10 sekúnd" },
             { value: 20, label: "20 sekúnd" },
@@ -301,7 +322,7 @@ export default function StartSession() {
           ]}
         />
 
-        <Input label="Body" value={points.toFixed(1)} readOnly />
+        <Input label="Body" value={points.toFixed(1)} disabled />
       </Card>
     </Page>
   );

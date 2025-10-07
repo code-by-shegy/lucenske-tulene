@@ -15,6 +15,7 @@ import Register from "./pages/Register";
 import StartSession from "./pages/StartSession";
 import Leaderboard from "./pages/Leaderboard";
 import Profile from "./pages/Profile";
+import ForgotPassword from "./pages/ForgotPassword";
 
 function App() {
   const [user, setUser] = useState<User | null>(null);
@@ -44,6 +45,10 @@ function App() {
         <Route
           path="/register"
           element={user ? <Navigate to="/" /> : <Register />}
+        />
+        <Route
+          path="/forgot-password"
+          element={user ? <Navigate to="/" /> : <ForgotPassword />}
         />
 
         {/* Protected routes */}

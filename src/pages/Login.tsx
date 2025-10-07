@@ -17,13 +17,24 @@ export default function Login() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      navigate("/");
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password,
+      );
+      const user = userCredential.user;
+
+      if (!user.emailVerified) {
+        alert("Prosím, potvrď svoj email pred prihlásením.");
+        await auth.signOut(); // log them out immediately
+        return;
+      }
+
+      navigate("/"); // proceed only if verified
     } catch (err: any) {
       setError(err.message);
     }
   };
-
   return (
     <Page className="items-center justify-center px-4">
       <Card>
@@ -59,6 +70,15 @@ export default function Login() {
               className="font-roboto text-mediumblue hover:underline"
             >
               Tu sa registruj!
+            </Link>
+          </p>
+          <p className="font-roboto text-darkblack mt-4 text-center text-sm">
+            Zabudol si heslo?{" "}
+            <Link
+              to="/forgot-password"
+              className="font-roboto text-mediumblue hover:underline"
+            >
+              Resetuj ho
             </Link>
           </p>
         </form>
