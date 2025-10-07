@@ -8,7 +8,7 @@ import {
 import { collection, query, where, getDocs } from "firebase/firestore";
 
 import { auth, db } from "../firebase";
-import { createUser } from "../lib/users";
+import { createUser } from "../lib/db_users";
 import type { Email, UserName } from "../types";
 import Input from "../components/Input";
 import Button from "../components/Button";

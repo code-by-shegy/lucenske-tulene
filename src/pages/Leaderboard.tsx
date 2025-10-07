@@ -2,7 +2,7 @@ import Header from "../components/Header";
 import Page from "../components/Page";
 import Table from "../components/Table";
 import { useEffect, useState } from "react";
-import { getLeaderboard } from "../lib/leaderboard";
+import { getLeaderboard } from "../lib/db_leaderboard";
 
 import type { LeaderboardEntry } from "../types";
 

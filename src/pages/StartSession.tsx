@@ -1,9 +1,9 @@
 // src/pages/StartSession.tsx
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { createEvent } from "../lib/events";
+import { createEvent } from "../lib/db_events";
 import { auth } from "../firebase";
-import { getUser } from "../lib/users";
+import { getUser } from "../lib/db_users";
 import { RotateCcw } from "lucide-react"; // add this at the top with other imports
 
 import Header from "../components/Header";

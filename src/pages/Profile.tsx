@@ -7,9 +7,9 @@ import Table from "../components/Table";
 import { auth } from "../firebase";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getUser } from "../lib/users";
-import { getEventsByUser } from "../lib/events";
-import { getLeaderboard } from "../lib/leaderboard";
+import { getUser } from "../lib/db_users";
+import { getEventsByUser, getUserTopEvent } from "../lib/db_events";
+import { getLeaderboard } from "../lib/db_leaderboard";
 import { getAuth, signOut } from "firebase/auth";
 import { LogOut } from "lucide-react";
 
@@ -30,6 +30,7 @@ export default function Profile() {
   const [standing, setStanding] = useState<Standing>(null);
   const [events, setEvents] = useState<EventEntry[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [bestEvent, setBestEvent] = useState<EventEntry | null>(null);
 
   const rowsPerPage = 5;
   const totalPages = Math.ceil(events.length / rowsPerPage);
@@ -60,6 +61,10 @@ export default function Profile() {
       // 3) Load events
       const userEvents = await getEventsByUser(user.uid);
       setEvents(userEvents);
+
+      // 4) Load top (best) event
+      const best = await getUserTopEvent(user.uid);
+      if (best) setBestEvent(best);
     }
     fetchProfile();
   }, []);
@@ -95,12 +100,24 @@ export default function Profile() {
   };
 
   // Convert events into rows for Table component
-  const rows = paginatedEvents.map((ev) => [
+  const user_events_rows = paginatedEvents.map((ev) => [
     <span className="font-bold">{formatDateTime(ev.date)},</span>, // datetime bold
     ev.water_temp,
     formatTime(ev.time_in_water), // display as MM:SS
     <span className="font-bold">{ev.points.toFixed(1)}</span>, // points bold
   ]);
+
+  // Prepare best event row (or null if no event)
+  const user_top_event_row = bestEvent
+    ? [
+        [
+          <span className="font-bold">{formatDateTime(bestEvent.date)}</span>,
+          bestEvent.water_temp,
+          formatTime(bestEvent.time_in_water),
+          <span className="font-bold">{bestEvent.points.toFixed(1)}</span>,
+        ],
+      ]
+    : [];
 
   return (
     <Page className="pb-[10vh]">
@@ -134,9 +151,10 @@ export default function Profile() {
         </p>
       </Card>
       {/* Sessions list */}
+      <h2 className="font-bangers text-darkblack pl-4 text-lg">Otuženia</h2>
       <Table
         headers={["DÁTUM", "TEPLOTA VODY (°C)", "ČAS (MM:SS)", "BODY"]}
-        rows={rows}
+        rows={user_events_rows}
       />
 
       {totalPages > 1 && (
@@ -161,6 +179,17 @@ export default function Profile() {
             Ďalšie
           </Button>
         </div>
+      )}
+      {bestEvent && (
+        <>
+          <h2 className="font-bangers text-darkblack pl-4 text-lg">
+            Najlepší výkon
+          </h2>
+          <Table
+            headers={["DÁTUM", "TEPLOTA VODY (°C)", "ČAS (MM:SS)", "BODY"]}
+            rows={user_top_event_row}
+          />
+        </>
       )}
     </Page>
   );
