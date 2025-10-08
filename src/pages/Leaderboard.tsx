@@ -44,7 +44,7 @@ export default function Leaderboard() {
     <Page className="pb-[10vh]">
       {/*So the bottom navbar does not cover content*/}
       <Header title="Tabuľka" />
-      <Table headers={["#", "TULEŇ", "OTUŽIL", "BODY"]} rows={rows} />
+      <Table headers={["#", "Tuleň", "Otužil", "Body"]} rows={rows} />
     </Page>
   );
 }

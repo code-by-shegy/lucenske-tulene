@@ -156,7 +156,7 @@ export default function Profile() {
             Najlepší výkon
           </h2>
           <Table
-            headers={["DÁTUM", "TEPLOTA VODY (°C)", "ČAS (MM:SS)", "BODY"]}
+            headers={["Dátum", "Voda (°C)", "Čas", "Body"]}
             rows={user_top_event_row}
           />
         </>
@@ -164,12 +164,12 @@ export default function Profile() {
       {/* Sessions list */}
       <h2 className="font-bangers text-darkblack pl-3 text-lg">Otuženia</h2>
       <Table
-        headers={["DÁTUM", "TEPLOTA VODY (°C)", "ČAS (MM:SS)", "BODY"]}
+        headers={["Dátum", "Voda (°C)", "Čas", "Body"]}
         rows={user_events_rows}
       />
 
       {totalPages > 1 && (
-        <div className="flex justify-center gap-4 p-3">
+        <div className="flex justify-center gap-3 p-3">
           <Button
             size="sm"
             variant="primary"

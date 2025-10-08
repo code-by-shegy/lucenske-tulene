@@ -12,7 +12,7 @@ export default function BottomNav() {
     }`;
 
   return (
-    <nav className="bg-darkblue fixed bottom-0 left-0 z-50 h-[10vh] w-full shadow-inner">
+    <nav className="bg-dark2blue fixed bottom-0 left-0 z-50 h-[10vh] w-full shadow-inner">
       <div className="mx-auto flex h-full max-w-screen-xl items-center justify-around px-6">
         <Link to="/" aria-label="Start session" className={itemClass("/")}>
           <img

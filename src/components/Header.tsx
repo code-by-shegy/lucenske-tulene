@@ -13,7 +13,7 @@ export default function Header({
 }: HeaderProps) {
   return (
     <header
-      className={`bg-darkblue text-icywhite flex items-center justify-between p-3 text-shadow-lg/50 ${className}`}
+      className={`bg-dark2blue text-icywhite flex items-center justify-between p-3 text-shadow-lg/50 ${className}`}
     >
       {leftSlot ?? <span />}
       <h1 className="font-bangers text-lg">{title}</h1>

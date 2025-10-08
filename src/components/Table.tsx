@@ -9,14 +9,15 @@ interface TableProps {
 export default function Table({ headers, rows, className = "" }: TableProps) {
   return (
     <div className={`overflow-x-auto p-3`}>
-      <table className={`w-full border-collapse text-left ${className}`}>
+      <table
+        className={`w-full border-separate border-spacing-0 text-left ${className}`}
+      >
         <thead>
-          <tr className="bg-darkblack text-icywhite font-roboto text-sm">
+          <tr>
             {headers.map((header, i) => (
               <th
                 key={i}
-                //Rounded corners only on the first and last header cells. Padding for all the same.
-                className={`p-3 ${
+                className={`text-icywhite bg-dark2blue font-roboto p-2 text-sm text-shadow-lg/25 ${
                   i === 0
                     ? "rounded-tl-2xl"
                     : i === headers.length - 1
@@ -32,14 +33,19 @@ export default function Table({ headers, rows, className = "" }: TableProps) {
 
         <tbody>
           {rows.map((cols, rowIndex) => (
-            <tr
-              key={rowIndex}
-              className="bg-icywhite border-mediumgrey hover:bg-lightblue/10 border-t transition-colors"
-            >
+            <tr key={rowIndex}>
               {cols.map((col, colIndex) => (
                 <td
                   key={colIndex}
-                  className="text-darkblack font-roboto text-md p-3"
+                  className={`text-darkblack font-roboto bg-icywhite border-mediumgrey hover:bg-lightblue/10 border-t p-2 text-sm transition-colors ${
+                    rowIndex === rows.length - 1 && colIndex === 0
+                      ? "rounded-bl-2xl"
+                      : ""
+                  } ${
+                    rowIndex === rows.length - 1 && colIndex === cols.length - 1
+                      ? "rounded-br-2xl"
+                      : ""
+                  }`}
                 >
                   {col}
                 </td>

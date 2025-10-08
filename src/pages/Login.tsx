@@ -32,7 +32,29 @@ export default function Login() {
 
       navigate("/"); // proceed only if verified
     } catch (err: any) {
-      setError(err.message);
+      const code = err.code;
+      let message = err.message;
+
+      switch (code) {
+        case "auth/invalid-email":
+          message = "Neplatná e-mailová adresa.";
+          break;
+        case "auth/invalid-credential":
+          message = "Nesprávne prihlasovacie údaje.";
+          break;
+        case "auth/user-not-found":
+          message = "Používateľ s týmto e-mailom neexistuje.";
+          break;
+        case "auth/wrong-password":
+        case "auth/missing-password":
+          message = "Zlé heslo, tuleň!";
+          break;
+        case "auth/too-many-requests":
+          message = "Príliš veľa pokusov. Skús to neskôr.";
+          break;
+      }
+
+      setError(message);
     }
   };
   return (
@@ -57,21 +79,15 @@ export default function Login() {
             onChange={(e) => setPassword(e.target.value)}
           />
 
-          {error && <p className="text-sm text-red-500">{error}</p>}
+          {error && (
+            <p className="font-roboto text-center text-sm font-bold text-red-500">
+              {error}
+            </p>
+          )}
 
           <Button type="submit" variant="primary" size="md" fullWidth>
             Login
           </Button>
-
-          <p className="font-roboto text-darkblack text-center text-sm">
-            Zabudol si heslo?{" "}
-            <Link
-              to="/forgot-password"
-              className="font-roboto text-mediumblue hover:underline"
-            >
-              Resetuj ho
-            </Link>
-          </p>
 
           <p className="font-roboto text-darkblack text-center text-sm">
             Ešte nemáš účet ty primitív?{" "}
@@ -80,6 +96,16 @@ export default function Login() {
               className="font-roboto text-mediumblue hover:underline"
             >
               Tu sa registruj!
+            </Link>
+          </p>
+
+          <p className="font-roboto text-darkblack text-center text-sm">
+            Zabudol si heslo?{" "}
+            <Link
+              to="/forgot-password"
+              className="font-roboto text-mediumblue hover:underline"
+            >
+              Resetuj ho
             </Link>
           </p>
         </form>

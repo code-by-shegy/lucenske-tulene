@@ -229,7 +229,7 @@ export default function StartSession() {
       <Header title={`${user_name} otužuje`} />
 
       {/* Timer */}
-      <div className="bg-lightgrey flex flex-1 items-center justify-center">
+      <div className="bg-lightgrey flex flex-1 items-center justify-center pt-3">
         <div className="font-bangers text-darkblack text-7xl sm:text-8xl md:text-9xl lg:text-[12rem]">
           {inPrep
             ? `${prepRemaining}`
