@@ -89,7 +89,7 @@ export default function Register() {
   return (
     <Page className="items-center justify-center px-4">
       <Card>
-        <form onSubmit={handleRegister} className="flex flex-col gap-4">
+        <form onSubmit={handleRegister} className="flex flex-col gap-3">
           <h1 className="font-bangers text-darkblue text-center text-4xl">
             Tulení výtvor
           </h1>

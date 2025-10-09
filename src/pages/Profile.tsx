@@ -104,7 +104,7 @@ export default function Profile() {
     <span className="font-bold">{formatDateTime(ev.date)},</span>, // datetime bold
     ev.water_temp,
     formatTime(ev.time_in_water), // display as MM:SS
-    <span className="font-bold">{ev.points.toFixed(1)}</span>, // points bold
+    <span className="font-bold">{ev.points.toFixed(0)}</span>, // points bold
   ]);
 
   // Prepare best event row (or null if no event)
@@ -114,7 +114,7 @@ export default function Profile() {
           <span className="font-bold">{formatDateTime(bestEvent.date)}</span>,
           bestEvent.water_temp,
           formatTime(bestEvent.time_in_water),
-          <span className="font-bold">{bestEvent.points.toFixed(1)}</span>,
+          <span className="font-bold">{bestEvent.points.toFixed(0)}</span>,
         ],
       ]
     : [];

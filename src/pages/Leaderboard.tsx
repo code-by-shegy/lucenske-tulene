@@ -37,7 +37,7 @@ export default function Leaderboard() {
     <span className="font-bold">{index + 1}</span>, // rank bold
     entry.user_name,
     entry.events_count + " x",
-    <span className="font-bold">{entry.points.toFixed(1)}</span>, // points bold
+    <span className="font-bold">{entry.points.toFixed(0)}</span>, // points bold
   ]);
 
   return (

@@ -73,16 +73,20 @@ export default function StartSession() {
     }
   };
 
-  function calculatePoints(): Points {
-    const tw = Number(water_temp_num);
-    const ta = Number(air_temp_num);
-    const w = Number(weather);
-    const sign = (x: number) => (x > 0 ? 1 : x < 0 ? -1 : 0);
-    const numerator =
-      (30 - tw) * (current_time / 60) + (tw - ta) / (50 - 10 * w);
-    const denominator = 1 + (tw * sign(tw)) / 5;
-    if (denominator === 0 || !isFinite(numerator / denominator)) return 0;
-    return numerator / denominator;
+  function calculatePoints(): number {
+    const Tw = Number(water_temp_num); // water temperature
+    const Ta = Number(air_temp_num); // air temperature
+    const c = Number(weather); // weather factor
+    const t = Number(current_time / 60); // time in minutes
+
+    const base = 20 - Tw + c;
+    const exponent = 1 + t / (20 + Tw + (Ta - Tw) / 10);
+
+    if (base <= 0) return 0; // prevent negative/zero base issues
+    const P = Math.pow(base, exponent);
+
+    //return Math.round(P); // rounds to nearest integer
+    return P; // rounds to nearest integer
   }
 
   useEffect(() => {
