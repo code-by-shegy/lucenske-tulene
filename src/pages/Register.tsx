@@ -4,13 +4,13 @@ import { useNavigate, Link } from "react-router-dom";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { auth, db } from "../firebase";
-
 import { createUser } from "../lib/db_users";
 
 import Input from "../components/Input";
 import Button from "../components/Button";
 import Page from "../components/Page";
 import Card from "../components/Card";
+import Alert from "../components/Alert";
 
 import type { Email, UserName } from "../types";
 
@@ -43,16 +43,15 @@ export default function Register() {
       setError("Toto meno je už obsadené.");
       return;
     }
-
     try {
       const cred = await createUserWithEmailAndPassword(auth, email, password);
       await createUser(cred.user.uid, email, user_name);
-      alert(
-        "Tvoja registrácia bola odoslaná. Po schválení administrátorom ti bude umožnený prístup.",
-      );
 
+      // Navigate to approval page with state
+      navigate("/approval", { state: { email } });
+
+      // Then sign out so they never stay logged in
       await auth.signOut();
-      navigate("/login");
     } catch (err: any) {
       const code = err.code;
       let message = "Neznáma chyba. Skús to znova.";
@@ -100,14 +99,12 @@ export default function Register() {
             onChange={(e) => setName(e.target.value)}
             maxLength={15}
           />
-
           <Input
             label="Email"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
-
           <Input
             label="Heslo"
             type="password"
@@ -115,7 +112,7 @@ export default function Register() {
             onChange={(e) => setPassword(e.target.value)}
           />
 
-          {error && <p className="text-sm text-red-500">{error}</p>}
+          {error && <Alert type="error">{error}</Alert>}
 
           <Button type="submit" variant="primary" size="md" fullWidth>
             Vytvor Tuleňa

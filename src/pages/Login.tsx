@@ -25,15 +25,9 @@ export default function Login() {
         email,
         password,
       );
-      const user = userCredential.user;
-
-      if (!user.emailVerified) {
-        alert("Prosím, potvrď svoj email pred prihlásením.");
-        await auth.signOut(); // log them out immediately
-        return;
-      }
 
       // 🔹 New: Check if user is approved
+      const user = userCredential.user;
       const userDocRef = doc(db, "users", user.uid);
       const userDoc = await getDoc(userDocRef);
 

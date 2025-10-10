@@ -16,20 +16,23 @@ import StartSession from "./pages/StartSession";
 import Leaderboard from "./pages/Leaderboard";
 import Profile from "./pages/Profile";
 import ForgotPassword from "./pages/ForgotPassword";
+import Approval from "./pages/Approval";
 
 function App() {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [authChecked, setAuthChecked] = useState(false);
 
   useEffect(() => {
+    // Wait until Firebase finishes checking user state
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       setUser(firebaseUser);
-      setLoading(false);
+      setAuthChecked(true);
     });
-    return () => unsubscribe();
+    return unsubscribe;
   }, []);
 
-  if (loading) {
+  if (!authChecked) {
+    // 👇 This ensures no routes are rendered until auth is ready
     return (
       <div className="font-bangers flex h-screen items-center justify-center">
         Obrovské zdravíčko!
@@ -50,6 +53,7 @@ function App() {
           path="/forgot-password"
           element={user ? <Navigate to="/" /> : <ForgotPassword />}
         />
+        <Route path="/approval" element={<Approval />} />
 
         {/* Protected routes */}
         <Route
@@ -69,7 +73,7 @@ function App() {
         <Route path="*" element={<Navigate to={user ? "/" : "/login"} />} />
       </Routes>
 
-      {/* BottomNav - This will be visible on all pages after authentication */}
+      {/* BottomNav - visible only when logged in */}
       {user && <Bottom />}
     </Router>
   );
