@@ -30,6 +30,7 @@ export type UserProfile = {
   avatar_url: Url;
   events_count: EventsCount;
   points: Points;
+  approved: boolean;
 };
 
 // Leaderboard

@@ -1,19 +1,18 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import {
-  createUserWithEmailAndPassword,
-  sendEmailVerification,
-} from "firebase/auth";
 
+import { createUserWithEmailAndPassword } from "firebase/auth";
 import { collection, query, where, getDocs } from "firebase/firestore";
-
 import { auth, db } from "../firebase";
+
 import { createUser } from "../lib/db_users";
-import type { Email, UserName } from "../types";
+
 import Input from "../components/Input";
 import Button from "../components/Button";
 import Page from "../components/Page";
 import Card from "../components/Card";
+
+import type { Email, UserName } from "../types";
 
 export default function Register() {
   const [email, setEmail] = useState<Email>("");
@@ -37,9 +36,7 @@ export default function Register() {
     }
 
     const usersRef = collection(db, "users");
-
     const nameQuery = query(usersRef, where("user_name", "==", user_name));
-
     const [nameSnapshot] = await Promise.all([getDocs(nameQuery)]);
 
     if (!nameSnapshot.empty) {
@@ -50,8 +47,10 @@ export default function Register() {
     try {
       const cred = await createUserWithEmailAndPassword(auth, email, password);
       await createUser(cred.user.uid, email, user_name);
-      await sendEmailVerification(cred.user);
-      alert("Skontroluj svoj email a potvrď registráciu.");
+      alert(
+        "Tvoja registrácia bola odoslaná. Po schválení administrátorom ti bude umožnený prístup.",
+      );
+
       await auth.signOut();
       navigate("/login");
     } catch (err: any) {

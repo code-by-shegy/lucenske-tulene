@@ -1,7 +1,10 @@
 import { useState } from "react";
-import { auth } from "../firebase";
-import { signInWithEmailAndPassword } from "firebase/auth";
 import { useNavigate, Link } from "react-router-dom";
+
+import { auth, db } from "../firebase";
+import { doc, getDoc } from "firebase/firestore";
+import { signInWithEmailAndPassword } from "firebase/auth";
+
 import Page from "../components/Page";
 import Input from "../components/Input";
 import Button from "../components/Button";
@@ -27,6 +30,16 @@ export default function Login() {
       if (!user.emailVerified) {
         alert("Prosím, potvrď svoj email pred prihlásením.");
         await auth.signOut(); // log them out immediately
+        return;
+      }
+
+      // 🔹 New: Check if user is approved
+      const userDocRef = doc(db, "users", user.uid);
+      const userDoc = await getDoc(userDocRef);
+
+      if (!userDoc.exists() || !userDoc.data()?.approved) {
+        setError("Tvoj účet ešte nebol schválený administrátorom.");
+        await auth.signOut();
         return;
       }
 
