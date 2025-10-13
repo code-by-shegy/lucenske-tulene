@@ -39,7 +39,7 @@ export default function ForgotPassword() {
       await sendPasswordResetEmail(auth, normalizedEmail);
 
       // 3️⃣ Navigate to reset password page
-      navigate("/reset-password", { state: { normalizedEmail } });
+      navigate("/reset-password", { state: { email: normalizedEmail } });
     } catch (err: any) {
       const code = err.code;
       let message = "Nastala chyba. Skús to znova.";
