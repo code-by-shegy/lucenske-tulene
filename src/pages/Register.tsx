@@ -52,9 +52,9 @@ export default function Register() {
         password,
       );
 
-      await auth.signOut();
       await createUser(cred.user.uid, normalizedEmail, user_name);
-      navigate("/approval", { state: { normalizedEmail } });
+      navigate("/approval", { state: { email: normalizedEmail } });
+      await auth.signOut();
     } catch (err: any) {
       const code = err.code;
       let message = "Neznáma chyba. Skús to znova.";
