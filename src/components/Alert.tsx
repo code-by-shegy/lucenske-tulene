@@ -1,39 +1,52 @@
-import type { FC } from "react";
+import type { FC, ReactNode } from "react";
 
 type AlertType = "success" | "warning" | "error";
 
 interface AlertProps {
-  type?: AlertType; // default: success
-  children: React.ReactNode;
+  type: AlertType;
+  title?: string;
+  children: ReactNode;
   className?: string;
 }
 
-const colors = {
+const variants = {
   success: {
     bg: "bg-green-100",
-    text: "text-green-800",
     border: "border-green-200",
+    title: "text-green-800",
+    text: "text-green-700",
+    icon: "✅",
   },
   warning: {
     bg: "bg-yellow-100",
-    text: "text-yellow-800",
     border: "border-yellow-200",
+    title: "text-yellow-800",
+    text: "text-yellow-700",
+    icon: "⚠️",
   },
   error: {
     bg: "bg-red-100",
-    text: "text-red-800",
     border: "border-red-200",
+    title: "text-red-800",
+    text: "text-red-700",
+    icon: "❌",
   },
 };
 
-const Alert: FC<AlertProps> = ({ type = "success", children, className }) => {
-  const color = colors[type];
+const Alert: FC<AlertProps> = ({ type, title, children, className }) => {
+  const color = variants[type];
 
   return (
     <div
-      className={`rounded-xl border px-4 py-3 text-sm shadow-md ${color.bg} ${color.text} ${color.border} ${className}`}
+      className={`w-full rounded-xl border p-3 shadow-lg ${color.bg} ${color.border} ${className || ""}`}
     >
-      {children}
+      {title && (
+        <h2 className={`font-bangers mb-3 text-center text-2xl ${color.title}`}>
+          {color.icon} {title}
+        </h2>
+      )}
+
+      <div className={`font-roboto text-sm ${color.text}`}>{children}</div>
     </div>
   );
 };

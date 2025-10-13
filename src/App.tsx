@@ -17,6 +17,8 @@ import Leaderboard from "./pages/Leaderboard";
 import Profile from "./pages/Profile";
 import ForgotPassword from "./pages/ForgotPassword";
 import Approval from "./pages/Approval";
+import ApprovalLogin from "./pages/ApprovalLogin";
+import ResetPassword from "./pages/ResetPassword";
 
 function App() {
   const [user, setUser] = useState<User | null>(null);
@@ -34,7 +36,7 @@ function App() {
   if (!authChecked) {
     // 👇 This ensures no routes are rendered until auth is ready
     return (
-      <div className="font-bangers flex h-screen items-center justify-center">
+      <div className="font-bangers text-darkblack flex h-screen items-center justify-center px-3 text-center text-4xl sm:text-5xl md:text-6xl">
         Obrovské zdravíčko!
       </div>
     );
@@ -54,6 +56,8 @@ function App() {
           element={user ? <Navigate to="/" /> : <ForgotPassword />}
         />
         <Route path="/approval" element={<Approval />} />
+        <Route path="/approval-login" element={<ApprovalLogin />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
 
         {/* Protected routes */}
         <Route

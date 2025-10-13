@@ -37,26 +37,32 @@ export default function Register() {
 
     const usersRef = collection(db, "users");
     const nameQuery = query(usersRef, where("user_name", "==", user_name));
-    const [nameSnapshot] = await Promise.all([getDocs(nameQuery)]);
+    const nameSnapshot = await getDocs(nameQuery);
 
     if (!nameSnapshot.empty) {
       setError("Toto meno je už obsadené.");
       return;
     }
     try {
-      const cred = await createUserWithEmailAndPassword(auth, email, password);
-      await createUser(cred.user.uid, email, user_name);
+      const normalizedEmail = email.trim().toLowerCase();
 
-      // Navigate to approval page with state
-      navigate("/approval", { state: { email } });
+      const cred = await createUserWithEmailAndPassword(
+        auth,
+        normalizedEmail,
+        password,
+      );
 
-      // Then sign out so they never stay logged in
       await auth.signOut();
+      await createUser(cred.user.uid, normalizedEmail, user_name);
+      navigate("/approval", { state: { normalizedEmail } });
     } catch (err: any) {
       const code = err.code;
       let message = "Neznáma chyba. Skús to znova.";
 
       switch (code) {
+        case "auth/missing-email":
+          message = "Email je prázdny. Zadaj platný email.";
+          break;
         case "auth/invalid-email":
           message = "Neplatná e-mailová adresa.";
           break;
@@ -69,12 +75,6 @@ export default function Register() {
           message =
             "Heslo musí mať aspoň 6 znakov, jedno veľké a jedno malé písmeno.";
           break;
-        case "auth/user-not-found":
-          message = "Používateľ s týmto e-mailom neexistuje.";
-          break;
-        case "auth/wrong-password":
-          message = "Zlé heslo, tuleň!";
-          break;
         case "auth/too-many-requests":
           message = "Príliš veľa pokusov. Skús to neskôr.";
           break;
@@ -85,11 +85,11 @@ export default function Register() {
   };
 
   return (
-    <Page className="items-center justify-center px-4">
+    <Page className="items-center justify-center">
       <Card>
         <form onSubmit={handleRegister} className="flex flex-col gap-3">
-          <h1 className="font-bangers text-darkblue text-center text-4xl">
-            Tulení výtvor
+          <h1 className="font-bangers text-dark2blue text-center text-4xl">
+            Registrácia
           </h1>
 
           <Input
@@ -115,15 +115,16 @@ export default function Register() {
           {error && <Alert type="error">{error}</Alert>}
 
           <Button type="submit" variant="primary" size="md" fullWidth>
-            Vytvor Tuleňa
+            Vytvoriť Tuleňa
           </Button>
 
-          <p className="font-roboto text-darkblack mt-4 text-center text-sm">
-            Si bezmozeg a už máš účet?{" "}
+          <p className="font-roboto text-darkblack text-center text-sm">
+            Si bezmozeg a už máš tuleňa?{" "}
             <Link
               to="/login"
               className="font-roboto text-mediumblue hover:underline"
             >
+              <br />
               Tu sa prihlás!
             </Link>
           </p>

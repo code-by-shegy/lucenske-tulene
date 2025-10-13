@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 
 import { auth, db } from "../firebase";
-import { doc, getDoc } from "firebase/firestore";
+import { collection, query, where, getDocs } from "firebase/firestore";
 import { signInWithEmailAndPassword } from "firebase/auth";
 
 import Page from "../components/Page";
@@ -14,30 +14,43 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (loading) return; // prevent double-click spam
+    setError("");
+    setLoading(true); // start loading
     try {
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password,
-      );
+      const normalizedEmail = email.trim().toLowerCase();
 
-      // 🔹 New: Check if user is approved
-      const user = userCredential.user;
-      const userDocRef = doc(db, "users", user.uid);
-      const userDoc = await getDoc(userDocRef);
-
-      if (!userDoc.exists() || !userDoc.data()?.approved) {
-        setError("Tvoj účet ešte nebol schválený administrátorom.");
-        await auth.signOut();
-        return;
+      if (!/^\S+@\S+\.\S+$/.test(normalizedEmail)) {
+        return setError("Zadaj platnú emailovú adresu.");
       }
 
-      navigate("/"); // proceed only if verified
+      // 1. Check user in Firestore users collection.
+      const usersRef = collection(db, "users");
+      const q = query(usersRef, where("email", "==", normalizedEmail));
+      const querySnapshot = await getDocs(q);
+
+      if (querySnapshot.empty) {
+        return setError("Tuleň s týmto e-mailom neexistuje.");
+      }
+
+      const userDoc = querySnapshot.docs[0];
+      const approved = userDoc.data().approved;
+
+      if (!approved) {
+        return navigate("/approval-login", {
+          state: { email: normalizedEmail },
+        }); // stop here, no Firebase Auth login
+      }
+
+      // 2. User is approved → log in with Firebase Auth.
+      await signInWithEmailAndPassword(auth, normalizedEmail, password);
+      navigate("/"); // proceed normally
     } catch (err: any) {
       const code = err.code;
       let message = err.message;
@@ -62,14 +75,16 @@ export default function Login() {
       }
 
       setError(message);
+    } finally {
+      setLoading(false); // always reset loading
     }
   };
   return (
-    <Page className="items-center justify-center px-3">
+    <Page className="items-center justify-center">
       <Card>
         <form onSubmit={handleLogin} className="flex flex-col gap-3">
-          <h1 className="font-bangers text-darkblue text-center text-4xl">
-            Tulení Nábor
+          <h1 className="font-bangers text-dark2blue text-center text-4xl">
+            Lučenské Tulene
           </h1>
 
           <Input
@@ -92,27 +107,34 @@ export default function Login() {
             </p>
           )}
 
-          <Button type="submit" variant="primary" size="md" fullWidth>
-            Login
+          <Button
+            type="submit"
+            variant="primary"
+            size="md"
+            fullWidth
+            disabled={loading}
+          >
+            {loading ? "Prihlasujem..." : "Prihlásiť sa"}
           </Button>
 
           <p className="font-roboto text-darkblack text-center text-sm">
-            Ešte nemáš účet ty primitív?{" "}
+            Ešte nemáš tuleňa ty primitív?{" "}
             <Link
               to="/register"
               className="font-roboto text-mediumblue hover:underline"
             >
-              Tu sa registruj!
+              <br />
+              Tu ho vytvor!
             </Link>
           </p>
 
           <p className="font-roboto text-darkblack text-center text-sm">
-            Zabudol si heslo?{" "}
+            Si po lobotómií a zabudol si heslo?{" "}
             <Link
               to="/forgot-password"
               className="font-roboto text-mediumblue hover:underline"
             >
-              Resetuj ho
+              <br /> Tu ho resetuj!
             </Link>
           </p>
         </form>
