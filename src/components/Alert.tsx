@@ -41,7 +41,7 @@ const Alert: FC<AlertProps> = ({ type, title, children, className }) => {
       className={`w-full rounded-xl border p-3 shadow-lg ${color.bg} ${color.border} ${className || ""}`}
     >
       {title && (
-        <h2 className={`font-bangers mb-3 text-center text-2xl ${color.title}`}>
+        <h2 className={`font-bangers mb-3 text-2xl ${color.title}`}>
           {color.icon} {title}
         </h2>
       )}
