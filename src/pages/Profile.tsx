@@ -131,7 +131,7 @@ export default function Profile() {
         }
       />
       {/* Stats summary */}
-      <Card className="rounded-none p-0 text-center">
+      <Card className="mb-3 rounded-none p-0 text-center">
         <p className="font-bangers text-darkblack text-lg">
           <span className="mr-4">
             Poradie:{" "}

@@ -12,7 +12,9 @@ import { auth } from "./firebase";
 import Bottom from "./components/Bottom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import StartSession from "./pages/StartSession";
+import Session from "./pages/Session";
+//import ColdShower from "./pages/ColdShower";
+//import ColdPlunge from "./pages/ColdPlunge";
 import Leaderboard from "./pages/Leaderboard";
 import Profile from "./pages/Profile";
 import ForgotPassword from "./pages/ForgotPassword";
@@ -62,7 +64,7 @@ function App() {
         {/* Protected routes */}
         <Route
           path="/"
-          element={user ? <StartSession /> : <Navigate to="/login" />}
+          element={user ? <Session /> : <Navigate to="/login" />}
         />
         <Route
           path="/leaderboard"

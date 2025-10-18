@@ -43,6 +43,7 @@ export async function createEvent(
     time_in_water,
     points,
     photo_url,
+    //@todo: rozsirit na typ-> sprcha/otuzovanie atd
   });
 
   // Update user stats
