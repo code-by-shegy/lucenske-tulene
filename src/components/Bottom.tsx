@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import iconStopwatch from "../assets/icons/timer.svg";
+import iconStopwatch from "../assets/icons/stopwatch.svg";
 import iconLeaderboard from "../assets/icons/leaderboard.svg";
 import iconSeal from "../assets/icons/seal.svg";
 
