@@ -26,19 +26,14 @@ export default function Profile() {
 
   const [user_name, setName] = useState<UserName>("");
   const [points, setPoints] = useState<Points>(0);
+  const [showers_count, setShowersCount] = useState<EventsCount>(0);
   const [events_count, setEventsCount] = useState<EventsCount>(0);
   const [standing, setStanding] = useState<Standing>(null);
   const [events, setEvents] = useState<EventEntry[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [bestEvent, setBestEvent] = useState<EventEntry | null>(null);
 
-  const rowsPerPage = 5;
-  const totalPages = Math.ceil(events.length / rowsPerPage);
-
-  const paginatedEvents = events.slice(
-    (currentPage - 1) * rowsPerPage,
-    currentPage * rowsPerPage,
-  );
+  const rowsPerPage = 10;
 
   useEffect(() => {
     async function fetchProfile() {
@@ -51,6 +46,7 @@ export default function Profile() {
         setName(user_profile.user_name || user.email || "Unknown");
         setPoints(user_profile.points || 0);
         setEventsCount(user_profile.events_count || 0);
+        setShowersCount(user_profile.showers_count || 0);
       }
 
       // 2) Load leaderboard and find user’s rank
@@ -100,11 +96,42 @@ export default function Profile() {
   };
 
   // Convert events into rows for Table component
-  const user_events_rows = paginatedEvents.map((ev) => [
-    <span className="font-bold">{formatDateTime(ev.date)},</span>, // datetime bold
+  // Only cold plunges
+  const coldPlungeAll = events.filter((ev) => ev.event_type === "cold_plunge");
+
+  // Pagination based on cold plunges
+  const coldPlungeTotalPages = Math.ceil(coldPlungeAll.length / rowsPerPage);
+
+  const paginatedColdPlungeEvents = coldPlungeAll.slice(
+    (currentPage - 1) * rowsPerPage,
+    currentPage * rowsPerPage,
+  );
+
+  const user_events_rows = paginatedColdPlungeEvents.map((ev) => [
+    <span className="font-bold">{formatDateTime(ev.date)}</span>,
     ev.water_temp,
-    formatTime(ev.time_in_water), // display as MM:SS
-    <span className="font-bold">{ev.points.toFixed(0)}</span>, // points bold
+    formatTime(ev.time_in_water),
+    <span className="font-bold">{ev.points.toFixed(0)}</span>,
+  ]);
+
+  {
+    /* Only cold showers */
+  }
+  const coldShowerAll = events.filter((ev) => ev.event_type === "cold_shower");
+
+  // Pagination for showers
+  const coldShowerTotalPages = Math.ceil(coldShowerAll.length / rowsPerPage);
+
+  const paginatedColdShowerEvents = coldShowerAll.slice(
+    (currentPage - 1) * rowsPerPage,
+    currentPage * rowsPerPage,
+  );
+
+  const user_showers_rows = paginatedColdShowerEvents.map((ev) => [
+    <span className="font-bold">{formatDateTime(ev.date)}</span>,
+    ev.water_temp,
+    formatTime(ev.time_in_water),
+    <span className="font-bold">{ev.points.toFixed(0)}</span>,
   ]);
 
   // Prepare best event row (or null if no event)
@@ -131,44 +158,52 @@ export default function Profile() {
         }
       />
       {/* Stats summary */}
-      <Card className="mb-3 rounded-none p-0 text-center">
+      <Card className="mt-4 mb-4 text-center">
         <p className="font-bangers text-darkblack text-lg">
-          <span className="mr-4">
+          <span className="mr-2">
             Poradie:{" "}
             <span className="text-mediumblue font-bangers">
               #{standing ?? "-"}
             </span>
           </span>
-          <span className="mr-4">
+          <span className="mr-2">
             Body: <span className="text-mediumblue font-bangers">{points}</span>
           </span>
-          <span>
+          <span className="mr-2">
             Otužil:{" "}
             <span className="text-mediumblue font-bangers">
               {events_count + " x"}
+            </span>
+          </span>
+          <span>
+            Sprchy:{" "}
+            <span className="text-mediumblue font-bangers">
+              {showers_count + " x"}
             </span>
           </span>
         </p>
       </Card>
       {bestEvent && (
         <>
-          <h2 className="font-bangers text-darkblack pl-3 text-lg">
+          <h2 className="font-bangers text-darkblack text-lg">
             Najlepší výkon
           </h2>
           <Table
             headers={["Dátum", "Voda (°C)", "Čas", "Body"]}
             rows={user_top_event_row}
+            className="mb-4"
           />
         </>
       )}
       {/* Sessions list */}
-      <h2 className="font-bangers text-darkblack pl-3 text-lg">Otuženia</h2>
+      <h2 className="font-bangers text-darkblack text-lg">Otuženia</h2>
       <Table
         headers={["Dátum", "Voda (°C)", "Čas", "Body"]}
         rows={user_events_rows}
+        className="mb-4"
       />
 
-      {totalPages > 1 && (
+      {coldPlungeTotalPages > 1 && (
         <div className="flex justify-center gap-3 p-3">
           <Button
             size="sm"
@@ -179,13 +214,50 @@ export default function Profile() {
             Späť
           </Button>
           <span className="font-bangers text-darkblack flex items-center">
-            {currentPage} / {totalPages}
+            {currentPage} / {coldPlungeTotalPages}
           </span>
           <Button
             size="sm"
             variant="primary"
-            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-            disabled={currentPage === totalPages}
+            onClick={() =>
+              setCurrentPage((p) => Math.min(coldPlungeTotalPages, p + 1))
+            }
+            disabled={currentPage === coldPlungeTotalPages}
+          >
+            Ďalšie
+          </Button>
+        </div>
+      )}
+
+      {/* Sprchy table */}
+      <h2 className="font-bangers text-darkblack text-lg">Sprchy</h2>
+
+      <Table
+        headers={["Dátum", "Voda (°C)", "Čas", "Body"]}
+        rows={user_showers_rows}
+        className="mb-4"
+      />
+
+      {coldShowerTotalPages > 1 && (
+        <div className="flex justify-center gap-3 p-3">
+          <Button
+            size="sm"
+            variant="primary"
+            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+            disabled={currentPage === 1}
+          >
+            Späť
+          </Button>
+          <span className="font-bangers text-darkblack flex items-center">
+            {currentPage} / {coldShowerTotalPages}
+          </span>
+          <Button
+            size="sm"
+            variant="primary"
+            onClick={() =>
+              setCurrentPage((p) => Math.min(coldShowerTotalPages, p + 1))
+            }
+            disabled={currentPage === coldShowerTotalPages}
           >
             Ďalšie
           </Button>

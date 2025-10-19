@@ -22,6 +22,9 @@ import type {
   TimeInSeconds,
   EventEntry,
   Weather,
+  EventType,
+  Title,
+  Location,
 } from "../types";
 
 export async function createEvent(
@@ -33,6 +36,9 @@ export async function createEvent(
   time_in_water: TimeInSeconds,
   points: Points,
   photo_url: Url,
+  event_type: EventType,
+  location: Location,
+  title: Title,
 ) {
   await addDoc(collection(db, "events"), {
     user_id,
@@ -43,19 +49,32 @@ export async function createEvent(
     time_in_water,
     points,
     photo_url,
-    //@todo: rozsirit na typ-> sprcha/otuzovanie atd
+    event_type,
+    location,
+    title,
   });
 
   // Update user stats
   const userRef = doc(db, "users", user_id);
   const snap = await getDoc(userRef);
-  if (snap.exists()) {
-    const user = snap.data();
-    await updateDoc(userRef, {
-      points: (user.points || 0) + points,
-      events_count: (user.events_count || 0) + 1,
-    });
+
+  if (!snap.exists()) return;
+
+  const user = snap.data();
+
+  // Always increase points
+  const updates: Record<string, any> = {
+    points: (user.points || 0) + points,
+  };
+
+  // Increment event/shower counts based on type
+  if (event_type === "cold_plunge") {
+    updates.events_count = (user.events_count || 0) + 1;
+  } else if (event_type === "cold_shower") {
+    updates.showers_count = (user.showers_count || 0) + 1;
   }
+
+  await updateDoc(userRef, updates);
 }
 
 export async function getEventsByUser(user_id: UserId): Promise<EventEntry[]> {
@@ -78,6 +97,9 @@ export async function getEventsByUser(user_id: UserId): Promise<EventEntry[]> {
       time_in_water: data.time_in_water ?? null,
       points: data.points ?? 0,
       photo_url: data.photo_url ?? null,
+      event_type: data.event_type ?? null,
+      location: data.location ?? null,
+      title: data.title ?? null,
     };
   });
 }
@@ -109,5 +131,8 @@ export async function getUserTopEvent(
     time_in_water: data.time_in_water ?? null,
     points: data.points ?? 0,
     photo_url: data.photo_url ?? null,
+    event_type: data.event_type ?? null,
+    location: data.location ?? null,
+    title: data.title ?? null,
   };
 }

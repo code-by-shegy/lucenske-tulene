@@ -5,16 +5,22 @@ interface SwitchProps {
     plunge: string;
     shower: string;
   };
+  className?: string;
 }
 
-export default function Switch({ mode, onChange, icons }: SwitchProps) {
+export default function Switch({
+  mode,
+  onChange,
+  icons,
+  className = "",
+}: SwitchProps) {
   const options = [
     { id: "plunge", icon: icons.plunge, alt: "Cold Plunge" },
     { id: "shower", icon: icons.shower, alt: "Cold Shower" },
   ] as const;
 
   return (
-    <div className="flex justify-center p-3">
+    <div className={`flex justify-center ${className}`}>
       <div className="bg-dark2blue relative mx-auto flex aspect-[4/1] w-[80%] max-w-xs items-center rounded-full p-[1.5%] shadow-lg transition-all">
         {/* Sliding background */}
         <div

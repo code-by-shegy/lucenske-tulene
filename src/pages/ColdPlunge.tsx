@@ -10,7 +10,7 @@ import Button from "../components/Button";
 import Input from "../components/Input";
 import Select from "../components/Select";
 
-import type { Weather, TimeInSeconds, Points } from "../types";
+import type { Weather, TimeInSeconds, Points, EventType } from "../types";
 
 export default function StartSession() {
   const navigate = useNavigate();
@@ -50,6 +50,7 @@ export default function StartSession() {
 
   const readonlyInputs = inPrep || startTimestamp !== null || stage !== "start";
   const animationFrameRef = useRef<number | null>(null);
+  const event_type: EventType = "cold_plunge";
 
   useEffect(() => {
     const audio = new Audio("/gong.mp3");
@@ -185,7 +186,10 @@ export default function StartSession() {
           weather ?? 0,
           time_in_water ?? 0,
           points ?? 0,
-          null,
+          null, //photo url
+          event_type,
+          null, //location
+          null, //title
         );
 
         setCurrentTime(0);
@@ -208,7 +212,7 @@ export default function StartSession() {
   return (
     <>
       {/* Timer */}
-      <div className="flex justify-center pt-4">
+      <div className="mt-4 flex justify-center">
         <div className="font-bangers text-darkblack text-8xl leading-none tracking-tight tabular-nums">
           {inPrep
             ? `${String(prepRemaining).padStart(2, "0")}`
@@ -217,7 +221,7 @@ export default function StartSession() {
       </div>
 
       {/* Main + Reset buttons */}
-      <div className="flex gap-3 px-3">
+      <div className="flex gap-4">
         <Button
           className="flex-[9]"
           size="lg"
@@ -258,7 +262,7 @@ export default function StartSession() {
         </Button>
       </div>
       {/* Inputs */}
-      <Card className="grid grid-cols-1 gap-1">
+      <Card className="mb-4 grid grid-cols-1 gap-2">
         <Input
           label="Teplota vody (°C)"
           type="decimal"
@@ -300,7 +304,7 @@ export default function StartSession() {
           ]}
         />
 
-        <Input label="Body" value={points.toFixed(1)} disabled />
+        <Input label="Body" value={points.toFixed(0)} disabled />
       </Card>
     </>
   );

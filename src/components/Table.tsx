@@ -1,14 +1,14 @@
 import type { ReactNode } from "react";
 
 interface TableProps {
-  headers: string[];
+  headers: ReactNode[];
   rows: ReactNode[][];
   className?: string;
 }
 
 export default function Table({ headers, rows, className = "" }: TableProps) {
   return (
-    <div className={`overflow-x-auto p-3`}>
+    <div className={`overflow-x-auto`}>
       <table
         className={`w-full border-separate border-spacing-0 text-left ${className}`}
       >

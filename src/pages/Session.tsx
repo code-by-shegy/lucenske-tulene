@@ -4,8 +4,8 @@ import Header from "../components/Header";
 import ColdPlunge from "./ColdPlunge";
 import ColdShower from "./ColdShower";
 import Switch from "../components/Switch";
-import plungeIcon from "../assets/icons/cold_exposure.png";
-import showerIcon from "../assets/icons/cold_shower.png";
+import plungeIcon from "../assets/icons/cold_exposure.svg";
+import showerIcon from "../assets/icons/cold_shower.svg";
 
 export default function SessionPage() {
   const [mode, setMode] = useState<"plunge" | "shower">("plunge");
@@ -23,12 +23,13 @@ export default function SessionPage() {
       />
 
       <Switch
+        className="mt-4"
         mode={mode}
         onChange={setMode}
         icons={{ plunge: plungeIcon, shower: showerIcon }}
       />
 
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-4">
         {mode === "plunge" ? (
           <ColdPlunge />
         ) : mode === "shower" ? (

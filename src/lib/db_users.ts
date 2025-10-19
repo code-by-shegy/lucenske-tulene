@@ -18,6 +18,7 @@ export async function createUser(
       avatar_url: null,
       points: 0,
       events_count: 0,
+      showers_count: 0,
       approved: false,
     },
     { merge: true },

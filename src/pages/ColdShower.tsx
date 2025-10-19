@@ -8,7 +8,7 @@ import Card from "../components/Card";
 import Button from "../components/Button";
 import Select from "../components/Select";
 
-import type { Points } from "../types";
+import type { Points, EventType } from "../types";
 
 export default function ColdShower() {
   const navigate = useNavigate();
@@ -26,17 +26,17 @@ export default function ColdShower() {
 
   // Map durations to points
   const pointsMap: Record<number, Points> = {
-    30: 0.5,
     60: 1,
     120: 2,
   };
 
   const options = [
-    { value: 0, label: "Vyber dĺžku sprchy" },
-    { value: 30, label: "30 sekúnd" },
+    { value: 0, label: "Vyber trvanie sprchy" },
     { value: 60, label: "1 minúta" },
     { value: 120, label: "2 minúty" },
   ];
+
+  const event_type: EventType = "cold_shower";
 
   // Preload gong
   useEffect(() => {
@@ -112,12 +112,15 @@ export default function ColdShower() {
       await createEvent(
         user.uid,
         date,
-        0, // water temp (not relevant)
-        0, // air temp
+        15, // water temp (not relevant)
+        23, // air temp
         0, // weather
         time_in_water,
         points,
-        "cold_shower", //@todo: wrong, use a type
+        null, //photo url
+        event_type,
+        null, //location
+        null, //title
       );
       navigate("/leaderboard");
     } catch (err: any) {
@@ -131,7 +134,7 @@ export default function ColdShower() {
   return (
     <>
       {/* Timer display */}
-      <div className="flex justify-center pt-4">
+      <div className="mt-4 flex justify-center">
         <div className="font-bangers text-darkblack text-8xl leading-none tracking-tight tabular-nums">
           {String(Math.floor(remaining / 60)).padStart(2, "0")}:
           {String(remaining % 60).padStart(2, "0")}
@@ -139,7 +142,7 @@ export default function ColdShower() {
       </div>
 
       {/* Main controls */}
-      <div className="flex gap-3 px-3">
+      <div className="flex gap-4">
         {!finished ? (
           <Button
             className="flex-[9]"
@@ -173,9 +176,9 @@ export default function ColdShower() {
         </Button>
       </div>
       {/* Options */}
-      <Card className="grid grid-cols-1 gap-1">
+      <Card className="mb-4 grid grid-cols-1 gap-2">
         <Select
-          label="Dĺžka studenej sprchy"
+          label="Časovač"
           value={duration}
           onChange={(e) => setDuration(Number(e.target.value))}
           disabled={running || finished}
@@ -186,9 +189,7 @@ export default function ColdShower() {
           {duration > 0 && (
             <>
               Body:{" "}
-              <span className="text-mediumblue">
-                {pointsMap[duration].toFixed(1)}
-              </span>
+              <span className="text-mediumblue">{pointsMap[duration]}</span>
             </>
           )}
         </div>

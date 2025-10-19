@@ -10,6 +10,7 @@ export async function getLeaderboard(): Promise<LeaderboardEntry[]> {
     return {
       user_id: doc.id,
       user_name: data.user_name,
+      showers_count: data.showers_count,
       events_count: data.events_count,
       points: data.points,
     };

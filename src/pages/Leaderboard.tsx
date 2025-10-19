@@ -35,16 +35,21 @@ export default function Leaderboard() {
   // Convert leaderboard data to rows compatible with Table component
   const rows = entries.map((entry, index) => [
     <span className="font-bold">{index + 1}</span>, // rank bold
-    entry.user_name,
-    entry.events_count + " x",
-    <span className="font-bold">{entry.points.toFixed(0)}</span>, // points bold
+    entry.user_name ?? "–", // default to dash if missing
+    (entry.events_count ?? 0) + " x", // default 0
+    (entry.showers_count ?? 0) + " x", // default 0
+    <span className="font-bold">{(entry.points ?? 0).toFixed(0)}</span>, // default 0
   ]);
 
   return (
     <Page className="pb-[10vh]">
       {/*So the bottom navbar does not cover content*/}
       <Header title="Tabuľka" />
-      <Table headers={["#", "Tuleň", "Otužil", "Body"]} rows={rows} />
+      <Table
+        className="mt-4"
+        headers={["#", "Tuleň", "Otužil", "Sprchy", "Body"]}
+        rows={rows}
+      />
     </Page>
   );
 }
