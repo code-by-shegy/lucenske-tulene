@@ -60,8 +60,8 @@ export default function StartSession() {
   const weatherIcons: Record<number, string> = {
     1: iconSunny,
     2: iconCloudy,
-    3: iconSnowing,
-    4: iconRaining,
+    3: iconRaining,
+    4: iconSnowing,
   };
 
   const canStart =
