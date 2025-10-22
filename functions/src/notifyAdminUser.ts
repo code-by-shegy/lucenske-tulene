@@ -92,7 +92,7 @@ export const approveUser = onRequest(async (req, res) => {
 
   try {
     const userRef = admin.firestore().collection("users").doc(userId);
-    userRef.update({ approved: true });
+    await userRef.update({ approved: true });
     res.send(`✅ Tuleň ${email} bol úspešne schválený!`);
   } catch (err) {
     logger.error("❌ Chyba pri schvaľovaní tuleňa:", err);

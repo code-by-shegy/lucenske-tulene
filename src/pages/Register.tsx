@@ -11,6 +11,7 @@ import Button from "../components/Button";
 import Page from "../components/Page";
 import Card from "../components/Card";
 import Alert from "../components/Alert";
+import iconLogo from "../assets/icons/logo.png";
 
 import type { Email, UserName } from "../types";
 
@@ -88,6 +89,10 @@ export default function Register() {
     <Page className="items-center justify-center">
       <Card>
         <form onSubmit={handleRegister} className="flex flex-col gap-3">
+          <div className="flex justify-center">
+            <img src={iconLogo} alt="Logo" className="h-[10em] w-[10em]" />
+          </div>
+
           <h1 className="font-bangers text-dark2blue text-center text-4xl">
             Registrácia
           </h1>
@@ -98,18 +103,21 @@ export default function Register() {
             value={user_name}
             onChange={(e) => setName(e.target.value)}
             maxLength={15}
+            inputClassName="border-3 p-2"
           />
           <Input
             label="Email"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            inputClassName="border-3 p-2"
           />
           <Input
             label="Heslo"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            inputClassName="border-3 p-2"
           />
 
           {error && <Alert type="error">{error}</Alert>}

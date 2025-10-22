@@ -9,6 +9,7 @@ import Page from "../components/Page";
 import Card from "../components/Card";
 import Input from "../components/Input";
 import Button from "../components/Button";
+import iconLogo from "../assets/icons/logo.png";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
@@ -67,6 +68,10 @@ export default function ForgotPassword() {
     <Page className="items-center justify-center">
       <Card>
         <form onSubmit={handleReset} className="flex flex-col gap-3">
+          <div className="flex justify-center">
+            <img src={iconLogo} alt="Logo" className="h-[10em] w-[10em]" />
+          </div>
+
           <h1 className="font-bangers text-dark2blue text-center text-4xl">
             Reset Hesla
           </h1>
@@ -76,6 +81,7 @@ export default function ForgotPassword() {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            inputClassName="border-3 p-2"
           />
 
           {error && <p className="text-sm text-red-500">{error}</p>}

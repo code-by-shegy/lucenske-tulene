@@ -10,6 +10,14 @@ import Button from "../components/Button";
 import Input from "../components/Input";
 import Select from "../components/Select";
 
+import iconWaterTemp from "../assets/icons/water_temp.svg";
+import iconAirTemp from "../assets/icons/air_temp.svg";
+import iconSunny from "../assets/icons/sunny.svg";
+import iconCloudy from "../assets/icons/cloudy.svg";
+import iconSnowing from "../assets/icons/snowing.svg";
+import iconRaining from "../assets/icons/raining.svg";
+import iconTimer from "../assets/icons/timer.svg";
+
 import type { Weather, TimeInSeconds, Points, EventType } from "../types";
 
 export default function StartSession() {
@@ -45,8 +53,24 @@ export default function StartSession() {
     { value: 0, label: "Vyber počasie" },
     { value: 1, label: "Slnečno" },
     { value: 2, label: "Oblačno" },
-    { value: 3, label: "Sneží/Prší" },
+    { value: 3, label: "Prší" },
+    { value: 4, label: "Sneží" },
   ];
+
+  const weatherIcons: Record<number, string> = {
+    1: iconSunny,
+    2: iconCloudy,
+    3: iconSnowing,
+    4: iconRaining,
+  };
+
+  const canStart =
+    water_temp !== "" &&
+    air_temp !== "" &&
+    !isNaN(water_temp_num) &&
+    !isNaN(air_temp_num) &&
+    weather !== 0 &&
+    prepTime !== 0;
 
   const readonlyInputs = inPrep || startTimestamp !== null || stage !== "start";
   const animationFrameRef = useRef<number | null>(null);
@@ -227,7 +251,7 @@ export default function StartSession() {
           size="lg"
           variant={stage === "stop" ? "danger" : "primary"}
           onClick={handleMainButton}
-          disabled={loading || inPrep}
+          disabled={loading || inPrep || !canStart}
         >
           {inPrep
             ? `Odpočítavanie`
@@ -262,38 +286,40 @@ export default function StartSession() {
         </Button>
       </div>
       {/* Inputs */}
-      <Card className="mb-4 grid grid-cols-1 gap-2">
+      <Card className="mb-4 grid grid-cols-1 gap-3">
         <Input
-          label="Teplota vody (°C)"
-          type="decimal"
+          type="number"
           step="0.1"
           value={water_temp}
           onChange={(e) => setWaterTemp(e.target.value)}
           disabled={readonlyInputs}
-          placeholder=""
+          placeholder="Teplota vody (°C)"
+          icon={iconWaterTemp}
+          inputClassName="pl-20 py-3 rounded-2xl text-lg bg-icywhite cursor-pointer"
         />
 
         <Input
-          label="Teplota vzduchu (°C)"
-          type="decimal"
+          type="number"
           step="0.1"
           value={air_temp}
           onChange={(e) => setAirTemp(e.target.value)}
           disabled={readonlyInputs}
-          placeholder=""
+          placeholder="Teplota vzduchu (°C)"
+          icon={iconAirTemp}
+          iconClassName="h-[100%]"
+          inputClassName="pl-20 py-3 rounded-2xl text-lg bg-icywhite cursor-pointer"
         />
 
         <Select
-          className="mt-auto"
-          label="Počasie"
           value={weather}
           onChange={(e) => setWeather(Number(e.target.value))}
           disabled={readonlyInputs}
           options={weatherOptions}
+          icon={weatherIcons[weather] || iconSunny}
+          selectClassName="pl-20 py-3 rounded-2xl text-lg bg-icywhite cursor-pointer"
         />
 
         <Select
-          label="Prípravný čas"
           value={prepTime}
           onChange={(e) => setPrepTime(Number(e.target.value))}
           disabled={readonlyInputs}
@@ -302,9 +328,9 @@ export default function StartSession() {
             { value: 20, label: "20 sekúnd" },
             { value: 30, label: "30 sekúnd" },
           ]}
+          icon={iconTimer}
+          selectClassName="pl-20 py-3 rounded-2xl text-lg bg-icywhite cursor-pointer"
         />
-
-        <Input label="Body" value={points.toFixed(0)} disabled />
       </Card>
     </>
   );

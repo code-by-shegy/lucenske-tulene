@@ -10,6 +10,8 @@ import Input from "../components/Input";
 import Button from "../components/Button";
 import Card from "../components/Card";
 
+import iconLogo from "../assets/icons/logo.png";
+
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -83,8 +85,12 @@ export default function Login() {
     <Page className="items-center justify-center">
       <Card>
         <form onSubmit={handleLogin} className="flex flex-col gap-3">
+          <div className="flex justify-center">
+            <img src={iconLogo} alt="Logo" className="h-[10em] w-[10em]" />
+          </div>
+
           <h1 className="font-bangers text-dark2blue text-center text-4xl">
-            Lučenské Tulene
+            Prihlásenie
           </h1>
 
           <Input
@@ -92,6 +98,7 @@ export default function Login() {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            inputClassName="border-3 p-2"
           />
 
           <Input
@@ -99,6 +106,7 @@ export default function Login() {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            inputClassName="border-3 p-2"
           />
 
           {error && (

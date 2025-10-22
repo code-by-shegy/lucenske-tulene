@@ -8,6 +8,8 @@ import Card from "../components/Card";
 import Button from "../components/Button";
 import Select from "../components/Select";
 
+import iconTimer from "../assets/icons/timer.svg";
+
 import type { Points, EventType } from "../types";
 
 export default function ColdShower() {
@@ -176,16 +178,17 @@ export default function ColdShower() {
         </Button>
       </div>
       {/* Options */}
-      <Card className="mb-4 grid grid-cols-1 gap-2">
+      <Card className="mb-4 grid grid-cols-1 gap-3">
         <Select
-          label="Časovač"
           value={duration}
           onChange={(e) => setDuration(Number(e.target.value))}
           disabled={running || finished}
           options={options}
+          icon={iconTimer}
+          selectClassName="pl-20 py-3 rounded-2xl text-lg bg-icywhite cursor-pointer"
         />
 
-        <div className="text-darkblack font-bangers p-2 text-center text-lg">
+        <div className="text-darkblack font-bangers p-1 text-center text-2xl">
           {duration > 0 && (
             <>
               Body:{" "}

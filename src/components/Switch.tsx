@@ -21,7 +21,7 @@ export default function Switch({
 
   return (
     <div className={`flex justify-center ${className}`}>
-      <div className="bg-dark2blue relative mx-auto flex aspect-[4/1] w-[80%] max-w-xs items-center rounded-full p-[1.5%] shadow-lg transition-all">
+      <div className="bg-dark2blue relative mx-auto flex aspect-[4/0.8] w-[70%] max-w-xs items-center rounded-full p-[1.5%] shadow-lg transition-all">
         {/* Sliding background */}
         <div
           className={`bg-mediumblue absolute top-[8%] bottom-[8%] w-[48%] rounded-full transition-all duration-300 ${
