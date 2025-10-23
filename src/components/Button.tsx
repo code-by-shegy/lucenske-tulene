@@ -26,8 +26,12 @@ export default function Button({
   className = "",
   iconOnly = false,
 }: ButtonProps) {
-  const baseStyles = `font-bangers ${className} text-shadow-lg/50
-                      rounded-xl transition-colors border-2`;
+  const baseStyles = `font-bangers ${className}
+                    rounded-2xl border-2 shadow-lg transition-all duration-150
+                    hover:shadow-xl active:shadow-md
+                    transform hover:scale-105 active:scale-95
+                    text-shadow-lg/50`;
+
   // focus:outline-none focus:ring-2 focus:ring-offset-2
 
   const variants: Record<ButtonVariant, string> = {

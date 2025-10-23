@@ -300,6 +300,8 @@ export default function StartSession() {
       <Card className="mb-4 grid grid-cols-1 gap-3">
         <Input
           type="number"
+          inputMode="decimal"
+          pattern="-?[0-9]*[.,]?[0-9]*"
           step="0.1"
           value={water_temp}
           onChange={(e) => {
@@ -325,13 +327,15 @@ export default function StartSession() {
         />
 
         {waterTempError && (
-          <p className="font-roboto ml-2 font-bold text-red-500">
+          <p className="font-roboto ml-2 text-sm font-bold text-red-500">
             {waterTempError}
           </p>
         )}
 
         <Input
           type="number"
+          inputMode="decimal"
+          pattern="-?[0-9]*[.,]?[0-9]*"
           step="0.1"
           value={air_temp}
           onChange={(e) => {
@@ -358,7 +362,7 @@ export default function StartSession() {
         />
 
         {airTempError && (
-          <p className="font-roboto ml-2 font-bold text-red-500">
+          <p className="font-roboto ml-2 text-sm font-bold text-red-500">
             {airTempError}
           </p>
         )}
