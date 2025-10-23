@@ -45,6 +45,9 @@ export default function StartSession() {
   const water_temp_num = water_temp === "" ? 100 : parseFloat(water_temp);
   const air_temp_num = air_temp === "" ? 100 : parseFloat(air_temp);
 
+  const [waterTempError, setWaterTempError] = useState<string | null>(null);
+  const [airTempError, setAirTempError] = useState<string | null>(null);
+
   const [points, setPoints] = useState<Points>(0);
   const [stage, setStage] = useState<"start" | "stop" | "save">("start");
   const [loading, setLoading] = useState<boolean>(false);
@@ -54,14 +57,14 @@ export default function StartSession() {
     { value: 1, label: "Slnečno" },
     { value: 2, label: "Oblačno" },
     { value: 3, label: "Prší" },
-    { value: 4, label: "Sneží" },
+    { value: 3.2, label: "Sneží" },
   ];
 
-  const weatherIcons: Record<number, string> = {
+  const weatherIcons: Record<string, string> = {
     1: iconSunny,
     2: iconCloudy,
     3: iconRaining,
-    4: iconSnowing,
+    3.2: iconSnowing,
   };
 
   const canStart =
@@ -70,7 +73,9 @@ export default function StartSession() {
     !isNaN(water_temp_num) &&
     !isNaN(air_temp_num) &&
     weather !== 0 &&
-    prepTime !== 0;
+    prepTime !== 0 &&
+    !waterTempError &&
+    !airTempError;
 
   const readonlyInputs = inPrep || startTimestamp !== null || stage !== "start";
   const animationFrameRef = useRef<number | null>(null);
@@ -273,6 +278,12 @@ export default function StartSession() {
               cancelAnimationFrame(animationFrameRef.current);
               animationFrameRef.current = null;
             }
+            setWaterTempError(null);
+            setAirTempError(null);
+            setWaterTemp("");
+            setAirTemp("");
+            setWeather(0);
+            setPrepTime(30);
             setCurrentTime(0);
             setPoints(0);
             setStage("start");
@@ -291,24 +302,66 @@ export default function StartSession() {
           type="number"
           step="0.1"
           value={water_temp}
-          onChange={(e) => setWaterTemp(e.target.value)}
+          onChange={(e) => {
+            const val = e.target.value;
+            setWaterTemp(val);
+            const num = parseFloat(val);
+            if (val === "") {
+              setWaterTempError(null);
+            } else if (isNaN(num)) {
+              setWaterTempError("Pil si? Teplota vody musí byť číšlo.");
+            } else if (num < -3) {
+              setWaterTempError("Si normálny? Míňať toľko soli?");
+            } else if (num > 20) {
+              setWaterTempError("Táto teplota je pre tuleňa život ohrozujúca!");
+            } else {
+              setWaterTempError(null);
+            }
+          }}
           disabled={readonlyInputs}
           placeholder="Teplota vody (°C)"
           icon={iconWaterTemp}
           inputClassName="pl-20 py-3 rounded-2xl text-lg bg-icywhite cursor-pointer"
         />
 
+        {waterTempError && (
+          <p className="font-roboto ml-2 font-bold text-red-500">
+            {waterTempError}
+          </p>
+        )}
+
         <Input
           type="number"
           step="0.1"
           value={air_temp}
-          onChange={(e) => setAirTemp(e.target.value)}
+          onChange={(e) => {
+            const val = e.target.value;
+            setAirTemp(val);
+            const num = parseFloat(val);
+            if (val === "") {
+              setAirTempError(null);
+            } else if (isNaN(num)) {
+              setAirTempError("Pil si? Teplota vzduchu musí byť číšlo.");
+            } else if (num < -30) {
+              setAirTempError("Otužovanie v Gulagu je zakázané!");
+            } else if (num > 30) {
+              setAirTempError("Táto teplota je pre tuleňa život ohrozujúca!");
+            } else {
+              setAirTempError(null);
+            }
+          }}
           disabled={readonlyInputs}
           placeholder="Teplota vzduchu (°C)"
           icon={iconAirTemp}
           iconClassName="h-[100%]"
           inputClassName="pl-20 py-3 rounded-2xl text-lg bg-icywhite cursor-pointer"
         />
+
+        {airTempError && (
+          <p className="font-roboto ml-2 font-bold text-red-500">
+            {airTempError}
+          </p>
+        )}
 
         <Select
           value={weather}

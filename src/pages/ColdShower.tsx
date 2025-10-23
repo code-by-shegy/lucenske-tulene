@@ -74,6 +74,7 @@ export default function ColdShower() {
     setRunning(false);
     setFinished(false);
     setRemaining(0);
+    setDuration(0);
   };
 
   // Timer logic
