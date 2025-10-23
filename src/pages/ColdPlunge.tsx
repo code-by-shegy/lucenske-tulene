@@ -1,4 +1,4 @@
-// src/pages/StartSession.tsx
+// src/pages/ColdPlunge.tsx
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { createEvent } from "../lib/db_events";
@@ -27,7 +27,7 @@ export default function StartSession() {
   // Preload gong sound
   const [gong, setGong] = useState<HTMLAudioElement | null>(null);
 
-  const [prepTime, setPrepTime] = useState<TimeInSeconds>(30); // 10, 20, or 30
+  const [prepTime, setPrepTime] = useState<TimeInSeconds>(0); // 10, 20, or 30
   const [prepRemaining, setPrepRemaining] = useState<TimeInSeconds>(0);
   const [inPrep, setInPrep] = useState<boolean>(false);
 
@@ -48,12 +48,27 @@ export default function StartSession() {
   const [waterTempError, setWaterTempError] = useState<string | null>(null);
   const [airTempError, setAirTempError] = useState<string | null>(null);
 
+  function sanitizeTemperatureInput(value: string): string {
+    // unify decimal separator
+    let val = value.replace(",", ".");
+
+    // match optional minus, 1 or 2 digits before dot, optional dot and 1 digit after
+    const match = val.match(/^(-?\d{1,2})(\.\d?)?$/);
+
+    // If it fully matches, keep it; otherwise, trim excess
+    if (match) return match[0];
+
+    // fallback: truncate invalid input
+    const truncated = val.replace(/^(-?\d{0,2})(\.\d?)?.*$/, "$1$2");
+    return truncated;
+  }
+
   const [points, setPoints] = useState<Points>(0);
   const [stage, setStage] = useState<"start" | "stop" | "save">("start");
   const [loading, setLoading] = useState<boolean>(false);
 
   const weatherOptions = [
-    { value: 0, label: "Vyber počasie" },
+    { value: 0, label: "Počasie" },
     { value: 1, label: "Slnečno" },
     { value: 2, label: "Oblačno" },
     { value: 3, label: "Prší" },
@@ -66,6 +81,13 @@ export default function StartSession() {
     3: iconRaining,
     3.2: iconSnowing,
   };
+
+  const timerOptions = [
+    { value: 0, label: "Časovač" },
+    { value: 10, label: "10 sekúnd" },
+    { value: 20, label: "20 sekúnd" },
+    { value: 30, label: "30 sekúnd" },
+  ];
 
   const canStart =
     water_temp !== "" &&
@@ -299,13 +321,13 @@ export default function StartSession() {
       {/* Inputs */}
       <Card className="mb-4 grid grid-cols-1 gap-3">
         <Input
-          type="number"
-          inputMode="decimal"
-          pattern="-?[0-9]*[.,]?[0-9]*"
-          step="0.1"
+          type="text"
+          pattern="-?\d{1,2}(\.\d)?"
+          autoCorrect="off"
+          spellCheck={false}
           value={water_temp}
           onChange={(e) => {
-            const val = e.target.value;
+            const val = sanitizeTemperatureInput(e.target.value);
             setWaterTemp(val);
             const num = parseFloat(val);
             if (val === "") {
@@ -333,13 +355,13 @@ export default function StartSession() {
         )}
 
         <Input
-          type="number"
-          inputMode="decimal"
-          pattern="-?[0-9]*[.,]?[0-9]*"
-          step="0.1"
+          type="text"
+          pattern="-?\d{1,2}(\.\d)?"
+          autoCorrect="off"
+          spellCheck={false}
           value={air_temp}
           onChange={(e) => {
-            const val = e.target.value;
+            const val = sanitizeTemperatureInput(e.target.value);
             setAirTemp(val);
             const num = parseFloat(val);
             if (val === "") {
@@ -373,20 +395,20 @@ export default function StartSession() {
           disabled={readonlyInputs}
           options={weatherOptions}
           icon={weatherIcons[weather] || iconSunny}
-          selectClassName="pl-20 py-3 rounded-2xl text-lg bg-icywhite cursor-pointer"
+          selectClassName={`pl-20 py-3 rounded-2xl text-lg bg-icywhite cursor-pointer ${
+            weather === 0 ? "text-darkgrey" : "text-darkblack"
+          }`}
         />
 
         <Select
           value={prepTime}
           onChange={(e) => setPrepTime(Number(e.target.value))}
           disabled={readonlyInputs}
-          options={[
-            { value: 10, label: "10 sekúnd" },
-            { value: 20, label: "20 sekúnd" },
-            { value: 30, label: "30 sekúnd" },
-          ]}
+          options={timerOptions}
           icon={iconTimer}
-          selectClassName="pl-20 py-3 rounded-2xl text-lg bg-icywhite cursor-pointer"
+          selectClassName={`pl-20 py-3 rounded-2xl text-lg bg-icywhite cursor-pointer ${
+            prepTime === 0 ? "text-darkgrey" : "text-darkblack"
+          }`}
         />
       </Card>
     </>
