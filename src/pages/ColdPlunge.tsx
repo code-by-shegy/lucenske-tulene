@@ -1,107 +1,72 @@
 // src/pages/ColdPlunge.tsx
+import type { Weather, TimeInSeconds, EventType } from "../types";
+
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { createEvent } from "../lib/db_events";
+import { RotateCcw } from "lucide-react";
 import { auth } from "../firebase";
-import { RotateCcw } from "lucide-react"; // add this at the top with other imports
+import { createEvent } from "../lib/db_events";
 
 import Card from "../components/Card";
 import Button from "../components/Button";
 import Input from "../components/Input";
 import Select from "../components/Select";
 
-import iconWaterTemp from "../assets/icons/water_temp.svg";
-import iconAirTemp from "../assets/icons/air_temp.svg";
-import iconSunny from "../assets/icons/sunny.svg";
-import iconCloudy from "../assets/icons/cloudy.svg";
-import iconSnowing from "../assets/icons/snowing.svg";
-import iconRaining from "../assets/icons/raining.svg";
-import iconTimer from "../assets/icons/timer.svg";
+import {
+  AIR_TEMP_MAX,
+  AIR_TEMP_MIN,
+  EVENT_TYPE,
+  ICONS,
+  TIMER_OPTIONS,
+  WATER_TEMP_MAX,
+  WATER_TEMP_MIN,
+  WEATHER,
+  WEATHER_ICON_MAP,
+  WEATHER_OPTIONS,
+} from "../constants";
 
-import type { Weather, TimeInSeconds, Points, EventType } from "../types";
+// ==============================
+// Constants
+// ==============================
+
+const event_type: EventType = EVENT_TYPE.COLD_PLUNGE;
+const DEFAULT_WATER_TEMP = 100;
+const DEFAULT_AIR_TEMP = 100;
+
+// ==============================
+// Helper functions
+// ==============================
+
+function calculatePoints(Tw: number, Ta: number, c: number, t: number): number {
+  const base = 20 - Tw + c;
+  const exponent = 1 + t / (20 + Tw + (Ta - Tw) / 10);
+  if (base <= 0) return 0;
+  return Math.pow(base, exponent);
+}
+
+function sanitizeTemperatureInput(value: string): string {
+  let val = value.replace(",", ".");
+  const match = val.match(/^(-?\d{1,2})(\.\d?)?$/);
+  if (match) return match[0];
+  const truncated = val.replace(/^(-?\d{0,2})(\.\d?)?.*$/, "$1$2");
+  return truncated;
+}
+
+// ==============================
+// Main component
+// ==============================
 
 export default function StartSession() {
   const navigate = useNavigate();
   const user = auth.currentUser;
-
-  // Preload gong sound
-  const [gong, setGong] = useState<HTMLAudioElement | null>(null);
-
-  const [prepTime, setPrepTime] = useState<TimeInSeconds>(0); // 10, 20, or 30
-  const [prepRemaining, setPrepRemaining] = useState<TimeInSeconds>(0);
-  const [inPrep, setInPrep] = useState<boolean>(false);
-
-  // const [current_time, setCurrentTime] = useState<TimeInSeconds>(0);
-  // const [running, setRunning] = useState<boolean>(false);
-  const [current_time, setCurrentTime] = useState<TimeInSeconds>(0);
-  const [startTimestamp, setStartTimestamp] = useState<number | null>(null); // new
-
-  /*must be string for the input to work nicely*/
-  const [water_temp, setWaterTemp] = useState<string>("");
-  const [air_temp, setAirTemp] = useState<string>("");
-  const [weather, setWeather] = useState<Weather>(0);
-
-  // Convert to numbers safely
-  const water_temp_num = water_temp === "" ? 100 : parseFloat(water_temp);
-  const air_temp_num = air_temp === "" ? 100 : parseFloat(air_temp);
-
-  const [waterTempError, setWaterTempError] = useState<string | null>(null);
-  const [airTempError, setAirTempError] = useState<string | null>(null);
-
-  function sanitizeTemperatureInput(value: string): string {
-    // unify decimal separator
-    let val = value.replace(",", ".");
-
-    // match optional minus, 1 or 2 digits before dot, optional dot and 1 digit after
-    const match = val.match(/^(-?\d{1,2})(\.\d?)?$/);
-
-    // If it fully matches, keep it; otherwise, trim excess
-    if (match) return match[0];
-
-    // fallback: truncate invalid input
-    const truncated = val.replace(/^(-?\d{0,2})(\.\d?)?.*$/, "$1$2");
-    return truncated;
-  }
-
-  const [points, setPoints] = useState<Points>(0);
   const [stage, setStage] = useState<"start" | "stop" | "save">("start");
   const [loading, setLoading] = useState<boolean>(false);
 
-  const weatherOptions = [
-    { value: 0, label: "Počasie" },
-    { value: 1, label: "Slnečno" },
-    { value: 2, label: "Oblačno" },
-    { value: 3, label: "Prší" },
-    { value: 3.2, label: "Sneží" },
-  ];
+  // ==============================
+  // Sound - Gong
+  // ==============================
 
-  const weatherIcons: Record<string, string> = {
-    1: iconSunny,
-    2: iconCloudy,
-    3: iconRaining,
-    3.2: iconSnowing,
-  };
-
-  const timerOptions = [
-    { value: 0, label: "Časovač" },
-    { value: 10, label: "10 sekúnd" },
-    { value: 20, label: "20 sekúnd" },
-    { value: 30, label: "30 sekúnd" },
-  ];
-
-  const canStart =
-    water_temp !== "" &&
-    air_temp !== "" &&
-    !isNaN(water_temp_num) &&
-    !isNaN(air_temp_num) &&
-    weather !== 0 &&
-    prepTime !== 0 &&
-    !waterTempError &&
-    !airTempError;
-
-  const readonlyInputs = inPrep || startTimestamp !== null || stage !== "start";
-  const animationFrameRef = useRef<number | null>(null);
-  const event_type: EventType = "cold_plunge";
+  const [gong, setGong] = useState<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     const audio = new Audio("/gong.mp3");
@@ -110,49 +75,53 @@ export default function StartSession() {
   }, []);
 
   const playBell = () => {
-    if (!gong) return; // not loaded yet
+    if (!gong) return;
     try {
       gong.currentTime = 0;
-      gong.play().catch((err) => {
-        console.warn("Audio play blocked or failed:", err);
-      });
-    } catch (err) {
-      console.error("Error playing gong:", err);
+      gong.play();
+    } catch (_) {
+      // catch err silently
     }
   };
 
-  function calculatePoints(): number {
-    const Tw = Number(water_temp_num); // water temperature
-    const Ta = Number(air_temp_num); // air temperature
-    const c = Number(weather); // weather factor
-    const t = Number(current_time / 60); // time in minutes
+  // ==============================
+  // Timer
+  // ==============================
 
-    const base = 20 - Tw + c;
-    const exponent = 1 + t / (20 + Tw + (Ta - Tw) / 10);
-
-    if (base <= 0) return 0; // prevent negative/zero base issues
-    const P = Math.pow(base, exponent);
-
-    //return Math.round(P); // rounds to nearest integer
-    return P; // rounds to nearest integer
-  }
+  const [inPrep, setInPrep] = useState<boolean>(false);
+  const [prepTime, setPrepTime] = useState<TimeInSeconds>(0);
+  const [prepRemaining, setPrepRemaining] = useState<TimeInSeconds>(0);
+  const [prepEndTimestamp, setPrepEndTimestamp] = useState<number | null>(null);
 
   useEffect(() => {
-    if (inPrep && prepRemaining > 0) {
-      const id = setInterval(() => setPrepRemaining((t) => t - 1), 1000);
-      return () => clearInterval(id);
-    }
+    if (!inPrep || prepEndTimestamp === null) return;
 
-    if (inPrep && prepRemaining === 0) {
-      setInPrep(false);
-      playBell();
-      setStartTimestamp(Date.now());
-      setStage("stop");
-    }
-  }, [inPrep, prepRemaining]);
+    const id = setInterval(() => {
+      const remaining = Math.ceil((prepEndTimestamp - Date.now()) / 1000);
+
+      if (remaining <= 0) {
+        setInPrep(false);
+        playBell?.();
+        setStartTimestamp(Date.now());
+        setStage("stop");
+        setPrepEndTimestamp(null);
+      } else {
+        setPrepRemaining(remaining);
+      }
+    }, 250);
+
+    return () => clearInterval(id);
+  }, [inPrep, prepEndTimestamp]);
+
+  // ==============================
+  // Stopwatch
+  // ==============================
+
+  const [current_time, setCurrentTime] = useState<TimeInSeconds>(0);
+  const [startTimestamp, setStartTimestamp] = useState<number | null>(null);
+  const animationFrameRef = useRef<number | null>(null);
 
   useEffect(() => {
-    // Only run timer if session started and stage is "stop"
     if (!startTimestamp || stage !== "stop") {
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
@@ -176,37 +145,81 @@ export default function StartSession() {
     };
   }, [startTimestamp, stage]);
 
-  useEffect(() => {
+  // ==============================
+  // Inputs
+  // ==============================
+
+  const [water_temp, setWaterTemp] = useState<string>("");
+  const [air_temp, setAirTemp] = useState<string>("");
+  const [weather, setWeather] = useState<Weather>(WEATHER.NONE);
+
+  const water_temp_num =
+    water_temp === "" ? DEFAULT_WATER_TEMP : parseFloat(water_temp);
+  const air_temp_num =
+    air_temp === "" ? DEFAULT_AIR_TEMP : parseFloat(air_temp);
+
+  const [waterTempError, setWaterTempError] = useState<string | null>(null);
+  const [airTempError, setAirTempError] = useState<string | null>(null);
+
+  const readonlyInputs = inPrep || startTimestamp !== null || stage !== "start";
+
+  const canStart =
+    water_temp !== "" &&
+    air_temp !== "" &&
+    !isNaN(water_temp_num) &&
+    !isNaN(air_temp_num) &&
+    weather !== WEATHER.NONE &&
+    prepTime !== 0 &&
+    !waterTempError &&
+    !airTempError;
+
+  // Update points every second
+  const displayPoints = (() => {
     if (
-      water_temp !== "" &&
-      air_temp !== "" &&
-      !isNaN(water_temp_num) &&
-      !isNaN(air_temp_num) &&
-      !isNaN(weather)
-    ) {
-      setPoints(parseFloat(calculatePoints().toFixed(1)));
-    } else {
-      setPoints(0);
+      water_temp === "" ||
+      air_temp === "" ||
+      isNaN(water_temp_num) ||
+      isNaN(air_temp_num) ||
+      weather === WEATHER.NONE
+    )
+      return 0;
+
+    const seconds = Math.floor(current_time);
+    const p = calculatePoints(
+      Number(water_temp_num),
+      Number(air_temp_num),
+      Number(weather),
+      Number(seconds / 60),
+    );
+    return parseFloat(p.toFixed(1));
+  })();
+
+  // ==============================
+  // Handlers
+  // ==============================
+
+  const resetForm = () => {
+    if (animationFrameRef.current) {
+      cancelAnimationFrame(animationFrameRef.current);
+      animationFrameRef.current = null;
     }
-  }, [current_time]);
+    setInPrep(false);
+    setStage("start");
+    setWaterTemp("");
+    setAirTemp("");
+    setWeather(WEATHER.NONE);
+    setPrepTime(0);
+    setCurrentTime(0);
+    setPrepRemaining(0);
+    setStartTimestamp(null);
+    setWaterTempError(null);
+    setAirTempError(null);
+  };
 
   const handleMainButton = async () => {
     if (stage === "start") {
-      if (!water_temp || isNaN(water_temp_num)) {
-        alert("Zadaj teplotu vody ty primitív.");
-        return;
-      }
-      if (!air_temp || isNaN(air_temp_num)) {
-        alert("Zadaj teplotu vzduchu ty primitív.");
-        return;
-      }
-      if (!weather || isNaN(weather)) {
-        alert("Vyber počasie ty primitív.");
-        return;
-      }
-
-      // Start pre-timer
       setPrepRemaining(prepTime);
+      setPrepEndTimestamp(Date.now() + prepTime * 1000);
       setInPrep(true);
       return;
     }
@@ -217,6 +230,12 @@ export default function StartSession() {
     }
 
     if (stage === "save") {
+      const finalPoints = calculatePoints(
+        Number(water_temp_num),
+        Number(air_temp_num),
+        Number(weather),
+        Number(current_time / 60), // use exact current_time
+      );
       setLoading(true);
       if (!user) {
         alert("You must be logged in to save a session.");
@@ -234,31 +253,28 @@ export default function StartSession() {
           date,
           water_temp_num ?? 100,
           air_temp_num ?? 100,
-          weather ?? 0,
+          weather ?? WEATHER.NONE,
           time_in_water ?? 0,
-          points ?? 0,
+          parseFloat(finalPoints.toFixed(1)) ?? 0, // save rounded points
           null, //photo url
           event_type,
           null, //location
           null, //title
         );
 
-        setCurrentTime(0);
-        setPoints(0);
-        setWaterTemp("");
-        setAirTemp("");
-        setWeather(0);
-        setStage("start");
-
+        resetForm();
         navigate("/leaderboard");
       } catch (err: any) {
-        console.error("Failed to save event:", err);
         alert("Failed to save session: " + (err?.message ?? String(err)));
       } finally {
         setLoading(false);
       }
     }
   };
+
+  // ==============================
+  // JSX
+  // ==============================
 
   return (
     <>
@@ -270,6 +286,12 @@ export default function StartSession() {
             : `${String(Math.floor(current_time / 60)).padStart(2, "0")}:${String(current_time % 60).padStart(2, "0")}`}
         </div>
       </div>
+
+      {(stage === "stop" || stage === "save") && (
+        <p className="text-darkblack font-bangers -mt-4 -mb-2 p-1 text-center text-2xl">
+          Body: <span className="text-mediumblue"> {displayPoints}</span>
+        </p>
+      )}
 
       {/* Main + Reset buttons */}
       <div className="flex gap-4">
@@ -295,24 +317,7 @@ export default function StartSession() {
           className="flex-[1]"
           size="lg"
           variant="secondary"
-          onClick={() => {
-            if (animationFrameRef.current) {
-              cancelAnimationFrame(animationFrameRef.current);
-              animationFrameRef.current = null;
-            }
-            setWaterTempError(null);
-            setAirTempError(null);
-            setWaterTemp("");
-            setAirTemp("");
-            setWeather(0);
-            setPrepTime(30);
-            setCurrentTime(0);
-            setPoints(0);
-            setStage("start");
-            setInPrep(false);
-            setPrepRemaining(0);
-            setStartTimestamp(null);
-          }}
+          onClick={resetForm}
           iconOnly
         >
           <RotateCcw strokeWidth={3} />
@@ -334,9 +339,9 @@ export default function StartSession() {
               setWaterTempError(null);
             } else if (isNaN(num)) {
               setWaterTempError("Pil si? Teplota vody musí byť číšlo.");
-            } else if (num < -3) {
+            } else if (num < WATER_TEMP_MIN) {
               setWaterTempError("Si normálny? Míňať toľko soli?");
-            } else if (num > 20) {
+            } else if (num > WATER_TEMP_MAX) {
               setWaterTempError("Táto teplota je pre tuleňa život ohrozujúca!");
             } else {
               setWaterTempError(null);
@@ -344,7 +349,7 @@ export default function StartSession() {
           }}
           disabled={readonlyInputs}
           placeholder="Teplota vody (°C)"
-          icon={iconWaterTemp}
+          icon={ICONS.waterTemp}
           inputClassName="pl-20 py-3 rounded-2xl text-lg bg-icywhite cursor-pointer"
         />
 
@@ -368,9 +373,9 @@ export default function StartSession() {
               setAirTempError(null);
             } else if (isNaN(num)) {
               setAirTempError("Pil si? Teplota vzduchu musí byť číšlo.");
-            } else if (num < -30) {
+            } else if (num < AIR_TEMP_MIN) {
               setAirTempError("Otužovanie v Gulagu je zakázané!");
-            } else if (num > 30) {
+            } else if (num > AIR_TEMP_MAX) {
               setAirTempError("Táto teplota je pre tuleňa život ohrozujúca!");
             } else {
               setAirTempError(null);
@@ -378,7 +383,7 @@ export default function StartSession() {
           }}
           disabled={readonlyInputs}
           placeholder="Teplota vzduchu (°C)"
-          icon={iconAirTemp}
+          icon={ICONS.airTemp}
           iconClassName="h-[100%]"
           inputClassName="pl-20 py-3 rounded-2xl text-lg bg-icywhite cursor-pointer"
         />
@@ -393,10 +398,10 @@ export default function StartSession() {
           value={weather}
           onChange={(e) => setWeather(Number(e.target.value))}
           disabled={readonlyInputs}
-          options={weatherOptions}
-          icon={weatherIcons[weather] || iconSunny}
+          options={WEATHER_OPTIONS}
+          icon={WEATHER_ICON_MAP[weather] ?? WEATHER_ICON_MAP[WEATHER.SUNNY]}
           selectClassName={`pl-20 py-3 rounded-2xl text-lg bg-icywhite cursor-pointer ${
-            weather === 0 ? "text-darkgrey" : "text-darkblack"
+            weather === WEATHER.NONE ? "text-darkgrey" : "text-darkblack"
           }`}
         />
 
@@ -404,8 +409,8 @@ export default function StartSession() {
           value={prepTime}
           onChange={(e) => setPrepTime(Number(e.target.value))}
           disabled={readonlyInputs}
-          options={timerOptions}
-          icon={iconTimer}
+          options={TIMER_OPTIONS}
+          icon={ICONS.timer}
           selectClassName={`pl-20 py-3 rounded-2xl text-lg bg-icywhite cursor-pointer ${
             prepTime === 0 ? "text-darkgrey" : "text-darkblack"
           }`}

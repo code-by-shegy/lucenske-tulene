@@ -1,46 +1,47 @@
+// src/pages/ColdShower.tsx
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { createEvent } from "../lib/db_events";
-import { auth } from "../firebase";
 import { RotateCcw } from "lucide-react";
+import { auth } from "../firebase";
+
+import { ICONS, SHOWER_OPTIONS, EVENT_TYPE } from "../constants";
+import { createEvent } from "../lib/db_events";
 
 import Card from "../components/Card";
 import Button from "../components/Button";
 import Select from "../components/Select";
 
-import iconTimer from "../assets/icons/timer.svg";
-
 import type { Points, EventType } from "../types";
+
+const event_type: EventType = EVENT_TYPE.COLD_SHOWER;
+const pointsMap: Record<number, Points> = {
+  60: 1,
+  120: 2,
+};
+
+// ==============================
+// Main component
+// ==============================
 
 export default function ColdShower() {
   const navigate = useNavigate();
   const user = auth.currentUser;
 
-  const [gong, setGong] = useState<HTMLAudioElement | null>(null);
-
-  const [duration, setDuration] = useState<number>(0); // selected duration in seconds
+  const [duration, setDuration] = useState<number>(0);
   const [remaining, setRemaining] = useState<number>(0);
   const [running, setRunning] = useState<boolean>(false);
   const [finished, setFinished] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
 
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const [startTimestamp, setStartTimestamp] = useState<number | null>(null);
+  const animationFrameRef = useRef<number | null>(null);
 
-  // Map durations to points
-  const pointsMap: Record<number, Points> = {
-    60: 1,
-    120: 2,
-  };
+  // ==============================
+  // Sound - Gong
+  // ==============================
 
-  const options = [
-    { value: 0, label: "Vyber trvanie sprchy" },
-    { value: 60, label: "1 minúta" },
-    { value: 120, label: "2 minúty" },
-  ];
+  const [gong, setGong] = useState<HTMLAudioElement | null>(null);
 
-  const event_type: EventType = "cold_shower";
-
-  // Preload gong
   useEffect(() => {
     const audio = new Audio("/gong.mp3");
     audio.preload = "auto";
@@ -51,13 +52,58 @@ export default function ColdShower() {
     if (!gong) return;
     try {
       gong.currentTime = 0;
-      gong
-        .play()
-        .catch((err) => console.warn("Audio play blocked or failed:", err));
-    } catch (err) {
-      console.error("Error playing gong:", err);
+      gong.play();
+    } catch (_) {
+      // catch err silently
     }
   };
+
+  // ==============================
+  // Timer
+  // ==============================
+
+  useEffect(() => {
+    if (!running || !startTimestamp) {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+        animationFrameRef.current = null;
+      }
+      return;
+    }
+
+    const update = () => {
+      const elapsed = Math.floor((Date.now() - startTimestamp) / 1000);
+      const newRemaining = Math.max(duration - elapsed, 0);
+      setRemaining(newRemaining);
+
+      if (newRemaining <= 0) {
+        setRunning(false);
+        setFinished(true);
+        playBell();
+        setStartTimestamp(null);
+        if (animationFrameRef.current) {
+          cancelAnimationFrame(animationFrameRef.current);
+          animationFrameRef.current = null;
+        }
+        return;
+      }
+
+      animationFrameRef.current = requestAnimationFrame(update);
+    };
+
+    animationFrameRef.current = requestAnimationFrame(update);
+
+    return () => {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+        animationFrameRef.current = null;
+      }
+    };
+  }, [running, startTimestamp, duration]);
+
+  // ==============================
+  // Handlers
+  // ==============================
 
   const handleStart = () => {
     if (!duration || duration <= 0) {
@@ -65,39 +111,22 @@ export default function ColdShower() {
       return;
     }
     setRemaining(duration);
+    setStartTimestamp(Date.now());
     setRunning(true);
     setFinished(false);
   };
 
   const handleReset = () => {
-    if (timerRef.current) clearInterval(timerRef.current);
+    if (animationFrameRef.current) {
+      cancelAnimationFrame(animationFrameRef.current);
+      animationFrameRef.current = null;
+    }
     setRunning(false);
     setFinished(false);
     setRemaining(0);
     setDuration(0);
+    setStartTimestamp(null);
   };
-
-  // Timer logic
-  useEffect(() => {
-    if (!running) return;
-
-    timerRef.current = setInterval(() => {
-      setRemaining((r) => {
-        if (r <= 1) {
-          clearInterval(timerRef.current!);
-          setRunning(false);
-          setFinished(true);
-          playBell();
-          return 0;
-        }
-        return r - 1;
-      });
-    }, 1000);
-
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
-  }, [running]);
 
   const handleSave = async () => {
     if (!user) {
@@ -115,15 +144,15 @@ export default function ColdShower() {
       await createEvent(
         user.uid,
         date,
-        15, // water temp (not relevant)
+        15, // water temp (placeholder)
         23, // air temp
         0, // weather
         time_in_water,
         points,
-        null, //photo url
+        null, // photo url
         event_type,
-        null, //location
-        null, //title
+        null, // location
+        null, // title
       );
       navigate("/leaderboard");
     } catch (err: any) {
@@ -133,6 +162,10 @@ export default function ColdShower() {
       setLoading(false);
     }
   };
+
+  // ==============================
+  // JSX
+  // ==============================
 
   return (
     <>
@@ -178,14 +211,15 @@ export default function ColdShower() {
           <RotateCcw strokeWidth={3} />
         </Button>
       </div>
+
       {/* Options */}
       <Card className="mb-4 grid grid-cols-1 gap-3">
         <Select
           value={duration}
           onChange={(e) => setDuration(Number(e.target.value))}
           disabled={running || finished}
-          options={options}
-          icon={iconTimer}
+          options={SHOWER_OPTIONS}
+          icon={ICONS.timer}
           selectClassName="pl-20 py-3 rounded-2xl text-lg bg-icywhite cursor-pointer"
         />
 
