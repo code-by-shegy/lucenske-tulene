@@ -33,6 +33,10 @@ const event_type: EventType = EVENT_TYPE.COLD_PLUNGE;
 const DEFAULT_WATER_TEMP = 100;
 const DEFAULT_AIR_TEMP = 100;
 
+// LocalStorage keys
+const LS_PREP_END = "coldplunge_prep_end_ts";
+const LS_START_TS = "coldplunge_start_ts";
+
 // ==============================
 // Helper functions
 // ==============================
@@ -88,38 +92,134 @@ export default function StartSession() {
   // Timer
   // ==============================
 
-  const [inPrep, setInPrep] = useState<boolean>(false);
+  // Persisted prepEndTimestamp - rehydrate from localStorage
+  const [prepEndTimestamp, setPrepEndTimestamp] = useState<number | null>(
+    () => {
+      const saved = localStorage.getItem(LS_PREP_END);
+      return saved ? Number(saved) : null;
+    },
+  );
+
+  // Persisted startTimestamp - rehydrate from localStorage
+  const [startTimestamp, setStartTimestamp] = useState<number | null>(() => {
+    const saved = localStorage.getItem(LS_START_TS);
+    return saved ? Number(saved) : null;
+  });
+
+  const [inPrep, setInPrep] = useState<boolean>(() => {
+    // If there's a future prepEndTimestamp, resume inPrep on mount.
+    const saved = localStorage.getItem(LS_PREP_END);
+    if (!saved) return false;
+    const ts = Number(saved);
+    return ts > Date.now();
+  });
+
   const [prepTime, setPrepTime] = useState<TimeInSeconds>(0);
   const [prepRemaining, setPrepRemaining] = useState<TimeInSeconds>(0);
-  const [prepEndTimestamp, setPrepEndTimestamp] = useState<number | null>(null);
 
+  // Persist prepEndTimestamp to localStorage when it changes
   useEffect(() => {
-    if (!inPrep || prepEndTimestamp === null) return;
+    if (prepEndTimestamp !== null) {
+      localStorage.setItem(LS_PREP_END, String(prepEndTimestamp));
+      localStorage.removeItem(LS_PREP_END);
+    }
+  }, [prepEndTimestamp]);
+  // Persist startTimestamp to localStorage when it changes
+  useEffect(() => {
+    if (startTimestamp !== null) {
+      localStorage.setItem(LS_START_TS, String(startTimestamp));
+    } else {
+      localStorage.removeItem(LS_START_TS);
+    }
+  }, [startTimestamp]);
 
-    const id = setInterval(() => {
+  // Animation frame refs for prep and stopwatch
+  const prepAnimRef = useRef<number | null>(null);
+  const animationFrameRef = useRef<number | null>(null);
+
+  // On mount: if prepEndTimestamp exists, compute prepRemaining or transition to stop
+  useEffect(() => {
+    if (prepEndTimestamp === null) {
+      setPrepRemaining(0);
+      return;
+    }
+
+    const rem = Math.ceil((prepEndTimestamp - Date.now()) / 1000);
+    if (rem <= 0) {
+      // prep already finished while app was suspended -> start stopwatch at prepEndTimestamp
+      setInPrep(false);
+      setPrepRemaining(0);
+      // set startTimestamp to the prep end so stopwatch computes from that moment
+      setStartTimestamp(prepEndTimestamp);
+      setStage("stop");
+      // remove persisted prepEndTimestamp because it's consumed
+      localStorage.removeItem(LS_PREP_END);
+      setPrepEndTimestamp(null);
+    } else {
+      setPrepRemaining(rem);
+      setInPrep(true); // (resume countdown)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // run once on mount
+
+  // Prep countdown (requestAnimationFrame loop but based on persisted timestamp)
+  useEffect(() => {
+    if (!inPrep || prepEndTimestamp === null) {
+      if (prepAnimRef.current) {
+        cancelAnimationFrame(prepAnimRef.current);
+        prepAnimRef.current = null;
+      }
+      return;
+    }
+
+    const update = () => {
       const remaining = Math.ceil((prepEndTimestamp - Date.now()) / 1000);
 
       if (remaining <= 0) {
+        // End of prep period: start stopwatch from exact prepEndTimestamp
         setInPrep(false);
         playBell?.();
-        setStartTimestamp(Date.now());
+        setStartTimestamp(prepEndTimestamp); // start timestamp equals prepEndTimestamp
         setStage("stop");
-        setPrepEndTimestamp(null);
+        setPrepEndTimestamp(null); // this will also remove localStorage via effect
+        setPrepRemaining(0);
+        if (prepAnimRef.current) {
+          cancelAnimationFrame(prepAnimRef.current);
+          prepAnimRef.current = null;
+        }
+        return;
       } else {
         setPrepRemaining(remaining);
       }
-    }, 250);
 
-    return () => clearInterval(id);
+      prepAnimRef.current = requestAnimationFrame(update);
+    };
+
+    // run first tick immediately to avoid waiting for frame
+    update();
+
+    return () => {
+      if (prepAnimRef.current) {
+        cancelAnimationFrame(prepAnimRef.current);
+        prepAnimRef.current = null;
+      }
+    };
   }, [inPrep, prepEndTimestamp]);
 
   // ==============================
   // Stopwatch
   // ==============================
 
-  const [current_time, setCurrentTime] = useState<TimeInSeconds>(0);
-  const [startTimestamp, setStartTimestamp] = useState<number | null>(null);
-  const animationFrameRef = useRef<number | null>(null);
+  const [current_time, setCurrentTime] = useState<TimeInSeconds>(() => {
+    // If we have a startTimestamp on mount, compute elapsed
+    const saved = localStorage.getItem(LS_START_TS);
+    if (!saved) return 0;
+    const st = Number(saved);
+    if (st && st <= Date.now()) {
+      return Math.floor((Date.now() - st) / 1000);
+    }
+    return 0;
+  });
 
   useEffect(() => {
     if (!startTimestamp || stage !== "stop") {
@@ -131,7 +231,9 @@ export default function StartSession() {
     }
 
     const update = () => {
-      setCurrentTime(Math.floor((Date.now() - startTimestamp) / 1000));
+      setCurrentTime(
+        Math.floor((Date.now() - (startTimestamp as number)) / 1000),
+      );
       animationFrameRef.current = requestAnimationFrame(update);
     };
 
@@ -163,16 +265,12 @@ export default function StartSession() {
 
   const readonlyInputs = inPrep || startTimestamp !== null || stage !== "start";
 
-  const canStart =
-    water_temp !== "" &&
-    air_temp !== "" &&
-    !isNaN(water_temp_num) &&
-    !isNaN(air_temp_num) &&
-    weather !== WEATHER.NONE &&
-    prepTime !== 0 &&
-    !waterTempError &&
-    !airTempError;
-
+  const [missingFields, setMissingFields] = useState({
+    water: false,
+    air: false,
+    weather: false,
+    prep: false,
+  });
   // Update points every second
   const displayPoints = (() => {
     if (
@@ -199,10 +297,18 @@ export default function StartSession() {
   // ==============================
 
   const resetForm = () => {
+    // clear animation frames and persisted timestamps
     if (animationFrameRef.current) {
       cancelAnimationFrame(animationFrameRef.current);
       animationFrameRef.current = null;
     }
+    if (prepAnimRef.current) {
+      cancelAnimationFrame(prepAnimRef.current);
+      prepAnimRef.current = null;
+    }
+    localStorage.removeItem(LS_START_TS);
+    localStorage.removeItem(LS_PREP_END);
+
     setInPrep(false);
     setStage("start");
     setWaterTemp("");
@@ -212,14 +318,37 @@ export default function StartSession() {
     setCurrentTime(0);
     setPrepRemaining(0);
     setStartTimestamp(null);
+    setPrepEndTimestamp(null);
     setWaterTempError(null);
     setAirTempError(null);
+    setMissingFields({ water: false, air: false, weather: false, prep: false });
   };
 
+  //+comment: Replace handleMainButton with this simplified version
   const handleMainButton = async () => {
     if (stage === "start") {
+      // simple validation of 4 fields
+      const isWater = water_temp !== "" && !isNaN(parseFloat(water_temp));
+      const isAir = air_temp !== "" && !isNaN(parseFloat(air_temp));
+      const isWeather = weather !== WEATHER.NONE;
+      const isPrep = prepTime > 0;
+
+      // highlight missing ones
+      setMissingFields({
+        water: !isWater,
+        air: !isAir,
+        weather: !isWeather,
+        prep: !isPrep,
+      });
+
+      if (!isWater || !isAir || !isWeather || !isPrep) {
+        return; // stop here until user fills all fields
+      }
+
+      // proceed normally
+      const end = Date.now() + prepTime * 1000;
       setPrepRemaining(prepTime);
-      setPrepEndTimestamp(Date.now() + prepTime * 1000);
+      setPrepEndTimestamp(end);
       setInPrep(true);
       return;
     }
@@ -234,7 +363,7 @@ export default function StartSession() {
         Number(water_temp_num),
         Number(air_temp_num),
         Number(weather),
-        Number(current_time / 60), // use exact current_time
+        Number(current_time / 60),
       );
       setLoading(true);
       if (!user) {
@@ -255,13 +384,12 @@ export default function StartSession() {
           air_temp_num ?? 100,
           weather ?? WEATHER.NONE,
           time_in_water ?? 0,
-          parseFloat(finalPoints.toFixed(1)) ?? 0, // save rounded points
-          null, //photo url
+          parseFloat(finalPoints.toFixed(1)) ?? 0,
+          null,
           event_type,
-          null, //location
-          null, //title
+          null,
+          null,
         );
-
         resetForm();
         navigate("/leaderboard");
       } catch (err: any) {
@@ -300,7 +428,7 @@ export default function StartSession() {
           size="lg"
           variant={stage === "stop" ? "danger" : "primary"}
           onClick={handleMainButton}
-          disabled={loading || inPrep || !canStart}
+          disabled={loading || inPrep}
         >
           {inPrep
             ? `Odpočítavanie`
@@ -334,6 +462,7 @@ export default function StartSession() {
           onChange={(e) => {
             const val = sanitizeTemperatureInput(e.target.value);
             setWaterTemp(val);
+            setMissingFields((prev) => ({ ...prev, water: false }));
             const num = parseFloat(val);
             if (val === "") {
               setWaterTempError(null);
@@ -350,7 +479,9 @@ export default function StartSession() {
           disabled={readonlyInputs}
           placeholder="Teplota vody (°C)"
           icon={ICONS.waterTemp}
-          inputClassName="pl-20 py-3 rounded-2xl text-lg bg-icywhite cursor-pointer"
+          inputClassName={`pl-20 py-3 rounded-2xl text-lg bg-icywhite cursor-pointer ${
+            missingFields.water ? "border-2 border-red-500" : ""
+          }`}
         />
 
         {waterTempError && (
@@ -368,6 +499,7 @@ export default function StartSession() {
           onChange={(e) => {
             const val = sanitizeTemperatureInput(e.target.value);
             setAirTemp(val);
+            setMissingFields((prev) => ({ ...prev, air: false }));
             const num = parseFloat(val);
             if (val === "") {
               setAirTempError(null);
@@ -385,7 +517,9 @@ export default function StartSession() {
           placeholder="Teplota vzduchu (°C)"
           icon={ICONS.airTemp}
           iconClassName="h-[100%]"
-          inputClassName="pl-20 py-3 rounded-2xl text-lg bg-icywhite cursor-pointer"
+          inputClassName={`pl-20 py-3 rounded-2xl text-lg bg-icywhite cursor-pointer ${
+            missingFields.air ? "border-2 border-red-500" : ""
+          }`}
         />
 
         {airTempError && (
@@ -396,23 +530,37 @@ export default function StartSession() {
 
         <Select
           value={weather}
-          onChange={(e) => setWeather(Number(e.target.value))}
+          onChange={(e) => {
+            setWeather(Number(e.target.value));
+            setMissingFields((prev) => ({ ...prev, weather: false }));
+          }}
           disabled={readonlyInputs}
           options={WEATHER_OPTIONS}
           icon={WEATHER_ICON_MAP[weather] ?? WEATHER_ICON_MAP[WEATHER.SUNNY]}
           selectClassName={`pl-20 py-3 rounded-2xl text-lg bg-icywhite cursor-pointer ${
-            weather === WEATHER.NONE ? "text-darkgrey" : "text-darkblack"
+            missingFields.weather
+              ? "border-2 border-red-500 text-darkgrey"
+              : weather === WEATHER.NONE
+                ? "text-darkgrey"
+                : "text-darkblack"
           }`}
         />
 
         <Select
           value={prepTime}
-          onChange={(e) => setPrepTime(Number(e.target.value))}
+          onChange={(e) => {
+            setPrepTime(Number(e.target.value));
+            setMissingFields((prev) => ({ ...prev, prep: false }));
+          }}
           disabled={readonlyInputs}
           options={TIMER_OPTIONS}
           icon={ICONS.timer}
           selectClassName={`pl-20 py-3 rounded-2xl text-lg bg-icywhite cursor-pointer ${
-            prepTime === 0 ? "text-darkgrey" : "text-darkblack"
+            missingFields.prep
+              ? "border-2 border-red-500 text-darkgrey"
+              : prepTime === 0
+                ? "text-darkgrey"
+                : "text-darkblack"
           }`}
         />
       </Card>
