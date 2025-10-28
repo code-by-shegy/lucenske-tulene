@@ -1,42 +1,26 @@
-import { useEffect, useState } from "react";
+// src/App.tsx
 import {
   BrowserRouter as Router,
   Routes,
   Route,
   Navigate,
 } from "react-router-dom";
-import type { User } from "firebase/auth";
-import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "./firebase";
-
 import Bottom from "./components/Bottom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Session from "./pages/Session";
-//import ColdShower from "./pages/ColdShower";
-//import ColdPlunge from "./pages/ColdPlunge";
 import Leaderboard from "./pages/Leaderboard";
 import Profile from "./pages/Profile";
 import ForgotPassword from "./pages/ForgotPassword";
 import Approval from "./pages/Approval";
 import ApprovalLogin from "./pages/ApprovalLogin";
 import ResetPassword from "./pages/ResetPassword";
+import { useAuth } from "./context/AuthContext";
 
 function App() {
-  const [user, setUser] = useState<User | null>(null);
-  const [authChecked, setAuthChecked] = useState(false);
+  const { user, loading } = useAuth();
 
-  useEffect(() => {
-    // Wait until Firebase finishes checking user state
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-      setUser(firebaseUser);
-      setAuthChecked(true);
-    });
-    return unsubscribe;
-  }, []);
-
-  if (!authChecked) {
-    // 👇 This ensures no routes are rendered until auth is ready
+  if (loading) {
     return (
       <div className="font-bangers text-darkblack flex h-screen items-center justify-center px-3 text-center text-4xl sm:text-5xl md:text-6xl">
         Obrovské zdravíčko!

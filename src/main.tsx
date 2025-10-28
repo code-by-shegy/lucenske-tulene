@@ -3,18 +3,24 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
+import { AuthProvider } from "./context/AuthContext";
+import { Toaster, toast } from "react-hot-toast";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <App />
+    <AuthProvider>
+      {/* ✅ Wrap the app so all children can access auth state */}
+      <App />
+      <Toaster />
+    </AuthProvider>
   </StrictMode>,
 );
 
 registerSW({
   onNeedRefresh() {
-    console.log("New content available, please refresh.");
+    toast("Nová verzia aplikácie je pripravená! Obnov stránku 🔄");
   },
   onOfflineReady() {
-    console.log("App ready to work offline.");
+    toast.success("Aplikácia je pripravená offline ✅");
   },
 });

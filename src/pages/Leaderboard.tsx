@@ -2,29 +2,59 @@ import Header from "../components/Header";
 import Page from "../components/Page";
 import Table from "../components/Table";
 import { useEffect, useState } from "react";
-import { getLeaderboard } from "../lib/db_leaderboard";
-
-import type { LeaderboardEntry } from "../types";
+import { getLeaderboard, getAllUsersTopEvents } from "../lib/db_leaderboard";
+import { useAuth } from "../context/AuthContext";
+import type { LeaderboardEntry, EventEntry } from "../types";
 
 export default function Leaderboard() {
   const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loadingLeaderboard, setLoadingLeaderboard] = useState(true);
 
+  const [topEvents, setTopEvents] = useState<
+    (EventEntry & { user_name: string })[]
+  >([]);
+  const [loadingTopEvents, setLoadingTopEvents] = useState(true);
+
+  const { user } = useAuth();
+
+  //@todo this is also used in profile, re-use it, create component.
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
+  };
+
+  // Load overall leaderboard
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchLeaderboard = async () => {
       try {
         const leaderboard = await getLeaderboard();
         setEntries(leaderboard);
       } catch (err) {
         console.error("Error loading leaderboard:", err);
       } finally {
-        setLoading(false);
+        setLoadingLeaderboard(false);
       }
     };
-    fetchData();
+    fetchLeaderboard();
   }, []);
 
-  if (loading) {
+  // Load top events
+  useEffect(() => {
+    const fetchTopEvents = async () => {
+      try {
+        const events = await getAllUsersTopEvents();
+        setTopEvents(events);
+      } catch (err) {
+        console.error("Error loading top events:", err);
+      } finally {
+        setLoadingTopEvents(false);
+      }
+    };
+    fetchTopEvents();
+  }, []);
+
+  if (loadingLeaderboard && loadingTopEvents) {
     return (
       <div className="font-bangers bg-lightgrey text-darkblack flex h-screen items-center justify-center text-2xl">
         Loading...
@@ -32,24 +62,65 @@ export default function Leaderboard() {
     );
   }
 
-  // Convert leaderboard data to rows compatible with Table component
-  const rows = entries.map((entry, index) => [
-    <span className="font-bold">{index + 1}</span>, // rank bold
-    entry.user_name ?? "–", // default to dash if missing
-    (entry.events_count ?? 0) + " x", // default 0
-    (entry.showers_count ?? 0) + " x", // default 0
-    <span className="font-bold">{(entry.points ?? 0).toFixed(0)}</span>, // default 0
-  ]);
+  // Convert leaderboard data to rows
+  const leaderboardRows = entries.map((entry, index) => {
+    const isCurrentUser = user?.uid === entry.user_id;
+    return {
+      rowClassName: isCurrentUser ? "bg-lightblue/20" : "bg-icywhite",
+      cells: [
+        <span className="font-bold">{index + 1}</span>,
+        entry.user_name ?? "–",
+        (entry.events_count ?? 0) + " x",
+        (entry.showers_count ?? 0) + " x",
+        <span className="font-bold">{(entry.points ?? 0).toFixed(0)}</span>,
+      ],
+    };
+  });
+
+  // Convert top events to rows
+  const topEventRows = topEvents.map((entry, index) => {
+    const isCurrentUser = user?.uid === entry.user_id;
+    return {
+      rowClassName: isCurrentUser ? "bg-lightblue/20" : "bg-icywhite",
+      cells: [
+        <span className="font-bold">{index + 1}</span>,
+        entry.user_name ?? "–",
+        entry.water_temp ?? "–",
+        formatTime(entry.time_in_water),
+        <span className="font-bold">{entry.points.toFixed(0)}</span>,
+      ],
+    };
+  });
 
   return (
     <Page className="pb-[10vh]">
-      {/*So the bottom navbar does not cover content*/}
-      <Header title="Tabuľka" />
+      <Header title="Tabuľky" />
+
+      {/* Overall leaderboard */}
       <Table
-        className="mt-4"
+        className="mb-4"
         headers={["#", "Tuleň", "Otužil", "Sprchy", "Body"]}
-        rows={rows}
+        rows={leaderboardRows.map((r) => r.cells)}
+        rowClassNames={leaderboardRows.map((r) => r.rowClassName)}
+        title="Celkové poradie"
+        titleClassName="mt-2 text-3xl"
       />
+
+      {/* Top performances table */}
+      {loadingTopEvents ? (
+        <div className="font-bangers text-darkblack mb-4 flex items-center justify-center text-lg">
+          Načítavam najlepšie výkony...
+        </div>
+      ) : (
+        <Table
+          className="mb-4"
+          headers={["#", "Tuleň", "Voda (°C)", "Čas", "Body"]}
+          rows={topEventRows.map((r) => r.cells)}
+          rowClassNames={topEventRows.map((r) => r.rowClassName)}
+          title="Najlepšie výkony"
+          titleClassName="mt-2 text-3xl"
+        />
+      )}
     </Page>
   );
 }

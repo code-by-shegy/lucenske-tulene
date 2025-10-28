@@ -3,12 +3,29 @@ import type { ReactNode } from "react";
 interface TableProps {
   headers: ReactNode[];
   rows: ReactNode[][];
+  rowClassNames?: string[];
   className?: string;
+  title?: string;
+  titleClassName?: string;
 }
 
-export default function Table({ headers, rows, className = "" }: TableProps) {
+export default function Table({
+  headers,
+  rows,
+  rowClassNames = [],
+  className = "",
+  title,
+  titleClassName,
+}: TableProps) {
   return (
     <div className={`overflow-x-auto`}>
+      {title && (
+        <h2
+          className={`font-bangers text-darkblack mb-2 text-lg ${titleClassName}`}
+        >
+          {title}
+        </h2>
+      )}
       <table
         className={`w-full border-separate border-spacing-0 text-left ${className}`}
       >
@@ -37,11 +54,9 @@ export default function Table({ headers, rows, className = "" }: TableProps) {
               {cols.map((col, colIndex) => (
                 <td
                   key={colIndex}
-                  className={`text-darkblack font-roboto bg-icywhite border-mediumgrey hover:bg-lightblue/10 border-t p-2 text-sm transition-colors ${
-                    rowIndex === rows.length - 1 && colIndex === 0
-                      ? "rounded-bl-2xl"
-                      : ""
-                  } ${
+                  className={`text-darkblack font-roboto border-mediumgrey hover:bg-lightblue/10 border-t p-2 text-sm transition-colors ${
+                    rowClassNames[rowIndex] ?? "bg-icywhite"
+                  } ${rowIndex === rows.length - 1 && colIndex === 0 ? "rounded-bl-2xl" : ""} ${
                     rowIndex === rows.length - 1 && colIndex === cols.length - 1
                       ? "rounded-br-2xl"
                       : ""

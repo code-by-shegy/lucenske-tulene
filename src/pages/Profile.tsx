@@ -186,22 +186,20 @@ export default function Profile() {
       </Card>
       {bestEvent && (
         <>
-          <h2 className="font-bangers text-darkblack text-lg">
-            Najlepší výkon
-          </h2>
           <Table
             headers={["Dátum", "Voda (°C)", "Čas", "Body"]}
             rows={user_top_event_row}
             className="mb-4"
+            title="Najlepší výkon"
           />
         </>
       )}
       {/* Sessions list */}
-      <h2 className="font-bangers text-darkblack text-lg">Otuženia</h2>
       <Table
         headers={["Dátum", "Voda (°C)", "Čas", "Body"]}
         rows={user_events_rows}
         className="mb-4"
+        title="Otuženia"
       />
 
       {coldPlungeTotalPages > 1 && (
@@ -231,12 +229,11 @@ export default function Profile() {
       )}
 
       {/* Sprchy table */}
-      <h2 className="font-bangers text-darkblack text-lg">Sprchy</h2>
-
       <Table
         headers={["Dátum", "Voda (°C)", "Čas", "Body"]}
         rows={user_showers_rows}
         className="mb-4"
+        title="Sprchy"
       />
 
       {coldShowerTotalPages > 1 && (
