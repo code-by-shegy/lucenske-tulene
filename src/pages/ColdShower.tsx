@@ -6,6 +6,7 @@ import { auth } from "../firebase";
 
 import { ICONS, SHOWER_OPTIONS, EVENT_TYPE } from "../constants";
 import { createEvent } from "../lib/db_events";
+import { getCurrentGeoPoint } from "../lib/db_location";
 
 import Card from "../components/Card";
 import Button from "../components/Button";
@@ -141,6 +142,7 @@ export default function ColdShower() {
 
     try {
       setLoading(true);
+      const geoPoint = await getCurrentGeoPoint();
       await createEvent(
         user.uid,
         date,
@@ -151,13 +153,28 @@ export default function ColdShower() {
         points,
         null, // photo url
         event_type,
-        null, // location
+        geoPoint,
         null, // title
       );
       navigate("/leaderboard");
-    } catch (err: any) {
-      console.error("Failed to save cold shower:", err);
-      alert("Nepodarilo sa uložiť sprchu: " + (err?.message ?? String(err)));
+    } catch (error: any) {
+      console.warn("GPS failed or denied, saving without location:", error);
+
+      // fallback: save event without location
+      await createEvent(
+        user.uid,
+        date,
+        15, // water temp (placeholder)
+        23, // air temp
+        0, // weather
+        time_in_water,
+        points,
+        null, // photo url
+        event_type,
+        null, // ❌ no location
+        null,
+      );
+      navigate("/leaderboard");
     } finally {
       setLoading(false);
     }

@@ -5,6 +5,7 @@ import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { RotateCcw } from "lucide-react";
 import { auth } from "../firebase";
+import { getCurrentGeoPoint } from "../lib/db_location";
 import { createEvent } from "../lib/db_events";
 
 import Card from "../components/Card";
@@ -377,6 +378,7 @@ export default function StartSession() {
       const time_in_water = current_time;
 
       try {
+        const geoPoint = await getCurrentGeoPoint();
         await createEvent(
           user.uid,
           date,
@@ -387,13 +389,31 @@ export default function StartSession() {
           parseFloat(finalPoints.toFixed(1)) ?? 0,
           null,
           event_type,
-          null,
+          geoPoint,
           null,
         );
         resetForm();
         navigate("/leaderboard");
-      } catch (err: any) {
-        alert("Failed to save session: " + (err?.message ?? String(err)));
+      } catch (error: any) {
+        console.warn("GPS failed or denied, saving without location:", error);
+
+        // fallback: save event without location
+        await createEvent(
+          user.uid,
+          date,
+          water_temp_num ?? 100,
+          air_temp_num ?? 100,
+          weather ?? WEATHER.NONE,
+          time_in_water ?? 0,
+          parseFloat(finalPoints.toFixed(1)) ?? 0,
+          null,
+          event_type,
+          null, // ❌ no location
+          null,
+        );
+
+        resetForm();
+        navigate("/leaderboard");
       } finally {
         setLoading(false);
       }
