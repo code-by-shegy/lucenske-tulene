@@ -7,7 +7,7 @@ export default function BottomNav() {
   const loc = useLocation();
 
   const itemClass = (path: string) =>
-    `flex items-center justify-center w-16 h-12 rounded-md transition ${
+    `flex items-center justify-center w-[18vw] h-[8vh] rounded-md transition ${
       loc.pathname === path ? "bg-icywhite" : "hover:bg-mediumgrey/60"
     }`;
 
@@ -18,7 +18,7 @@ export default function BottomNav() {
           <img
             src={iconStopwatch}
             alt="Start"
-            className="h-[3em] w-[3em] transform transition-transform duration-200 hover:scale-110 active:scale-95"
+            className="h-[6vh] w-auto transform object-contain transition-transform duration-200 hover:scale-110 active:scale-95"
           />
         </Link>
 
@@ -30,7 +30,7 @@ export default function BottomNav() {
           <img
             src={iconLeaderboard}
             alt="Leaderboard"
-            className="h-[5em] w-[5em] transform transition-transform duration-200 hover:scale-110 active:scale-95"
+            className="h-[8vh] w-auto transform object-contain transition-transform duration-200 hover:scale-110 active:scale-95"
           />
         </Link>
 
@@ -42,7 +42,7 @@ export default function BottomNav() {
           <img
             src={iconSeal}
             alt="Profile"
-            className="h-[5em] w-[5em] transform transition-transform duration-200 hover:scale-110 active:scale-95"
+            className="h-[9vh] w-auto transform object-contain transition-transform duration-200 hover:scale-110 active:scale-95"
           />
         </Link>
       </div>

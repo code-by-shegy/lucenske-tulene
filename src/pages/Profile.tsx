@@ -169,6 +169,7 @@ export default function Profile() {
           <span className="mr-2">
             Body: <span className="text-mediumblue font-bangers">{points}</span>
           </span>
+          <br />
           <span className="mr-2">
             Otužil:{" "}
             <span className="text-mediumblue font-bangers">

@@ -516,7 +516,6 @@ export default function StartSession() {
           disabled={readonlyInputs}
           placeholder="Teplota vzduchu (°C)"
           icon={ICONS.airTemp}
-          iconClassName="h-[100%]"
           inputClassName={`pl-20 py-3 rounded-2xl text-lg bg-icywhite cursor-pointer ${
             missingFields.air ? "border-2 border-red-500" : ""
           }`}
