@@ -19,17 +19,16 @@ function Table({
   titleClassName,
 }: TableProps) {
   return (
-    <div className={`overflow-x-auto`}>
+    <div className="scrollbar-thin scrollbar-thumb-dark2blue overflow-x-auto">
+      {" "}
       {title && (
         <h2
-          className={`font-bangers text-darkblack mb-2 text-lg ${titleClassName}`}
+          className={`font-bangers text-darkblack mb-2 ml-2 text-center text-xl text-shadow-lg/10 ${titleClassName}`}
         >
           {title}
         </h2>
       )}
-      <table
-        className={`w-full border-separate border-spacing-0 text-left ${className}`}
-      >
+      <table className={`w-full border-separate border-spacing-0 ${className}`}>
         <thead>
           <tr>
             {headers.map((header, i) => (
@@ -43,7 +42,7 @@ function Table({
                       : ""
                 }`}
               >
-                {header}
+                <div className="flex items-center justify-center">{header}</div>
               </th>
             ))}
           </tr>
@@ -63,7 +62,7 @@ function Table({
                       : ""
                   }`}
                 >
-                  {col}
+                  <div className="flex items-center justify-center">{col}</div>
                 </td>
               ))}
             </tr>

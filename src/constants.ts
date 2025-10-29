@@ -2,10 +2,16 @@
 import iconWaterTemp from "./assets/icons/water_temp.svg";
 import iconAirTemp from "./assets/icons/air_temp.svg";
 import iconTimer from "./assets/icons/timer.svg";
+import iconStopwatch from "./assets/icons/stopwatch.svg";
 import iconSunny from "./assets/icons/sunny.svg";
 import iconCloudy from "./assets/icons/cloudy.svg";
 import iconSnowing from "./assets/icons/snowing.svg";
 import iconRaining from "./assets/icons/raining.svg";
+import iconSeal from "./assets/icons/seal.svg";
+import iconSealPoints from "./assets/icons/points.svg";
+import iconColdPlunge from "./assets/icons/cold_exposure.svg";
+import iconColdShower from "./assets/icons/cold_shower.svg";
+import iconCalendar from "./assets/icons/calendar.svg";
 
 export const ICONS = {
   waterTemp: iconWaterTemp,
@@ -17,6 +23,12 @@ export const ICONS = {
     snowing: iconSnowing,
     raining: iconRaining,
   },
+  seal: iconSeal,
+  sealPoints: iconSealPoints,
+  stopwatch: iconStopwatch,
+  coldPlunge: iconColdPlunge,
+  coldShower: iconColdShower,
+  calendar: iconCalendar,
 };
 
 // Temperature

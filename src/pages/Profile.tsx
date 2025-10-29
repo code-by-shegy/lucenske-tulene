@@ -3,7 +3,9 @@ import Button from "../components/Button";
 import Page from "../components/Page";
 import Card from "../components/Card";
 import Table from "../components/Table";
+import IconHeaderTable from "../components/IconTableHeader";
 
+import { ICONS, WEATHER_ICON_MAP } from "../constants";
 import { useAuth } from "../context/AuthContext";
 import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
@@ -32,7 +34,9 @@ export default function Profile() {
   const [events_count, setEventsCount] = useState<EventsCount>(0);
   const [standing, setStanding] = useState<Standing>(null);
   const [events, setEvents] = useState<EventEntry[]>([]);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [coldPlungePage, setColdPlungePage] = useState(1);
+  const [coldShowerPage, setColdShowerPage] = useState(1);
+
   const [bestEvent, setBestEvent] = useState<EventEntry | null>(null);
 
   const rowsPerPage = 10;
@@ -85,16 +89,22 @@ export default function Profile() {
   const coldPlungeTotalPages = Math.ceil(coldPlungeAll.length / rowsPerPage);
 
   const paginatedColdPlungeEvents = coldPlungeAll.slice(
-    (currentPage - 1) * rowsPerPage,
-    currentPage * rowsPerPage,
+    (coldPlungePage - 1) * rowsPerPage,
+    coldPlungePage * rowsPerPage,
   );
 
   const user_events_rows = useMemo(
     () =>
       paginatedColdPlungeEvents.map((ev) => [
         <span className="font-bold">{formatDateTime(ev.date)}</span>,
-        ev.water_temp,
         formatTimeToMMSS(ev.time_in_water),
+        ev.water_temp,
+        ev.air_temp,
+        <IconHeaderTable
+          src={WEATHER_ICON_MAP[ev.weather] ?? ICONS.weather.sunny}
+          alt="Počasie"
+          size="h-[3.5vh] w-[3.5vh]"
+        />,
         <span className="font-bold">{ev.points.toFixed(0)}</span>,
       ]),
     [paginatedColdPlungeEvents],
@@ -109,15 +119,14 @@ export default function Profile() {
   const coldShowerTotalPages = Math.ceil(coldShowerAll.length / rowsPerPage);
 
   const paginatedColdShowerEvents = coldShowerAll.slice(
-    (currentPage - 1) * rowsPerPage,
-    currentPage * rowsPerPage,
+    (coldShowerPage - 1) * rowsPerPage,
+    coldShowerPage * rowsPerPage,
   );
 
   const user_showers_rows = useMemo(
     () =>
       paginatedColdShowerEvents.map((ev) => [
         <span className="font-bold">{formatDateTime(ev.date)}</span>,
-        ev.water_temp,
         formatTimeToMMSS(ev.time_in_water),
         <span className="font-bold">{ev.points.toFixed(0)}</span>,
       ]),
@@ -131,10 +140,16 @@ export default function Profile() {
         ? [
             [
               <span className="font-bold">
-                {formatDateTime(bestEvent.date)}
+                {formatDateTime(bestEvent.date)}{" "}
               </span>,
-              bestEvent.water_temp,
               formatTimeToMMSS(bestEvent.time_in_water),
+              bestEvent.water_temp ?? "–",
+              bestEvent.air_temp ?? "–",
+              <img
+                src={WEATHER_ICON_MAP[bestEvent.weather] ?? ICONS.weather.sunny}
+                alt="Počasie"
+                className="h-[3.5vh] w-[3.5vh] items-center"
+              />,
               <span className="font-bold">{bestEvent.points.toFixed(0)}</span>,
             ],
           ]
@@ -183,7 +198,34 @@ export default function Profile() {
       {bestEvent && (
         <>
           <Table
-            headers={["Dátum", "Voda (°C)", "Čas", "Body"]}
+            headers={[
+              "Dátum a čas",
+              <IconHeaderTable
+                src={ICONS.stopwatch}
+                alt="Čas"
+                size="h-[4.5vh] w-[4.5vh]"
+              />,
+              <IconHeaderTable
+                src={ICONS.waterTemp}
+                alt="Voda (°C)"
+                size="h-[4.5vh] w-[4.5vh]"
+              />,
+              <IconHeaderTable
+                src={ICONS.airTemp}
+                alt="Vzduch (°C)"
+                size="h-[4.5vh] w-[4.5vh]"
+              />,
+              <IconHeaderTable
+                src={ICONS.weather.sunny}
+                alt="Počasie"
+                size="h-[6vh] w-[6vh]"
+              />,
+              <IconHeaderTable
+                src={ICONS.sealPoints}
+                alt="Body"
+                size="h-[6vh] w-[6vh]"
+              />,
+            ]}
             rows={user_top_event_row}
             className="mb-4"
             title="Najlepší výkon"
@@ -192,7 +234,34 @@ export default function Profile() {
       )}
       {/* Sessions list */}
       <Table
-        headers={["Dátum", "Voda (°C)", "Čas", "Body"]}
+        headers={[
+          "Dátum a čas",
+          <IconHeaderTable
+            src={ICONS.stopwatch}
+            alt="Čas"
+            size="h-[4.5vh] w-[4.5vh]"
+          />,
+          <IconHeaderTable
+            src={ICONS.waterTemp}
+            alt="Voda (°C)"
+            size="h-[4.5vh] w-[4.5vh]"
+          />,
+          <IconHeaderTable
+            src={ICONS.airTemp}
+            alt="Vzduch (°C)"
+            size="h-[4.5vh] w-[4.5vh]"
+          />,
+          <IconHeaderTable
+            src={ICONS.weather.sunny}
+            alt="Počasie"
+            size="h-[6vh] w-[6vh]"
+          />,
+          <IconHeaderTable
+            src={ICONS.sealPoints}
+            alt="Body"
+            size="h-[6vh] w-[6vh]"
+          />,
+        ]}
         rows={user_events_rows}
         className="mb-4"
         title="Otuženia"
@@ -203,21 +272,21 @@ export default function Profile() {
           <Button
             size="sm"
             variant="primary"
-            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-            disabled={currentPage === 1}
+            onClick={() => setColdPlungePage((p) => Math.max(1, p - 1))}
+            disabled={coldPlungePage === 1}
           >
             Späť
           </Button>
           <span className="font-bangers text-darkblack flex items-center">
-            {currentPage} / {coldPlungeTotalPages}
+            {coldPlungePage} / {coldPlungeTotalPages}
           </span>
           <Button
             size="sm"
             variant="primary"
             onClick={() =>
-              setCurrentPage((p) => Math.min(coldPlungeTotalPages, p + 1))
+              setColdPlungePage((p) => Math.min(coldPlungeTotalPages, p + 1))
             }
-            disabled={currentPage === coldPlungeTotalPages}
+            disabled={coldPlungePage === coldPlungeTotalPages}
           >
             Ďalšie
           </Button>
@@ -226,7 +295,19 @@ export default function Profile() {
 
       {/* Sprchy table */}
       <Table
-        headers={["Dátum", "Voda (°C)", "Čas", "Body"]}
+        headers={[
+          "Dátum a čas",
+          <IconHeaderTable
+            src={ICONS.stopwatch}
+            alt="Čas"
+            size="h-[4.5vh] w-[4.5vh]"
+          />,
+          <IconHeaderTable
+            src={ICONS.sealPoints}
+            alt="Body"
+            size="h-[6vh] w-[6vh]"
+          />,
+        ]}
         rows={user_showers_rows}
         className="mb-4"
         title="Sprchy"
@@ -237,21 +318,21 @@ export default function Profile() {
           <Button
             size="sm"
             variant="primary"
-            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-            disabled={currentPage === 1}
+            onClick={() => setColdShowerPage((p) => Math.max(1, p - 1))}
+            disabled={coldShowerPage === 1}
           >
             Späť
           </Button>
           <span className="font-bangers text-darkblack flex items-center">
-            {currentPage} / {coldShowerTotalPages}
+            {coldShowerPage} / {coldShowerTotalPages}
           </span>
           <Button
             size="sm"
             variant="primary"
             onClick={() =>
-              setCurrentPage((p) => Math.min(coldShowerTotalPages, p + 1))
+              setColdShowerPage((p) => Math.min(coldShowerTotalPages, p + 1))
             }
-            disabled={currentPage === coldShowerTotalPages}
+            disabled={coldShowerPage === coldShowerTotalPages}
           >
             Ďalšie
           </Button>
