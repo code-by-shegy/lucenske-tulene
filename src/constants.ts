@@ -32,7 +32,7 @@ export const WEATHER = {
   SUNNY: 1,
   CLOUDY: 2,
   RAIN: 3,
-  SNOW: 4,
+  SNOW: 3.1,
 } as const;
 
 export const WEATHER_OPTIONS = [

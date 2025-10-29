@@ -4,7 +4,7 @@ import Page from "../components/Page";
 import Card from "../components/Card";
 import Table from "../components/Table";
 
-import { auth } from "../firebase";
+import { useAuth } from "../context/AuthContext";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getUser } from "../lib/db_users";
@@ -37,7 +37,7 @@ export default function Profile() {
 
   useEffect(() => {
     async function fetchProfile() {
-      const user = auth.currentUser;
+      const { user } = useAuth();
       if (!user) return;
 
       // 1) Load user profile

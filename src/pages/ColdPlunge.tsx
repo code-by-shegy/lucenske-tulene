@@ -4,7 +4,7 @@ import type { Weather, TimeInSeconds, EventType } from "../types";
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { RotateCcw } from "lucide-react";
-import { auth } from "../firebase";
+import { useAuth } from "../context/AuthContext";
 import { getCurrentGeoPoint } from "../lib/db_location";
 import { createEvent } from "../lib/db_events";
 
@@ -63,7 +63,7 @@ function sanitizeTemperatureInput(value: string): string {
 
 export default function StartSession() {
   const navigate = useNavigate();
-  const user = auth.currentUser;
+  const { user } = useAuth();
   const [stage, setStage] = useState<"start" | "stop" | "save">("start");
   const [loading, setLoading] = useState<boolean>(false);
 

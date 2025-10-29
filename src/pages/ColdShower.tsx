@@ -2,7 +2,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { RotateCcw } from "lucide-react";
-import { auth } from "../firebase";
+import { useAuth } from "../context/AuthContext";
 
 import { ICONS, SHOWER_OPTIONS, EVENT_TYPE } from "../constants";
 import { createEvent } from "../lib/db_events";
@@ -26,7 +26,7 @@ const pointsMap: Record<number, Points> = {
 
 export default function ColdShower() {
   const navigate = useNavigate();
-  const user = auth.currentUser;
+  const { user } = useAuth();
 
   const [duration, setDuration] = useState<number>(0);
   const [remaining, setRemaining] = useState<number>(0);
