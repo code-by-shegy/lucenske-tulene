@@ -24,6 +24,7 @@ import type {
 
 export default function Profile() {
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const [user_name, setName] = useState<UserName>("");
   const [points, setPoints] = useState<Points>(0);
@@ -38,7 +39,6 @@ export default function Profile() {
 
   useEffect(() => {
     async function fetchProfile() {
-      const { user } = useAuth();
       if (!user) return;
 
       // 1) Load user profile

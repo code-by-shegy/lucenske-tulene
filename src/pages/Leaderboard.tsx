@@ -1,62 +1,30 @@
 import Header from "../components/Header";
 import Page from "../components/Page";
 import Table from "../components/Table";
-import { useEffect, useState, useMemo } from "react";
+import { useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { getLeaderboard, getAllUsersTopEvents } from "../lib/db_leaderboard";
 import { useAuth } from "../context/AuthContext";
 import { formatTimeToMMSS } from "../utils/utils.ts";
-import type { LeaderboardEntry, EventEntry } from "../types";
 
 export default function Leaderboard() {
-  const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
-  const [loadingLeaderboard, setLoadingLeaderboard] = useState(true);
-
-  const [topEvents, setTopEvents] = useState<
-    (EventEntry & { user_name: string })[]
-  >([]);
-  const [loadingTopEvents, setLoadingTopEvents] = useState(true);
-
   const { user } = useAuth();
 
-  // Load overall leaderboard
-  useEffect(() => {
-    const fetchLeaderboard = async () => {
-      try {
-        const leaderboard = await getLeaderboard();
-        setEntries(leaderboard);
-      } catch (err) {
-        console.error("Error loading leaderboard:", err);
-      } finally {
-        setLoadingLeaderboard(false);
-      }
-    };
-    fetchLeaderboard();
-  }, []);
+  // --- React Query for leaderboard ---
+  const { data: entries = [], isLoading: loadingLeaderboard } = useQuery({
+    queryKey: ["leaderboard"],
+    queryFn: getLeaderboard,
+    staleTime: 5 * 60 * 1000, // cache for 5 minutes
+  });
 
-  // Load top events
-  useEffect(() => {
-    const fetchTopEvents = async () => {
-      try {
-        const events = await getAllUsersTopEvents();
-        setTopEvents(events);
-      } catch (err) {
-        console.error("Error loading top events:", err);
-      } finally {
-        setLoadingTopEvents(false);
-      }
-    };
-    fetchTopEvents();
-  }, []);
+  // --- React Query for top events ---
+  const { data: topEvents = [], isLoading: loadingTopEvents } = useQuery({
+    queryKey: ["topEvents"],
+    queryFn: getAllUsersTopEvents,
+    staleTime: 5 * 60 * 1000, // cache for 5 minutes
+  });
 
-  if (loadingLeaderboard && loadingTopEvents) {
-    return (
-      <div className="font-bangers bg-lightgrey text-darkblack flex h-screen items-center justify-center text-2xl">
-        Loading...
-      </div>
-    );
-  }
-
-  // Convert leaderboard data to rows
+  // --- Convert leaderboard to rows ---
   const leaderboardRows = useMemo(
     () =>
       entries.map((entry, index) => {
@@ -75,7 +43,7 @@ export default function Leaderboard() {
     [entries, user?.uid],
   );
 
-  // Convert top events to rows
+  // --- Convert top events to rows ---
   const topEventRows = useMemo(
     () =>
       topEvents.map((entry, index) => {
@@ -99,20 +67,21 @@ export default function Leaderboard() {
       <Header title="Tabuľky" />
 
       {/* Overall leaderboard */}
-      <Table
-        className="mb-4"
-        headers={["#", "Tuleň", "Otužil", "Sprchy", "Body"]}
-        rows={leaderboardRows.map((r) => r.cells)}
-        rowClassNames={leaderboardRows.map((r) => r.rowClassName)}
-        title="Celkové poradie"
-        titleClassName="mt-2 text-3xl"
-      />
-
+      {loadingLeaderboard ? (
+        <div>Načítávam celkové poradie...</div>
+      ) : (
+        <Table
+          className="mb-4"
+          headers={["#", "Tuleň", "Otužil", "Sprchy", "Body"]}
+          rows={leaderboardRows.map((r) => r.cells)}
+          rowClassNames={leaderboardRows.map((r) => r.rowClassName)}
+          title="Celkové poradie"
+          titleClassName="mt-2 text-3xl"
+        />
+      )}
       {/* Top performances table */}
       {loadingTopEvents ? (
-        <div className="font-bangers text-darkblack mb-4 flex items-center justify-center text-lg">
-          Načítavam najlepšie výkony...
-        </div>
+        <div>Načítávam najlepšie výkony...</div>
       ) : (
         <Table
           className="mb-4"
