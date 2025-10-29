@@ -1,3 +1,4 @@
+import { memo } from "react";
 import type { ReactNode } from "react";
 
 interface TableProps {
@@ -9,7 +10,7 @@ interface TableProps {
   titleClassName?: string;
 }
 
-export default function Table({
+function Table({
   headers,
   rows,
   rowClassNames = [],
@@ -72,3 +73,5 @@ export default function Table({
     </div>
   );
 }
+
+export default memo(Table);

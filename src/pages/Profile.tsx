@@ -5,13 +5,14 @@ import Card from "../components/Card";
 import Table from "../components/Table";
 
 import { useAuth } from "../context/AuthContext";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { getUser } from "../lib/db_users";
 import { getEventsByUser, getUserTopEvent } from "../lib/db_events";
 import { getLeaderboard } from "../lib/db_leaderboard";
 import { getAuth, signOut } from "firebase/auth";
 import { LogOut } from "lucide-react";
+import { formatDateTime, formatTimeToMMSS } from "../utils/utils.ts";
 
 import type {
   EventEntry,
@@ -76,25 +77,6 @@ export default function Profile() {
     }
   };
 
-  const formatDateTime = (date?: Date | null): string => {
-    if (!date) return "—";
-
-    return date.toLocaleString(undefined, {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false,
-    });
-  };
-
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, "0")}`;
-  };
-
   // Convert events into rows for Table component
   // Only cold plunges
   const coldPlungeAll = events.filter((ev) => ev.event_type === "cold_plunge");
@@ -107,12 +89,16 @@ export default function Profile() {
     currentPage * rowsPerPage,
   );
 
-  const user_events_rows = paginatedColdPlungeEvents.map((ev) => [
-    <span className="font-bold">{formatDateTime(ev.date)}</span>,
-    ev.water_temp,
-    formatTime(ev.time_in_water),
-    <span className="font-bold">{ev.points.toFixed(0)}</span>,
-  ]);
+  const user_events_rows = useMemo(
+    () =>
+      paginatedColdPlungeEvents.map((ev) => [
+        <span className="font-bold">{formatDateTime(ev.date)}</span>,
+        ev.water_temp,
+        formatTimeToMMSS(ev.time_in_water),
+        <span className="font-bold">{ev.points.toFixed(0)}</span>,
+      ]),
+    [paginatedColdPlungeEvents],
+  );
 
   {
     /* Only cold showers */
@@ -127,24 +113,34 @@ export default function Profile() {
     currentPage * rowsPerPage,
   );
 
-  const user_showers_rows = paginatedColdShowerEvents.map((ev) => [
-    <span className="font-bold">{formatDateTime(ev.date)}</span>,
-    ev.water_temp,
-    formatTime(ev.time_in_water),
-    <span className="font-bold">{ev.points.toFixed(0)}</span>,
-  ]);
+  const user_showers_rows = useMemo(
+    () =>
+      paginatedColdShowerEvents.map((ev) => [
+        <span className="font-bold">{formatDateTime(ev.date)}</span>,
+        ev.water_temp,
+        formatTimeToMMSS(ev.time_in_water),
+        <span className="font-bold">{ev.points.toFixed(0)}</span>,
+      ]),
+    [paginatedColdShowerEvents],
+  );
 
   // Prepare best event row (or null if no event)
-  const user_top_event_row = bestEvent
-    ? [
-        [
-          <span className="font-bold">{formatDateTime(bestEvent.date)}</span>,
-          bestEvent.water_temp,
-          formatTime(bestEvent.time_in_water),
-          <span className="font-bold">{bestEvent.points.toFixed(0)}</span>,
-        ],
-      ]
-    : [];
+  const user_top_event_row = useMemo(
+    () =>
+      bestEvent
+        ? [
+            [
+              <span className="font-bold">
+                {formatDateTime(bestEvent.date)}
+              </span>,
+              bestEvent.water_temp,
+              formatTimeToMMSS(bestEvent.time_in_water),
+              <span className="font-bold">{bestEvent.points.toFixed(0)}</span>,
+            ],
+          ]
+        : [],
+    [bestEvent],
+  );
 
   return (
     <Page className="pb-[10vh]">
