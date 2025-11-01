@@ -1,34 +1,39 @@
 // Icons
-import iconWaterTemp from "./assets/icons/water_temp.svg";
-import iconAirTemp from "./assets/icons/air_temp.svg";
-import iconTimer from "./assets/icons/timer.svg";
-import iconStopwatch from "./assets/icons/stopwatch.svg";
-import iconSunny from "./assets/icons/sunny.svg";
-import iconCloudy from "./assets/icons/cloudy.svg";
-import iconSnowing from "./assets/icons/snowing.svg";
-import iconRaining from "./assets/icons/raining.svg";
-import iconSeal from "./assets/icons/seal.svg";
-import iconSealPoints from "./assets/icons/points.svg";
-import iconColdPlunge from "./assets/icons/cold_exposure.svg";
-import iconColdShower from "./assets/icons/cold_shower.svg";
-import iconCalendar from "./assets/icons/calendar.svg";
+import iconWaterTempCompact from "./assets/icons/water_temp_compact.svg";
+import iconAirTempCompact from "./assets/icons/air_temp_compact.svg";
+import iconTimerCompact from "./assets/icons/timer_compact.svg";
+import iconStopwatchCompact from "./assets/icons/stopwatch_compact.svg";
+import iconSunnyCompact from "./assets/icons/sunny_compact.svg";
+import iconCloudyCompact from "./assets/icons/cloudy_compact.svg";
+import iconSnowingCompact from "./assets/icons/snowing_compact.svg";
+import iconRainingCompact from "./assets/icons/raining_compact.svg";
+import iconSealCompact from "./assets/icons/seal_compact.svg";
+import iconSealPointsCompact from "./assets/icons/points_compact.svg";
+import iconColdPlungeCompact from "./assets/icons/cold_exposure_compact.svg";
+import iconColdShowerCompact from "./assets/icons/cold_shower_compact.svg";
+import iconCalendarCompact from "./assets/icons/calendar_compact.svg";
+import iconLeaderboardCompact from "./assets/icons/leaderboard_compact.svg";
 
 export const ICONS = {
-  waterTemp: iconWaterTemp,
-  airTemp: iconAirTemp,
-  timer: iconTimer,
-  weather: {
-    sunny: iconSunny,
-    cloudy: iconCloudy,
-    snowing: iconSnowing,
-    raining: iconRaining,
+  compact: {
+    waterTemp: iconWaterTempCompact,
+    airTemp: iconAirTempCompact,
+    timer: iconTimerCompact,
+    weather: {
+      sunny: iconSunnyCompact,
+      cloudy: iconCloudyCompact,
+      snowing: iconSnowingCompact,
+      raining: iconRainingCompact,
+    },
+    seal: iconSealCompact,
+    sealPoints: iconSealPointsCompact,
+    stopwatch: iconStopwatchCompact,
+    coldPlunge: iconColdPlungeCompact,
+    coldShower: iconColdShowerCompact,
+    calendar: iconCalendarCompact,
+    leaderboard: iconLeaderboardCompact,
   },
-  seal: iconSeal,
-  sealPoints: iconSealPoints,
-  stopwatch: iconStopwatch,
-  coldPlunge: iconColdPlunge,
-  coldShower: iconColdShower,
-  calendar: iconCalendar,
+  padded: {},
 };
 
 // Temperature
@@ -56,11 +61,11 @@ export const WEATHER_OPTIONS = [
 ];
 
 export const WEATHER_ICON_MAP: Record<number, string> = {
-  [WEATHER.NONE]: iconSunny,
-  [WEATHER.SUNNY]: iconSunny,
-  [WEATHER.CLOUDY]: iconCloudy,
-  [WEATHER.RAIN]: iconRaining,
-  [WEATHER.SNOW]: iconSnowing,
+  [WEATHER.NONE]: iconSunnyCompact,
+  [WEATHER.SUNNY]: iconSunnyCompact,
+  [WEATHER.CLOUDY]: iconCloudyCompact,
+  [WEATHER.RAIN]: iconRainingCompact,
+  [WEATHER.SNOW]: iconSnowingCompact,
 };
 
 // Timer

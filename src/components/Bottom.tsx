@@ -1,24 +1,24 @@
 import { Link, useLocation } from "react-router-dom";
-import iconStopwatch from "../assets/icons/stopwatch.svg";
-import iconLeaderboard from "../assets/icons/leaderboard.svg";
-import iconSeal from "../assets/icons/seal.svg";
+import { ICONS } from "../constants";
 
 export default function BottomNav() {
   const loc = useLocation();
 
   const itemClass = (path: string) =>
-    `flex items-center justify-center w-[18vw] h-[8vh] rounded-md transition ${
-      loc.pathname === path ? "bg-icywhite" : "hover:bg-mediumgrey/60"
+    `flex h-[75%] flex-1 items-center justify-center rounded-2xl transition ${
+      loc.pathname === path ? "bg-icywhite" : ""
     }`;
 
   return (
-    <nav className="bg-dark2blue fixed bottom-0 left-0 z-50 h-[10vh] w-full shadow-inner">
+    // Set the parent (blue navbar) to scale with VH, but also have min and max.
+    // Childs can then just scale with vh-%.
+    <nav className="bg-dark2blue fixed bottom-0 left-0 z-50 h-[10vh] max-h-[80px] min-h-[56px] w-full pb-[env(safe-area-inset-bottom)] shadow-inner">
       <div className="mx-auto flex h-full max-w-screen-xl items-center justify-around px-6">
         <Link to="/" aria-label="Start session" className={itemClass("/")}>
           <img
-            src={iconStopwatch}
-            alt="Start"
-            className="h-[6vh] w-auto transform object-contain transition-transform duration-200 hover:scale-110 active:scale-95"
+            src={ICONS.stopwatch}
+            alt="Start session"
+            className="h-[60%] w-auto transform object-contain transition-transform duration-200 hover:scale-110 active:scale-95"
           />
         </Link>
 
@@ -28,9 +28,9 @@ export default function BottomNav() {
           className={itemClass("/leaderboard")}
         >
           <img
-            src={iconLeaderboard}
+            src={ICONS.leaderboard}
             alt="Leaderboard"
-            className="h-[8vh] w-auto transform object-contain transition-transform duration-200 hover:scale-110 active:scale-95"
+            className="h-[60%] w-auto transform object-contain transition-transform duration-200 hover:scale-110 active:scale-95"
           />
         </Link>
 
@@ -40,9 +40,9 @@ export default function BottomNav() {
           className={itemClass("/profile")}
         >
           <img
-            src={iconSeal}
+            src={ICONS.seal}
             alt="Profile"
-            className="h-[9vh] w-auto transform object-contain transition-transform duration-200 hover:scale-110 active:scale-95"
+            className="h-[60%] w-auto transform object-contain transition-transform duration-200 hover:scale-110 active:scale-95"
           />
         </Link>
       </div>
