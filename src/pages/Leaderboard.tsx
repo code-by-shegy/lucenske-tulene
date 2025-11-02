@@ -13,6 +13,8 @@ import { getLeaderboard, getAllUsersTopEvents } from "../lib/db_leaderboard";
 export default function Leaderboard() {
   const { user } = useAuth();
 
+  console.log("ICONS:", ICONS); // 👈 add this
+
   // --- React Query for leaderboard ---
   const { data: leaderboard = [], isLoading: loadingLeaderboard } = useQuery({
     queryKey: ["leaderboard"],
@@ -60,9 +62,11 @@ export default function Leaderboard() {
             entry.water_temp ?? "–",
             entry.air_temp ?? "–",
             <IconHeaderTable
-              src={WEATHER_ICON_MAP[entry.weather] ?? ICONS.weather.sunny}
+              src={
+                WEATHER_ICON_MAP[entry.weather] ?? ICONS.compact.weather.sunny
+              }
               alt="Počasie"
-              size="h-[3.5vh] w-[3.5vh]"
+              size="h-[60%] w-auto"
             />,
             <span className="font-bold">{entry.points.toFixed(0)}</span>,
           ],
@@ -89,24 +93,24 @@ export default function Leaderboard() {
         headers={[
           "#",
           <IconHeaderTable
-            src={ICONS.seal}
+            src={ICONS.compact.seal}
             alt="Tuleň"
-            size="h-[6vh] w-[6vh]"
+            size="h-[80%] w-auto"
           />,
           <IconHeaderTable
-            src={ICONS.coldPlunge}
+            src={ICONS.compact.coldPlunge}
             alt="Otužil"
-            size="h-[4.5vh] w-[4.5vh]"
+            size="h-[80%] w-auto"
           />,
           <IconHeaderTable
-            src={ICONS.coldShower}
+            src={ICONS.compact.coldShower}
             alt="Sprchy"
-            size="h-[4.5vh] w-[4.5vh]"
+            size="h-[80%] w-auto"
           />,
           <IconHeaderTable
-            src={ICONS.sealPoints}
+            src={ICONS.compact.sealPoints}
             alt="Body"
-            size="h-[5.5vh] w-[5.5vh]"
+            size="h-[80%] w-auto"
           />,
         ]}
         rows={leaderboardRows.map((r) => r.cells)}
@@ -121,34 +125,34 @@ export default function Leaderboard() {
         headers={[
           "#",
           <IconHeaderTable
-            src={ICONS.seal}
+            src={ICONS.compact.seal}
             alt="Tuleň"
-            size="h-[6vh] w-[6vh]"
+            size="h-[80%] w-auto"
           />,
           <IconHeaderTable
-            src={ICONS.stopwatch}
+            src={ICONS.compact.stopwatch}
             alt="Čas"
-            size="h-[4.5vh] w-[4.5vh]"
+            size="h-[80%] w-auto"
           />,
           <IconHeaderTable
-            src={ICONS.waterTemp}
+            src={ICONS.compact.waterTemp}
             alt="Voda (°C)"
-            size="h-[4.5vh] w-[4.5vh]"
+            size="h-[80%] w-auto"
           />,
           <IconHeaderTable
-            src={ICONS.airTemp}
+            src={ICONS.compact.airTemp}
             alt="Vzduch (°C)"
-            size="h-[4.5vh] w-[4.5vh]"
+            size="h-[80%] w-auto"
           />,
           <IconHeaderTable
-            src={ICONS.weather.sunny}
+            src={ICONS.compact.weather.sunny}
             alt="Počasie"
-            size="h-[6vh] w-[6vh]"
+            size="h-[80%] w-auto"
           />,
           <IconHeaderTable
-            src={ICONS.sealPoints}
+            src={ICONS.compact.sealPoints}
             alt="Body"
-            size="h-[6vh] w-[6vh]"
+            size="h-[80%] w-auto"
           />,
         ]}
         rows={topEventRows.map((r) => r.cells)}

@@ -24,11 +24,11 @@ export default function Input({
 
       <div className="relative w-full">
         {icon && (
-          <div className="absolute top-0 bottom-0 left-0 flex items-center">
+          <div className="absolute top-0 bottom-0 ml-3 flex items-center">
             <img
               src={icon}
               alt=""
-              className={`h-[90%] w-auto object-contain ${iconClassName}`}
+              className={`h-[60%] w-auto object-contain ${iconClassName}`}
             />
           </div>
         )}

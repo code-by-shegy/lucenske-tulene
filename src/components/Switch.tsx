@@ -44,7 +44,7 @@ export default function Switch({
               <img
                 src={opt.icon}
                 alt={opt.alt}
-                className="h-[65%] w-[65%] object-contain"
+                className="h-[60%] w-[60%] object-contain p-1"
               />
             </div>
           </button>

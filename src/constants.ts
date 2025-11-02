@@ -1,4 +1,3 @@
-// Icons
 import iconWaterTempCompact from "./assets/icons/water_temp_compact.svg";
 import iconAirTempCompact from "./assets/icons/air_temp_compact.svg";
 import iconTimerCompact from "./assets/icons/timer_compact.svg";
@@ -13,6 +12,21 @@ import iconColdPlungeCompact from "./assets/icons/cold_exposure_compact.svg";
 import iconColdShowerCompact from "./assets/icons/cold_shower_compact.svg";
 import iconCalendarCompact from "./assets/icons/calendar_compact.svg";
 import iconLeaderboardCompact from "./assets/icons/leaderboard_compact.svg";
+
+import iconWaterTempPadded from "./assets/icons/water_temp_compact.svg";
+import iconAirTempPadded from "./assets/icons/air_temp_compact.svg";
+import iconTimerPadded from "./assets/icons/timer_compact.svg";
+import iconStopwatchPadded from "./assets/icons/stopwatch_compact.svg";
+import iconSunnyPadded from "./assets/icons/sunny_compact.svg";
+import iconCloudyPadded from "./assets/icons/cloudy_compact.svg";
+import iconSnowingPadded from "./assets/icons/snowing_compact.svg";
+import iconRainingPadded from "./assets/icons/raining_compact.svg";
+import iconSealPadded from "./assets/icons/seal_compact.svg";
+import iconSealPointsPadded from "./assets/icons/points_compact.svg";
+import iconColdPlungePadded from "./assets/icons/cold_exposure_compact.svg";
+import iconColdShowerPadded from "./assets/icons/cold_shower_compact.svg";
+import iconCalendarPadded from "./assets/icons/calendar_compact.svg";
+import iconLeaderboardPadded from "./assets/icons/leaderboard_compact.svg";
 
 export const ICONS = {
   compact: {
@@ -34,22 +48,22 @@ export const ICONS = {
     leaderboard: iconLeaderboardCompact,
   },
   padded: {
-    waterTemp: iconWaterTempCompact,
-    airTemp: iconAirTempCompact,
-    timer: iconTimerCompact,
+    waterTemp: iconWaterTempPadded,
+    airTemp: iconAirTempPadded,
+    timer: iconTimerPadded,
     weather: {
-      sunny: iconSunnyCompact,
-      cloudy: iconCloudyCompact,
-      snowing: iconSnowingCompact,
-      raining: iconRainingCompact,
+      sunny: iconSunnyPadded,
+      cloudy: iconCloudyPadded,
+      snowing: iconSnowingPadded,
+      raining: iconRainingPadded,
     },
-    seal: iconSealCompact,
-    sealPoints: iconSealPointsCompact,
-    stopwatch: iconStopwatchCompact,
-    coldPlunge: iconColdPlungeCompact,
-    coldShower: iconColdShowerCompact,
-    calendar: iconCalendarCompact,
-    leaderboard: iconLeaderboardCompact,
+    seal: iconSealPadded,
+    sealPoints: iconSealPointsPadded,
+    stopwatch: iconStopwatchPadded,
+    coldPlunge: iconColdPlungePadded,
+    coldShower: iconColdShowerPadded,
+    calendar: iconCalendarPadded,
+    leaderboard: iconLeaderboardPadded,
   },
 };
 

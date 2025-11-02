@@ -103,7 +103,7 @@ export default function Profile() {
         <IconHeaderTable
           src={WEATHER_ICON_MAP[ev.weather] ?? ICONS.compact.weather.sunny}
           alt="Počasie"
-          size="h-[3.5vh] w-[3.5vh]"
+          size="h-[60%] w-auto"
         />,
         <span className="font-bold">{ev.points.toFixed(0)}</span>,
       ]),
@@ -145,13 +145,13 @@ export default function Profile() {
               formatTimeToMMSS(bestEvent.time_in_water),
               bestEvent.water_temp ?? "–",
               bestEvent.air_temp ?? "–",
-              <img
+              <IconHeaderTable
                 src={
                   WEATHER_ICON_MAP[bestEvent.weather] ??
                   ICONS.compact.weather.sunny
                 }
                 alt="Počasie"
-                className="h-[3.5vh] w-[3.5vh] items-center"
+                size="h-[60%] w-auto"
               />,
               <span className="font-bold">{bestEvent.points.toFixed(0)}</span>,
             ],
@@ -206,27 +206,27 @@ export default function Profile() {
               <IconHeaderTable
                 src={ICONS.compact.stopwatch}
                 alt="Čas"
-                size="h-[4.5vh] w-[4.5vh]"
+                size="h-[80%] w-auto"
               />,
               <IconHeaderTable
                 src={ICONS.compact.waterTemp}
                 alt="Voda (°C)"
-                size="h-[4.5vh] w-[4.5vh]"
+                size="h-[80%] w-auto"
               />,
               <IconHeaderTable
                 src={ICONS.compact.airTemp}
                 alt="Vzduch (°C)"
-                size="h-[4.5vh] w-[4.5vh]"
+                size="h-[80%] w-auto"
               />,
               <IconHeaderTable
                 src={ICONS.compact.weather.sunny}
                 alt="Počasie"
-                size="h-[6vh] w-[6vh]"
+                size="h-[80%] w-auto"
               />,
               <IconHeaderTable
                 src={ICONS.compact.sealPoints}
                 alt="Body"
-                size="h-[6vh] w-[6vh]"
+                size="h-[80%] w-auto"
               />,
             ]}
             rows={user_top_event_row}
@@ -242,27 +242,27 @@ export default function Profile() {
           <IconHeaderTable
             src={ICONS.compact.stopwatch}
             alt="Čas"
-            size="h-[4.5vh] w-[4.5vh]"
+            size="h-[80%] w-auto"
           />,
           <IconHeaderTable
             src={ICONS.compact.waterTemp}
             alt="Voda (°C)"
-            size="h-[4.5vh] w-[4.5vh]"
+            size="h-[80%] w-auto"
           />,
           <IconHeaderTable
             src={ICONS.compact.airTemp}
             alt="Vzduch (°C)"
-            size="h-[4.5vh] w-[4.5vh]"
+            size="h-[80%] w-auto"
           />,
           <IconHeaderTable
             src={ICONS.compact.weather.sunny}
             alt="Počasie"
-            size="h-[6vh] w-[6vh]"
+            size="h-[80%] w-auto"
           />,
           <IconHeaderTable
             src={ICONS.compact.sealPoints}
             alt="Body"
-            size="h-[6vh] w-[6vh]"
+            size="h-[80%] w-auto"
           />,
         ]}
         rows={user_events_rows}
@@ -303,12 +303,12 @@ export default function Profile() {
           <IconHeaderTable
             src={ICONS.compact.stopwatch}
             alt="Čas"
-            size="h-[4.5vh] w-[4.5vh]"
+            size="h-[80%] w-auto"
           />,
           <IconHeaderTable
             src={ICONS.compact.sealPoints}
             alt="Body"
-            size="h-[6vh] w-[6vh]"
+            size="h-[80%] w-auto"
           />,
         ]}
         rows={user_showers_rows}

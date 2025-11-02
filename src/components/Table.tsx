@@ -42,7 +42,9 @@ function Table({
                       : ""
                 }`}
               >
-                <div className="flex items-center justify-center">{header}</div>
+                <div className="flex h-[4vh] min-h-[4vh] items-center justify-center">
+                  {header}
+                </div>{" "}
               </th>
             ))}
           </tr>
@@ -54,7 +56,7 @@ function Table({
               {cols.map((col, colIndex) => (
                 <td
                   key={colIndex}
-                  className={`text-darkblack font-roboto border-mediumgrey hover:bg-lightblue/10 border-t p-2 text-sm transition-colors ${
+                  className={`text-darkblack font-roboto border-mediumgrey hover:bg-lightblue/10 border-t text-sm transition-colors ${
                     rowClassNames[rowIndex] ?? "bg-icywhite"
                   } ${rowIndex === rows.length - 1 && colIndex === 0 ? "rounded-bl-2xl" : ""} ${
                     rowIndex === rows.length - 1 && colIndex === cols.length - 1
@@ -62,7 +64,9 @@ function Table({
                       : ""
                   }`}
                 >
-                  <div className="flex items-center justify-center">{col}</div>
+                  <div className="flex h-[4vh] min-h-[4vh] items-center justify-center">
+                    {col}
+                  </div>
                 </td>
               ))}
             </tr>
