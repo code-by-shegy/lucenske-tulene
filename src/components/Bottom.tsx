@@ -16,7 +16,7 @@ export default function BottomNav() {
       <div className="mx-auto flex h-full max-w-screen-xl items-center justify-around px-6">
         <Link to="/" aria-label="Start session" className={itemClass("/")}>
           <img
-            src={ICONS.stopwatch}
+            src={ICONS.padded.stopwatch}
             alt="Start session"
             className="h-[60%] w-auto transform object-contain transition-transform duration-200 hover:scale-110 active:scale-95"
           />
@@ -28,7 +28,7 @@ export default function BottomNav() {
           className={itemClass("/leaderboard")}
         >
           <img
-            src={ICONS.leaderboard}
+            src={ICONS.padded.leaderboard}
             alt="Leaderboard"
             className="h-[60%] w-auto transform object-contain transition-transform duration-200 hover:scale-110 active:scale-95"
           />
@@ -40,7 +40,7 @@ export default function BottomNav() {
           className={itemClass("/profile")}
         >
           <img
-            src={ICONS.seal}
+            src={ICONS.padded.seal}
             alt="Profile"
             className="h-[60%] w-auto transform object-contain transition-transform duration-200 hover:scale-110 active:scale-95"
           />

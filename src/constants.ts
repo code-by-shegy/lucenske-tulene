@@ -33,7 +33,24 @@ export const ICONS = {
     calendar: iconCalendarCompact,
     leaderboard: iconLeaderboardCompact,
   },
-  padded: {},
+  padded: {
+    waterTemp: iconWaterTempCompact,
+    airTemp: iconAirTempCompact,
+    timer: iconTimerCompact,
+    weather: {
+      sunny: iconSunnyCompact,
+      cloudy: iconCloudyCompact,
+      snowing: iconSnowingCompact,
+      raining: iconRainingCompact,
+    },
+    seal: iconSealCompact,
+    sealPoints: iconSealPointsCompact,
+    stopwatch: iconStopwatchCompact,
+    coldPlunge: iconColdPlungeCompact,
+    coldShower: iconColdShowerCompact,
+    calendar: iconCalendarCompact,
+    leaderboard: iconLeaderboardCompact,
+  },
 };
 
 // Temperature

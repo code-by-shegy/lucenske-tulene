@@ -101,7 +101,7 @@ export default function Profile() {
         ev.water_temp,
         ev.air_temp,
         <IconHeaderTable
-          src={WEATHER_ICON_MAP[ev.weather] ?? ICONS.weather.sunny}
+          src={WEATHER_ICON_MAP[ev.weather] ?? ICONS.compact.weather.sunny}
           alt="Počasie"
           size="h-[3.5vh] w-[3.5vh]"
         />,
@@ -146,7 +146,10 @@ export default function Profile() {
               bestEvent.water_temp ?? "–",
               bestEvent.air_temp ?? "–",
               <img
-                src={WEATHER_ICON_MAP[bestEvent.weather] ?? ICONS.weather.sunny}
+                src={
+                  WEATHER_ICON_MAP[bestEvent.weather] ??
+                  ICONS.compact.weather.sunny
+                }
                 alt="Počasie"
                 className="h-[3.5vh] w-[3.5vh] items-center"
               />,
@@ -201,27 +204,27 @@ export default function Profile() {
             headers={[
               "Dátum a čas",
               <IconHeaderTable
-                src={ICONS.stopwatch}
+                src={ICONS.compact.stopwatch}
                 alt="Čas"
                 size="h-[4.5vh] w-[4.5vh]"
               />,
               <IconHeaderTable
-                src={ICONS.waterTemp}
+                src={ICONS.compact.waterTemp}
                 alt="Voda (°C)"
                 size="h-[4.5vh] w-[4.5vh]"
               />,
               <IconHeaderTable
-                src={ICONS.airTemp}
+                src={ICONS.compact.airTemp}
                 alt="Vzduch (°C)"
                 size="h-[4.5vh] w-[4.5vh]"
               />,
               <IconHeaderTable
-                src={ICONS.weather.sunny}
+                src={ICONS.compact.weather.sunny}
                 alt="Počasie"
                 size="h-[6vh] w-[6vh]"
               />,
               <IconHeaderTable
-                src={ICONS.sealPoints}
+                src={ICONS.compact.sealPoints}
                 alt="Body"
                 size="h-[6vh] w-[6vh]"
               />,
@@ -237,27 +240,27 @@ export default function Profile() {
         headers={[
           "Dátum a čas",
           <IconHeaderTable
-            src={ICONS.stopwatch}
+            src={ICONS.compact.stopwatch}
             alt="Čas"
             size="h-[4.5vh] w-[4.5vh]"
           />,
           <IconHeaderTable
-            src={ICONS.waterTemp}
+            src={ICONS.compact.waterTemp}
             alt="Voda (°C)"
             size="h-[4.5vh] w-[4.5vh]"
           />,
           <IconHeaderTable
-            src={ICONS.airTemp}
+            src={ICONS.compact.airTemp}
             alt="Vzduch (°C)"
             size="h-[4.5vh] w-[4.5vh]"
           />,
           <IconHeaderTable
-            src={ICONS.weather.sunny}
+            src={ICONS.compact.weather.sunny}
             alt="Počasie"
             size="h-[6vh] w-[6vh]"
           />,
           <IconHeaderTable
-            src={ICONS.sealPoints}
+            src={ICONS.compact.sealPoints}
             alt="Body"
             size="h-[6vh] w-[6vh]"
           />,
@@ -298,12 +301,12 @@ export default function Profile() {
         headers={[
           "Dátum a čas",
           <IconHeaderTable
-            src={ICONS.stopwatch}
+            src={ICONS.compact.stopwatch}
             alt="Čas"
             size="h-[4.5vh] w-[4.5vh]"
           />,
           <IconHeaderTable
-            src={ICONS.sealPoints}
+            src={ICONS.compact.sealPoints}
             alt="Body"
             size="h-[6vh] w-[6vh]"
           />,

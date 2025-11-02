@@ -236,7 +236,7 @@ export default function ColdShower() {
           onChange={(e) => setDuration(Number(e.target.value))}
           disabled={running || finished}
           options={SHOWER_OPTIONS}
-          icon={ICONS.timer}
+          icon={ICONS.compact.timer}
           selectClassName="pl-20 py-3 rounded-2xl text-lg bg-icywhite cursor-pointer"
         />
 

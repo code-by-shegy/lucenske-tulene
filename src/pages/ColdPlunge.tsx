@@ -498,7 +498,7 @@ export default function StartSession() {
           }}
           disabled={readonlyInputs}
           placeholder="Teplota vody (°C)"
-          icon={ICONS.waterTemp}
+          icon={ICONS.compact.waterTemp}
           inputClassName={`pl-20 py-3 rounded-2xl text-lg bg-icywhite cursor-pointer ${
             missingFields.water ? "border-2 border-red-500" : ""
           }`}
@@ -535,7 +535,7 @@ export default function StartSession() {
           }}
           disabled={readonlyInputs}
           placeholder="Teplota vzduchu (°C)"
-          icon={ICONS.airTemp}
+          icon={ICONS.compact.airTemp}
           inputClassName={`pl-20 py-3 rounded-2xl text-lg bg-icywhite cursor-pointer ${
             missingFields.air ? "border-2 border-red-500" : ""
           }`}
@@ -573,7 +573,7 @@ export default function StartSession() {
           }}
           disabled={readonlyInputs}
           options={TIMER_OPTIONS}
-          icon={ICONS.timer}
+          icon={ICONS.compact.timer}
           selectClassName={`pl-20 py-3 rounded-2xl text-lg bg-icywhite cursor-pointer ${
             missingFields.prep
               ? "border-2 border-red-500 text-darkgrey"
