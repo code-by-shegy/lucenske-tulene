@@ -36,6 +36,7 @@ export default function ColdShower() {
 
   const [startTimestamp, setStartTimestamp] = useState<number | null>(null);
   const animationFrameRef = useRef<number | null>(null);
+  const [missingFields, setMissingFields] = useState({ duration: false });
 
   // ==============================
   // Sound - Gong
@@ -108,9 +109,10 @@ export default function ColdShower() {
 
   const handleStart = () => {
     if (!duration || duration <= 0) {
-      alert("Vyber dĺžku sprchy tuleň!");
+      setMissingFields({ duration: true });
       return;
     }
+    setMissingFields({ duration: false });
     setRemaining(duration);
     setStartTimestamp(Date.now());
     setRunning(true);
@@ -127,6 +129,7 @@ export default function ColdShower() {
     setRemaining(0);
     setDuration(0);
     setStartTimestamp(null);
+    setMissingFields({ duration: false });
   };
 
   const handleSave = async () => {
@@ -188,7 +191,7 @@ export default function ColdShower() {
     <>
       {/* Timer display */}
       <div className="mt-4 flex justify-center">
-        <div className="font-bangers text-darkblack text-8xl leading-none tracking-tight tabular-nums">
+        <div className="text-darkblack text-8xl leading-none font-extrabold tracking-tight tabular-nums">
           {String(Math.floor(remaining / 60)).padStart(2, "0")}:
           {String(remaining % 60).padStart(2, "0")}
         </div>
@@ -200,11 +203,11 @@ export default function ColdShower() {
           <Button
             className="flex-[9]"
             size="lg"
-            variant={running ? "danger" : "primary"}
+            variant={"primary"}
             onClick={running ? handleReset : handleStart}
-            disabled={loading || (running ? false : !duration)}
+            disabled={loading || running}
           >
-            {running ? "Stop" : "Štart"}
+            {running ? "Odpočítavanie" : "Štart"}
           </Button>
         ) : (
           <Button
@@ -224,6 +227,7 @@ export default function ColdShower() {
           variant="secondary"
           onClick={handleReset}
           iconOnly
+          disabled={finished}
         >
           <RotateCcw strokeWidth={3} />
         </Button>
@@ -233,11 +237,16 @@ export default function ColdShower() {
       <Card className="mb-4 grid grid-cols-1 gap-3">
         <Select
           value={duration}
-          onChange={(e) => setDuration(Number(e.target.value))}
+          onChange={(e) => {
+            setDuration(Number(e.target.value));
+            setMissingFields({ duration: false });
+          }}
           disabled={running || finished}
           options={SHOWER_OPTIONS}
           icon={ICONS.compact.timer}
-          selectClassName="pl-20 py-3 rounded-2xl text-lg bg-icywhite cursor-pointer"
+          selectClassName={`pl-20 py-3 rounded-2xl text-lg bg-icywhite cursor-pointer ${
+            missingFields.duration ? "border-2 border-red-500" : ""
+          }`}
         />
 
         <div className="text-darkblack font-bangers p-1 text-center text-2xl">

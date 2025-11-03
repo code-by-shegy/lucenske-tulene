@@ -7,68 +7,57 @@ import IconHeaderTable from "../components/IconTableHeader";
 
 import { ICONS, WEATHER_ICON_MAP } from "../constants";
 import { useAuth } from "../context/AuthContext";
-import { useEffect, useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { getUser } from "../lib/db_users";
-import { getEventsByUser, getUserTopEvent } from "../lib/db_events";
 import { getLeaderboard } from "../lib/db_leaderboard";
+import { getEventsByUser, getUserTopEvent } from "../lib/db_events";
 import { getAuth, signOut } from "firebase/auth";
 import { LogOut } from "lucide-react";
 import { formatDateTime, formatTimeToMMSS } from "../utils/utils.ts";
-
-import type {
-  EventEntry,
-  Standing,
-  UserName,
-  Points,
-  EventsCount,
-} from "../types";
 
 export default function Profile() {
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  const [user_name, setName] = useState<UserName>("");
-  const [points, setPoints] = useState<Points>(0);
-  const [showers_count, setShowersCount] = useState<EventsCount>(0);
-  const [events_count, setEventsCount] = useState<EventsCount>(0);
-  const [standing, setStanding] = useState<Standing>(null);
-  const [events, setEvents] = useState<EventEntry[]>([]);
   const [coldPlungePage, setColdPlungePage] = useState(1);
   const [coldShowerPage, setColdShowerPage] = useState(1);
-
-  const [bestEvent, setBestEvent] = useState<EventEntry | null>(null);
-
   const rowsPerPage = 10;
 
-  useEffect(() => {
-    async function fetchProfile() {
-      if (!user) return;
+  const { data: userProfile } = useQuery({
+    queryKey: ["userProfile", user?.uid],
+    queryFn: () => getUser(user!.uid),
+    enabled: !!user,
+    staleTime: 5 * 60 * 1000,
+  });
 
-      // 1) Load user profile
-      const user_profile = await getUser(user.uid);
-      if (user_profile) {
-        setName(user_profile.user_name || user.email || "Unknown");
-        setPoints(user_profile.points || 0);
-        setEventsCount(user_profile.events_count || 0);
-        setShowersCount(user_profile.showers_count || 0);
-      }
+  const { data: leaderboard } = useQuery({
+    queryKey: ["leaderboard"],
+    queryFn: getLeaderboard,
+    staleTime: 5 * 60 * 1000,
+  });
 
-      // 2) Load leaderboard and find user’s rank
-      const leaderboard = await getLeaderboard();
-      const rank = leaderboard.findIndex((entry) => entry.user_id === user.uid);
-      if (rank !== -1) setStanding(rank + 1);
+  const { data: events = [] } = useQuery({
+    queryKey: ["userEvents", user?.uid],
+    queryFn: () => getEventsByUser(user!.uid),
+    enabled: !!user,
+    staleTime: 5 * 60 * 1000,
+  });
 
-      // 3) Load events
-      const userEvents = await getEventsByUser(user.uid);
-      setEvents(userEvents);
+  const { data: bestEvent } = useQuery({
+    queryKey: ["userTopEvent", user?.uid],
+    queryFn: () => getUserTopEvent(user!.uid),
+    enabled: !!user,
+    staleTime: 5 * 60 * 1000,
+  });
 
-      // 4) Load top (best) event
-      const best = await getUserTopEvent(user.uid);
-      if (best) setBestEvent(best);
-    }
-    fetchProfile();
-  }, []);
+  const user_name = userProfile?.user_name ?? user?.email ?? "Unknown";
+  const points = userProfile?.points ?? 0;
+  const events_count = userProfile?.events_count ?? 0;
+  const showers_count = userProfile?.showers_count ?? 0;
+  const standing =
+    (leaderboard?.findIndex((entry) => entry.user_id === user?.uid) ?? -1) + 1;
 
   const handleLogout = async () => {
     const auth = getAuth();
@@ -181,7 +170,10 @@ export default function Profile() {
             </span>
           </span>
           <span className="mr-2">
-            Body: <span className="text-mediumblue font-bangers">{points}</span>
+            Body:{" "}
+            <span className="text-mediumblue font-bangers">
+              {points.toFixed(0)}
+            </span>
           </span>
           <br />
           <span className="mr-2">

@@ -10,16 +10,8 @@ export default function IconHeader({
   size = "",
 }: IconHeaderProps) {
   return (
-    <div
-      className={`flex items-center justify-center`}
-      style={{ height: "100%", minHeight: "4vh" }}
-    >
-      <img
-        src={src}
-        alt={alt}
-        className={`object-contain ${size}`}
-        style={{ display: "block" }} // removes inline img spacing
-      />
+    <div className={`flex aspect-square h-full items-center justify-center`}>
+      <img src={src} alt={alt} className={`object-contain ${size}`} />
     </div>
   );
 }

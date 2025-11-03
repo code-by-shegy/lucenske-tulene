@@ -23,7 +23,7 @@ function Table({
       {" "}
       {title && (
         <h2
-          className={`font-bangers text-darkblack mb-2 ml-2 text-center text-xl text-shadow-lg/10 ${titleClassName}`}
+          className={`font-bangers text-darkblack mb-2 ml-2 text-center text-xl ${titleClassName}`}
         >
           {title}
         </h2>
@@ -34,7 +34,7 @@ function Table({
             {headers.map((header, i) => (
               <th
                 key={i}
-                className={`text-icywhite bg-dark2blue font-roboto p-2 text-sm text-shadow-lg/25 ${
+                className={`text-icywhite bg-dark2blue font-roboto text-sm text-shadow-lg/25 ${
                   i === 0
                     ? "rounded-tl-2xl"
                     : i === headers.length - 1
@@ -42,9 +42,9 @@ function Table({
                       : ""
                 }`}
               >
-                <div className="flex h-[4vh] min-h-[4vh] items-center justify-center">
+                <div className="m-2 flex h-[3.5vh] max-h-[50px] min-h-[20px] items-center justify-center">
                   {header}
-                </div>{" "}
+                </div>
               </th>
             ))}
           </tr>
@@ -56,7 +56,7 @@ function Table({
               {cols.map((col, colIndex) => (
                 <td
                   key={colIndex}
-                  className={`text-darkblack font-roboto border-mediumgrey hover:bg-lightblue/10 border-t text-sm transition-colors ${
+                  className={`text-darkblack font-roboto border-mediumgrey border-t text-sm transition-colors ${
                     rowClassNames[rowIndex] ?? "bg-icywhite"
                   } ${rowIndex === rows.length - 1 && colIndex === 0 ? "rounded-bl-2xl" : ""} ${
                     rowIndex === rows.length - 1 && colIndex === cols.length - 1
@@ -64,7 +64,7 @@ function Table({
                       : ""
                   }`}
                 >
-                  <div className="flex h-[4vh] min-h-[4vh] items-center justify-center">
+                  <div className="m-2 flex h-[2.5vh] max-h-[25px] min-h-[10px] items-center justify-center">
                     {col}
                   </div>
                 </td>

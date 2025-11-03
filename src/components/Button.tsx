@@ -50,7 +50,9 @@ export default function Button({
   const disabledStyles = disabled ? "opacity-50 cursor-not-allowed" : "";
 
   // Extra styles for icon-only buttons
-  const iconOnlyStyles = iconOnly ? "flex items-center justify-center" : "";
+  const iconOnlyStyles = iconOnly
+    ? "inline-flex items-center justify-center"
+    : "";
 
   return (
     <button

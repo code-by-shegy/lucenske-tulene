@@ -222,6 +222,8 @@ export default function StartSession() {
     return 0;
   });
 
+  const [maxTime, setMaxTime] = useState<number | null>(null);
+
   useEffect(() => {
     if (!startTimestamp || stage !== "stop") {
       if (animationFrameRef.current) {
@@ -356,6 +358,7 @@ export default function StartSession() {
 
     if (stage === "stop") {
       setStage("save");
+      setMaxTime(current_time);
       return;
     }
 
@@ -428,12 +431,33 @@ export default function StartSession() {
     <>
       {/* Timer */}
       <div className="mt-4 flex justify-center">
-        <div className="font-bangers text-darkblack text-8xl leading-none tracking-tight tabular-nums">
+        <div className="text-darkblack text-8xl leading-none font-extrabold tracking-tight tabular-nums">
           {inPrep
             ? `${String(prepRemaining).padStart(2, "0")}`
             : `${String(Math.floor(current_time / 60)).padStart(2, "0")}:${String(current_time % 60).padStart(2, "0")}`}
         </div>
       </div>
+
+      {stage === "save" && (
+        <div className="mb-3 flex justify-center gap-4">
+          <Button
+            size="md"
+            variant="danger"
+            onClick={() => setCurrentTime((t) => Math.max(t - 10, 0))}
+          >
+            -10 sekúnd
+          </Button>
+          <Button
+            size="md"
+            variant="primary"
+            onClick={() =>
+              setCurrentTime((t) => Math.min(t + 10, maxTime ?? t))
+            }
+          >
+            +10 sekúnd
+          </Button>
+        </div>
+      )}
 
       {(stage === "stop" || stage === "save") && (
         <p className="text-darkblack font-bangers -mt-4 -mb-2 p-1 text-center text-2xl">
@@ -467,6 +491,7 @@ export default function StartSession() {
           variant="secondary"
           onClick={resetForm}
           iconOnly
+          disabled={stage === "save" || loading}
         >
           <RotateCcw strokeWidth={3} />
         </Button>
