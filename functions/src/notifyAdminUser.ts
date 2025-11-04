@@ -1,14 +1,16 @@
-import { setGlobalOptions } from "firebase-functions";
+// functions/src/notifyAdminUser.ts
 import { onDocumentCreated } from "firebase-functions/v2/firestore";
 import { onRequest } from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import * as nodemailer from "nodemailer";
 import { logger } from "firebase-functions/v2";
 
-admin.initializeApp();
+import * as dotenv from "dotenv";
+dotenv.config();
 
-// Set default region for all functions in this file
-setGlobalOptions({ region: "europe-west3" });
+if (!admin.apps.length) {
+  admin.initializeApp();
+}
 
 // ---------------------------
 // Notify admin when new user registers
@@ -24,13 +26,13 @@ export const notifyAdminOnNewUser = onDocumentCreated(
 
     const data = snapshot.data();
     if (!data?.email || !data?.user_name) {
-      logger.error("Missing fields in user document", { structuredData: true });
+      logger.error("Missing fields in user document");
       return;
     }
 
-    // ⚠️@todo: For production, store credentials in Firebase Secrets
-    const gmailUser = "codebyshegy@gmail.com";
-    const gmailPass = "bwavaetosgdisoqe";
+    // from .env file
+    const gmailUser = process.env.GMAIL_USER!;
+    const gmailPass = process.env.GMAIL_PASS!;
 
     const transporter = nodemailer.createTransport({
       service: "gmail",
@@ -65,14 +67,11 @@ Email: ${data.email}
 
     try {
       await transporter.sendMail(mailOptions);
-      logger.info(`✅ Email úspešne odoslaný pre tuleňa: ${data.email}`, {
-        structuredData: true,
-      });
+      logger.info(`✅ Email úspešne odoslaný pre tuleňa: ${data.email}`);
     } catch (err) {
       logger.error(
         `❌ Chyba pri odosielaní emailu pre tuleňa ${data.email}`,
         err,
-        { structuredData: true },
       );
     }
   },
@@ -91,8 +90,11 @@ export const approveUser = onRequest(async (req, res) => {
   }
 
   try {
-    const userRef = admin.firestore().collection("users").doc(userId);
-    await userRef.update({ approved: true });
+    await admin
+      .firestore()
+      .collection("users")
+      .doc(userId)
+      .update({ approved: true });
     res.send(`✅ Tuleň ${email} bol úspešne schválený!`);
   } catch (err) {
     logger.error("❌ Chyba pri schvaľovaní tuleňa:", err);

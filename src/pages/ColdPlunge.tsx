@@ -8,6 +8,8 @@ import { useAuth } from "../context/AuthContext";
 import { getCurrentGeoPoint } from "../lib/db_location";
 import { createEvent } from "../lib/db_events";
 import { toast } from "react-hot-toast";
+import { getFunctions, httpsCallable } from "firebase/functions";
+import { app } from "../firebase";
 
 import Card from "../components/Card";
 import Button from "../components/Button";
@@ -65,6 +67,26 @@ function sanitizeTemperatureInput(value: string): string {
 export default function ColdPlunge() {
   const navigate = useNavigate();
   const { user } = useAuth();
+
+  const functions = getFunctions(app, "europe-west3"); // match your region
+  const sendMinuteNotification = async (minute: number) => {
+    if (!user) return;
+    try {
+      const sendUserNotification = httpsCallable(
+        functions,
+        "sendUserNotification",
+      );
+      await sendUserNotification({
+        uid: user.uid,
+        title: "🧊 Otužovanie pokračuje!",
+        body: `Práve si v ľade ${minute} minútu!`,
+      });
+      console.log("✅ Push notification sent for minute:", minute);
+    } catch (err) {
+      console.error("❌ Failed to send push:", err);
+    }
+  };
+
   const [stage, setStage] = useState<"start" | "stop" | "save">("start");
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -224,6 +246,7 @@ export default function ColdPlunge() {
   });
 
   const [maxTime, setMaxTime] = useState<number | null>(null);
+  const lastNotifiedMinuteRef = useRef<number>(0);
 
   useEffect(() => {
     if (!startTimestamp || stage !== "stop") {
@@ -235,9 +258,17 @@ export default function ColdPlunge() {
     }
 
     const update = () => {
-      setCurrentTime(
-        Math.floor((Date.now() - (startTimestamp as number)) / 1000),
+      const elapsedSec = Math.floor(
+        (Date.now() - (startTimestamp as number)) / 1000,
       );
+      setCurrentTime(elapsedSec);
+
+      const minute = Math.floor(elapsedSec / 60);
+      if (minute > 0 && minute !== lastNotifiedMinuteRef.current) {
+        lastNotifiedMinuteRef.current = minute;
+        sendMinuteNotification(minute);
+      }
+
       animationFrameRef.current = requestAnimationFrame(update);
     };
 

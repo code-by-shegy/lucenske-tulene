@@ -5,6 +5,15 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
+
+import { useEffect } from "react";
+import { useAuth } from "./context/AuthContext";
+
+import {
+  setupForegroundHandler,
+  registerForPushNotifications,
+} from "./lib/messaging";
+
 import Bottom from "./components/Bottom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -15,11 +24,31 @@ import ForgotPassword from "./pages/ForgotPassword";
 import Approval from "./pages/Approval";
 import ApprovalLogin from "./pages/ApprovalLogin";
 import ResetPassword from "./pages/ResetPassword";
-import { useAuth } from "./context/AuthContext";
+
+const VAPID_KEY = import.meta.env.VITE_FCM_VAPID_KEY as string;
 
 function App() {
   const { user, loading } = useAuth();
 
+  // --- 📲 Set up FCM foreground listener once on mount ---
+  useEffect(() => {
+    setupForegroundHandler();
+  }, []);
+
+  // --- 🔐 Register push token when user logs in ---
+  useEffect(() => {
+    if (user) {
+      registerForPushNotifications(user, VAPID_KEY)
+        .then((token) => {
+          if (token) console.log("✅ Registered FCM token:", token);
+        })
+        .catch((err) =>
+          console.error("Push notification registration failed:", err),
+        );
+    }
+  }, [user]);
+
+  // --- 🌀 Loading state ---
   if (loading) {
     return (
       <div className="font-bangers text-darkblack flex h-screen items-center justify-center px-3 text-center text-4xl sm:text-5xl md:text-6xl">
@@ -28,6 +57,7 @@ function App() {
     );
   }
 
+  // --- 🧭 Routes ---
   return (
     <Router>
       <Routes>
