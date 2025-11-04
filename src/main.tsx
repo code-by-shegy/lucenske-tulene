@@ -15,7 +15,11 @@ createRoot(document.getElementById("root")!).render(
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <App />
-        <Toaster />
+        <Toaster
+          toastOptions={{
+            duration: 4000, // sets all toasts to 4s
+          }}
+        />
       </AuthProvider>
     </QueryClientProvider>
   </StrictMode>,

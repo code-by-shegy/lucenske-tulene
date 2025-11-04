@@ -7,6 +7,7 @@ import { useAuth } from "../context/AuthContext";
 import { ICONS, SHOWER_OPTIONS, EVENT_TYPE } from "../constants";
 import { createEvent } from "../lib/db_events";
 import { getCurrentGeoPoint } from "../lib/db_location";
+import { toast } from "react-hot-toast";
 
 import Card from "../components/Card";
 import Button from "../components/Button";
@@ -159,6 +160,7 @@ export default function ColdShower() {
         geoPoint,
         null, // title
       );
+      toast.success("Silné!💪 Sprcha bola uložená!❄️");
       navigate("/leaderboard");
     } catch (error: any) {
       console.warn("GPS failed or denied, saving without location:", error);
@@ -177,6 +179,7 @@ export default function ColdShower() {
         null, // ❌ no location
         null,
       );
+      toast.success("Silné!💪 Sprcha bola uložená aj bez GPS!📍");
       navigate("/leaderboard");
     } finally {
       setLoading(false);

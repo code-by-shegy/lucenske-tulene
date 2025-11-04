@@ -7,6 +7,7 @@ import { RotateCcw } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { getCurrentGeoPoint } from "../lib/db_location";
 import { createEvent } from "../lib/db_events";
+import { toast } from "react-hot-toast";
 
 import Card from "../components/Card";
 import Button from "../components/Button";
@@ -61,7 +62,7 @@ function sanitizeTemperatureInput(value: string): string {
 // Main component
 // ==============================
 
-export default function StartSession() {
+export default function ColdPlunge() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [stage, setStage] = useState<"start" | "stop" | "save">("start");
@@ -395,6 +396,7 @@ export default function StartSession() {
           geoPoint,
           null,
         );
+        toast.success("Silné!💪 Otužovanie bolo uložené! 🧊");
         resetForm();
         navigate("/leaderboard");
       } catch (error: any) {
@@ -415,6 +417,7 @@ export default function StartSession() {
           null,
         );
 
+        toast.success("Silné!💪 Otužovanie bolo uložené bez GPS!📍");
         resetForm();
         navigate("/leaderboard");
       } finally {
