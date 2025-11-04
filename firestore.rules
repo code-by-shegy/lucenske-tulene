@@ -2,16 +2,26 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // ==========================
-    // USERS COLLECTION
-    // ==========================
-    match /users/{userId} {
-      // Anyone can read user profiles (for leaderboard, etc.)
-      allow read: if true;
+// ==========================
+// USERS COLLECTION
+// ==========================
+match /users/{userId} {
+  // Anyone can read user profiles (for leaderboard, etc.)
+  allow read: if true;
 
-      // Only that user can modify their profile
-      allow create, update, delete: if request.auth != null && request.auth.uid == userId;
-    }
+  // Only that user can modify their profile
+  allow create, update, delete: if request.auth != null && request.auth.uid == userId;
+
+  // --- ✅ FCM TOKENS SUBCOLLECTION ---
+  match /fcmTokens/{tokenId} {
+    // Only the authenticated user can manage their own tokens
+    allow create, read, delete: if request.auth != null && request.auth.uid == userId;
+
+    // Optional: prevent updating an existing token document
+    // (since you’ll just delete + recreate)
+    allow update: if false;
+  }
+}
 
     // ==========================
     // EVENTS COLLECTION
