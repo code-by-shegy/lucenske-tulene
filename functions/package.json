@@ -21,6 +21,7 @@
   "devDependencies": {
     "@types/nodemailer": "^7.0.2",
     "firebase-functions-test": "^3.1.0",
+    "jest": "^30.2.0",
     "typescript": "^5.7.3"
   },
   "private": true
