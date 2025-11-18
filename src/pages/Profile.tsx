@@ -52,7 +52,7 @@ export default function Profile() {
     staleTime: 5 * 60 * 1000,
   });
 
-  const user_name = userProfile?.user_name ?? user?.email ?? "Unknown";
+  const user_name = userProfile?.user_name ?? "";
   const points = userProfile?.points ?? 0;
   const events_count = userProfile?.events_count ?? 0;
   const showers_count = userProfile?.showers_count ?? 0;

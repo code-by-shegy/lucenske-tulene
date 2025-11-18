@@ -1,6 +1,10 @@
 // src/firebase.ts
 import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
+import {
+  persistentLocalCache,
+  persistentMultipleTabManager,
+  initializeFirestore,
+} from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { getStorage } from "firebase/storage";
 
@@ -17,7 +21,14 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
+// Initialize Firestore with persistent cache (modern approach)
+const db = initializeFirestore(app, {
+  localCache: persistentLocalCache({
+    tabManager: persistentMultipleTabManager(),
+  }),
+});
+
 // Export initialized services for use in your app
-export const db = getFirestore(app);
+export { db };
 export const auth = getAuth(app);
 export const storage = getStorage(app);

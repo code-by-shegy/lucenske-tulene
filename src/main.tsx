@@ -7,8 +7,22 @@ import { AuthProvider } from "./context/AuthContext";
 import { Toaster, toast } from "react-hot-toast";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-// Create a client
-const queryClient = new QueryClient();
+// Create a client with offline-first configuration
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5, // 5 minutes
+      gcTime: 1000 * 60 * 60 * 24, // 24 hours cache
+      networkMode: "offlineFirst", // Try cache first, then network
+      retry: 3,
+      refetchOnWindowFocus: false,
+    },
+    mutations: {
+      networkMode: "offlineFirst",
+      retry: 3,
+    },
+  },
+});
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

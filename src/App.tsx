@@ -16,6 +16,7 @@ import Approval from "./pages/Approval";
 import ApprovalLogin from "./pages/ApprovalLogin";
 import ResetPassword from "./pages/ResetPassword";
 import { useAuth } from "./context/AuthContext";
+import { OfflineIndicator } from "./components/OfflineIndicator";
 
 function App() {
   const { user, loading } = useAuth();
@@ -30,6 +31,7 @@ function App() {
 
   return (
     <Router>
+      <OfflineIndicator />
       <Routes>
         {/* Public routes */}
         <Route path="/login" element={user ? <Navigate to="/" /> : <Login />} />
